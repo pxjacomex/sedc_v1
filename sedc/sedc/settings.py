@@ -31,7 +31,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'variable.apps.VariableConfig',
     'formato.apps.FormatoConfig',
+    'datalogger.apps.DataloggerConfig',
+    'estacion.apps.EstacionConfig',
+    'medicion.apps.MedicionConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

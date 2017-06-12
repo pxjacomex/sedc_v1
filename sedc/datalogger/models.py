@@ -23,4 +23,7 @@ class Sensor(models.Model):
     )
     sen_codigo=models.CharField("Código",max_length=10)
     sen_nombre=models.CharField("Nombre",max_length=20)
-    sen_
+    sen_marca=models.CharField("Marca",max_length=20,null=True)
+    sen_modelo=models.CharField("Modelo",max_length=20,null=True)
+    sen_serial=models.CharField("Serial",max_length=20,null=True)
+    sen_estado=models.BooleanField("Estado",default=True)
