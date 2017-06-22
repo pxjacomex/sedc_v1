@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 class Datalogger(models.Model):
@@ -12,6 +13,9 @@ class Datalogger(models.Model):
     dat_modelo=models.CharField("Modelo",max_length=25,null=True)
     dat_serial=models.CharField("Serial",max_length=25,null=True)
     dat_estado=models.BooleanField("Estado",default=True)
+    def get_absolute_url(self):
+        return reverse('datalogger:datalogger_detail', kwargs={'pk': self.pk})
+
 class Sensor(models.Model):
     sen_id=models.AutoField("Id",primary_key=True)
     dat_id=models.ForeignKey(
