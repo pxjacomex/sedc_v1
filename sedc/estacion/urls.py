@@ -5,6 +5,9 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
 urlpatterns=[
-    url(r'^$',views.home,name='home'),
+    url(r'^estacion/$',views.EstacionList.as_view(),name='estacion_index'),
+    url(r'estacion/create/$', views.EstacionCreate.as_view(), name='estacion_create'),
+    url(r'estacion/detail/(?P<pk>[0-9]+)/$', views.EstacionDetail.as_view(), name='estacion_detail'),
+    url(r'estacion/(?P<pk>[0-9]+)/$', views.EstacionUpdate.as_view(), name='estacion_update'),
+    url(r'estacion/(?P<pk>[0-9]+)/delete/$', views.EstacionDelete.as_view(), name='estacion_delete'),
 ]
-

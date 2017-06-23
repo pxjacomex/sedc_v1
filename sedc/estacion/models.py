@@ -19,15 +19,18 @@ class Estacion(models.Model):
     est_provincia=models.CharField("Provincia",max_length=50,null=True)
     est_latitud=models.CharField("Latitud",max_length=12,null=True)
     est_longitud=models.CharField("Longitud",max_length=12,null=True)
-    est_altura=models.IntegerField("Altura",null=True)
+    est_altitud=models.IntegerField("Altitud",null=True)
     est_ficha=models.FileField(upload_to='fichas/')
+    def get_absolute_url(self):
+        return reverse('estacion:estacion_detail', kwargs={'pk': self.pk})
+
 class Vacios(models.Model):
     vac_id=models.AutoField("Id",primary_key=True)
     est_id=models.ForeignKey(
 	Estacion,
 	models.SET_NULL,
 	blank=True,
-	null=True, 
+	null=True,
 	verbose_name="Estacion")
     vac_fecha_ini=models.DateField()
     vac_fecha_fin=models.DateField()
@@ -35,9 +38,8 @@ class Vacios(models.Model):
 class Registro(models.Model):
     reg_id=models.AutoField("Id",primary_key=True)
     est_id=models.ForeignKey(
-	Estacion, 
-	models.SET_NULL, 
-	blank=True, 
-	null=True, 
+	Estacion,
+	models.SET_NULL,
+	blank=True,
+	null=True,
 	verbose_name="Estacion")
-
