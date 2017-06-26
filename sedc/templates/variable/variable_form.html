@@ -4,7 +4,7 @@
 
 <div class="col-lg-4 col-md-4">
   <div class="panel panel-default">
-    <div class="panel-heading">{{title}} Datalogger</div>
+    <div class="panel-heading">{{title}} Variable</div>
     <div class="panel-body">
       <form method="post" class="form">
         {% csrf_token %}
@@ -13,7 +13,7 @@
           Guardar
         </button>
         <a class="btn btn-default"
-        href="{% url 'datalogger:datalogger_index' %}">
+        href="{% url 'variable:variable_index' %}">
         Cancelar</a>
       </form>
     </div>

@@ -10,4 +10,5 @@ urlpatterns=[
     url(r'estacion/detail/(?P<pk>[0-9]+)/$', views.EstacionDetail.as_view(), name='estacion_detail'),
     url(r'estacion/(?P<pk>[0-9]+)/$', views.EstacionUpdate.as_view(), name='estacion_update'),
     url(r'estacion/(?P<pk>[0-9]+)/delete/$', views.EstacionDelete.as_view(), name='estacion_delete'),
+
 ]

@@ -21,11 +21,22 @@ class EstacionCreate(CreateView):
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
         return context
+    def model_form_upload(request):
+        if request.method == 'POST':
+            form = DocumentForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('index')
+        else:
+            form = DocumentForm()
+        return render(request, 'core/model_form_upload.html', {
+            'form': form
+        })
 
 # Create your views here.
 class EstacionList(ListView):
     model=Estacion
-    paginate_by = 2
+    paginate_by = 10
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(EstacionList, self).get_context_data(**kwargs)
@@ -39,10 +50,10 @@ class EstacionList(ListView):
 
     	if page == 1:
     	    start=1
-            last=start+2
+            last=start+1
     	elif page == paginator.num_pages:
             last=paginator.num_pages
-            start=last-2
+            start=last-1
         else:
     	    start=page-1
             last=page+1
