@@ -23,13 +23,12 @@
 		<span class="icon-bar"></span>
 		<span class="icon-bar"></span>
 	      </button>
-	      <a class="navbar-brand" href="#">SEDC</a>
+	      <a class="navbar-brand" href="/#">SEDC</a>
 	    </div>
 
 	    <!-- Collect the nav links, forms, and other content for toggling -->
 	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 	      <ul class="nav navbar-nav">
-
 
 		<li class="dropdown">
 		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administración <span class="caret"></span></a>
@@ -43,21 +42,39 @@
 		    <li><a href="{% url 'variable:variable_index' %}">Variable</a></li>
 		    <li role="separator" class="divider"></li>
 		    <li><a href="{% url 'variable:unidad_index' %}">Unidad</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="{% url 'formato:extension_index' %}">Extensión</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="{% url 'formato:delimitador_index' %}">Delimitador</a></li>
 		  </ul>
 		</li>
 
 		<li class="dropdown">
 		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Monitoreo<span class="caret"></span></a>
 		  <ul class="dropdown-menu">
-		    <li><a href="#">Formato</a></li>
+		    <li><a href="{% url 'formato:formato_index' %}">Formato</a></li>
 		    <li role="separator" class="divider"></li>
 		    <li><a href="#">Importación</a></li>
 		    <li role="separator" class="divider"></li>
-		    <li><a href="#">Control</a></li>
+		    <li><a href="#">Asociación</a></li>
 		    <li role="separator" class="divider"></li>
-		    <li><a href="#">Registro</a></li>
+		    <li><a href="{% url 'estacion:registro_index' %}">Registro</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#">Vacios</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="{% url 'formato:clasificacion_index' %}">Clasificación</a></li>
 		  </ul>
 		</li>
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Validación<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li><a href="#">Validación</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#">Medición</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="{% url 'variable:control_index' %}">Control</a></li>
+      </ul>
+    </li>
 		<li><a href="#">Reportes</a></li>
 	      </ul>
 

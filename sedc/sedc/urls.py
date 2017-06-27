@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^',include('datalogger.urls',namespace='datalogger')),
     url(r'^',include('estacion.urls',namespace='estacion')),
     url(r'^',include('variable.urls',namespace='variable')),
+    url(r'^',include('formato.urls',namespace='formato')),
 
 ]
 

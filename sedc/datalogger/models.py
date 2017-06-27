@@ -33,5 +33,7 @@ class Sensor(models.Model):
     sen_modelo=models.CharField("Modelo",max_length=20,null=True)
     sen_serial=models.CharField("Serial",max_length=20,null=True)
     sen_estado=models.BooleanField("Estado",default=True)
+    def __str__(self):
+        return self.sen_nombre
     def get_absolute_url(self):
         return reverse('datalogger:sensor_detail', kwargs={'pk': self.pk})

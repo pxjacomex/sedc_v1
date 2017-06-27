@@ -33,6 +33,8 @@ class Variable(models.Model):
     var_err=models.DecimalField("Error",max_digits=7,decimal_places=2)
     var_min=models.DecimalField("Error mínimo",max_digits=7,decimal_places=2)
     var_estado=models.BooleanField("Estado",default=True)
+    def __str__(self):
+        return self.var_nombre
     def get_absolute_url(self):
         return reverse('variable:variable_detail', kwargs={'pk': self.pk})
 
@@ -55,6 +57,8 @@ class Control(models.Model):
     	models.SET_NULL,
     	blank=True,
     	null=True,
-    	verbose_name="Estacion")
-    con_fecha_ini=models.DateField()
-    con_fecha_fin=models.DateField()
+    	verbose_name="Estación")
+    con_fecha_ini=models.DateField("Fecha inicio")
+    con_fecha_fin=models.DateField("Fecha fin")
+    def get_absolute_url(self):
+        return reverse('variable:control_detail', kwargs={'pk': self.pk})
