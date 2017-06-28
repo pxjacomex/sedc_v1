@@ -56,11 +56,11 @@
 		    <li role="separator" class="divider"></li>
 		    <li><a href="#">Importación</a></li>
 		    <li role="separator" class="divider"></li>
-		    <li><a href="#">Asociación</a></li>
+		    <li><a href="{% url 'formato:asociacion_index' %}">Asociación</a></li>
 		    <li role="separator" class="divider"></li>
 		    <li><a href="{% url 'estacion:registro_index' %}">Registro</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="#">Vacios</a></li>
+        <li><a href="{% url 'estacion:vacios_index' %}">Vacios</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="{% url 'formato:clasificacion_index' %}">Clasificación</a></li>
 		  </ul>
@@ -68,9 +68,9 @@
     <li class="dropdown">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Validación<span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li><a href="#">Validación</a></li>
+        <li><a href="{% url 'medicion:validacion_index' %}">Validación</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="#">Medición</a></li>
+        <li><a href="{% url 'medicion:medicion_index' %}">Medición</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="{% url 'variable:control_index' %}">Control</a></li>
       </ul>

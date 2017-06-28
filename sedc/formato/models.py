@@ -19,6 +19,7 @@ class Extension(models.Model):
 class Delimitador(models.Model):
     del_id=models.AutoField("Id",primary_key=True)
     del_valor=models.CharField("Valor",max_length=50)
+    del_codigo=models.IntegerField("Código",null=True)
     def __str__(self):
         return self.del_valor
     def get_absolute_url(self):

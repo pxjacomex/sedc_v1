@@ -30,7 +30,7 @@ class FormatoList(ListView):
         context = super(FormatoList, self).get_context_data(**kwargs)
     	lista=Formato.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:
@@ -87,7 +87,7 @@ class ExtensionList(ListView):
         context = super(ExtensionList, self).get_context_data(**kwargs)
     	lista=Extension.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:
@@ -125,7 +125,7 @@ class ExtensionDelete(DeleteView):
 #Delimitador
 class DelimitadorCreate(CreateView):
     model=Delimitador
-    fields = ['del_valor']
+    fields = ['del_valor', 'del_codigo']
     def form_valid(self, form):
         return super(DelimitadorCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -142,7 +142,7 @@ class DelimitadorList(ListView):
         context = super(DelimitadorList, self).get_context_data(**kwargs)
     	lista=Delimitador.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:
@@ -166,7 +166,7 @@ class DelimitadorDetail(DetailView):
 
 class DelimitadorUpdate(UpdateView):
     model=Delimitador
-    fields = ['del_valor']
+    fields = ['del_valor','del_codigo']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(DelimitadorUpdate, self).get_context_data(**kwargs)
@@ -197,7 +197,7 @@ class ClasificacionList(ListView):
         context = super(ClasificacionList, self).get_context_data(**kwargs)
     	lista=Clasificacion.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:
@@ -252,7 +252,7 @@ class AsociacionList(ListView):
         context = super(AsociacionList, self).get_context_data(**kwargs)
     	lista=Asociacion.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:

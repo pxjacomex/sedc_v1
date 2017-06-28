@@ -1,18 +1,26 @@
 {% extends "index.html" %}
 {% block content %}
 {% load bootstrap %}
-<h1><small>Borrar delimitador</small></h1>
+<h1><small>Borrar vacios</small></h1>
 <div class="row">
   <div class="col-lg-4">
     <br>
     <table class="table table-striped table-bordered">
       <tr>
-        <th>Valor</th>
-        <td>{{delimitador.del_valor}}</td>
+        <th>Estación</th>
+        <td>{{vacios.est_id}}</td>
       </tr>
       <tr>
-        <th>Código</th>
-        <td>{{delimitador.del_codigo}}</td>
+        <th>Fecha inicio</th>
+        <td>{{vacios.vac_fecha_ini}}</td>
+      </tr>
+      <tr>
+        <th>Fecha fin</th>
+        <td>{{vacios.vac_fecha_fin}}</td>
+      </tr>
+      <tr>
+        <th>Observación</th>
+        <td>{{vacios.vac_observacion}}</td>
       </tr>
     </table>
   </div>
@@ -22,7 +30,7 @@
     <form method="post" class="form">
       {% csrf_token %}
       <button type="submit" class="btn btn-default btn-warning">Confirmar</button>
-      <a class="btn btn-default" href="{% url 'formato:delimitador_index' %}">Cancelar</a>
+      <a class="btn btn-default" href="{% url 'estacion:vacios_index' %}">Cancelar</a>
     </form>
   </div>
 </div>

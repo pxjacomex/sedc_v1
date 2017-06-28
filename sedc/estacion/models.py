@@ -37,9 +37,11 @@ class Vacios(models.Model):
     	blank=True,
     	null=True,
     	verbose_name="Estación")
-    vac_fecha_ini=models.DateField()
-    vac_fecha_fin=models.DateField()
+    vac_fecha_ini=models.DateField("Fecha inicio")
+    vac_fecha_fin=models.DateField("Fecha fin")
     vac_observacion=models.TextField("Observación",null=True)
+    def get_absolute_url(self):
+        return reverse('estacion:vacios_detail', kwargs={'pk': self.pk})
 
 class Registro(models.Model):
     reg_id=models.AutoField("Id",primary_key=True)

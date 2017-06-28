@@ -4,7 +4,7 @@
 
 <div class="col-lg-4 col-md-4">
   <div class="panel panel-default">
-    <div class="panel-heading">{{title}} Asociación</div>
+    <div class="panel-heading">{{title}} Vacios</div>
     <div class="panel-body">
       <form method="post" class="form">
         {% csrf_token %}
@@ -13,7 +13,7 @@
           Guardar
         </button>
         <a class="btn btn-default"
-        href="{% url 'formato:asociacion_index' %}">
+        href="{% url 'estacion:vacios_index' %}">
         Cancelar</a>
       </form>
     </div>

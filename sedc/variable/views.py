@@ -28,7 +28,7 @@ class VariableList(ListView):
         context = super(VariableList, self).get_context_data(**kwargs)
     	lista=Variable.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:
@@ -40,8 +40,8 @@ class VariableList(ListView):
             last=paginator.num_pages
             start=last-1
         else:
-    	    start=page-1
-            last=page+1
+            start=page-1
+            last=page
         context['first'] = 1
         context['last'] = paginator.num_pages
         context['range'] = range(start,last+1)
@@ -83,7 +83,7 @@ class UnidadList(ListView):
         context = super(UnidadList, self).get_context_data(**kwargs)
     	lista=Unidad.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:
@@ -95,8 +95,8 @@ class UnidadList(ListView):
             last=paginator.num_pages
             start=last-1
         else:
-    	    start=page-1
-            last=page+1
+            start=page-1
+            last=page
         context['first'] = 1
         context['last'] = paginator.num_pages
         context['range'] = range(start,last+1)
@@ -138,7 +138,7 @@ class ControlList(ListView):
         context = super(ControlList, self).get_context_data(**kwargs)
     	lista=Control.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:

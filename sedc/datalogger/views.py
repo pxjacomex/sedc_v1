@@ -11,7 +11,7 @@ from django.core.paginator import Paginator
 #Datalogger views
 class DataloggerCreate(CreateView):
     model = Datalogger
-    fields = ['dat_codigo','dat_nombre','dat_marca','dat_modelo','dat_serial']
+    fields = ['est_id','dat_codigo','dat_nombre','dat_marca','dat_modelo','dat_serial']
     def form_valid(self, form):
         return super(DataloggerCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -28,7 +28,7 @@ class DataloggerList(ListView):
         context = super(DataloggerList, self).get_context_data(**kwargs)
     	lista=Datalogger.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:
@@ -52,7 +52,7 @@ class DataloggerDetail(DetailView):
 
 class DataloggerUpdate(UpdateView):
     model=Datalogger
-    fields = ['dat_codigo','dat_nombre','dat_marca','dat_modelo','dat_serial']
+    fields = ['est_id','dat_codigo','dat_nombre','dat_marca','dat_modelo','dat_serial']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(DataloggerUpdate, self).get_context_data(**kwargs)
@@ -83,7 +83,7 @@ class SensorList(ListView):
         context = super(SensorList, self).get_context_data(**kwargs)
     	lista=Sensor.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 2)
+    	paginator = Paginator(lista, 10)
     	if page is None:
     	    page=1
     	else:
