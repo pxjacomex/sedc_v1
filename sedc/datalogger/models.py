@@ -16,17 +16,34 @@ class Datalogger(models.Model):
         verbose_name="Estación"
     )
     dat_codigo=models.CharField("Código",max_length=10)
-    dat_nombre=models.CharField("Nombre",max_length=25)
     dat_marca=models.CharField("Marca",max_length=25,null=True)
     dat_modelo=models.CharField("Modelo",max_length=25,null=True)
     dat_serial=models.CharField("Serial",max_length=25,null=True)
     dat_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
-        return self.dat_nombre
+        return str(self.est_id) + " " + self.dat_marca
     def get_absolute_url(self):
         return reverse('datalogger:datalogger_detail', kwargs={'pk': self.pk})
 
 class Sensor(models.Model):
+    TIPO_MARCA=(
+        ('CAMPBELL','CAMPBELL'),
+        ('VAISALA','VAISALA'),
+        ('YOUNG','YOUNG'),
+        ('APOGEE','APOGEE'),
+        ('TEXAS ELECTRONICS','TEXAS ELECTRONICS'),
+        ('HOBO','HOBO'),
+        )
+    TIPO_NOMBRE=(
+        ('Termómetro','Termómetro'),
+        ('Higrómetro','Higrómetro'),
+        ('Pluviógrafo','Pluviógrafo'),
+        ('Veleta','Veleta'),
+        ('Anemómetro','Anemómetro'),
+        ('Barómetro','Barómetro'),
+        ('TDR','TDR'),
+        ('Piranómetro','Piranómetro'),
+    )
     sen_id=models.AutoField("Id",primary_key=True)
     dat_id=models.ForeignKey(
         Datalogger,
@@ -35,13 +52,12 @@ class Sensor(models.Model):
         null=True,
         verbose_name="Datalogger"
     )
-    sen_codigo=models.CharField("Código",max_length=10)
-    sen_nombre=models.CharField("Nombre",max_length=20)
-    sen_marca=models.CharField("Marca",max_length=20,null=True)
+    sen_nombre=models.CharField("Nombre",max_length=20,choices=TIPO_NOMBRE)
+    sen_marca=models.CharField("Marca",max_length=20,null=True,choices=TIPO_MARCA)
     sen_modelo=models.CharField("Modelo",max_length=20,null=True)
     sen_serial=models.CharField("Serial",max_length=20,null=True)
     sen_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
-        return self.sen_nombre
+        return (self.sen_nombre + " " + str(self.dat_id)).encode('utf-8')
     def get_absolute_url(self):
         return reverse('datalogger:sensor_detail', kwargs={'pk': self.pk})

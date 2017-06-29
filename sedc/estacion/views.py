@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 # Create your views here.
 class EstacionCreate(CreateView):
     model = Estacion
-    fields = ['est_id', 'est_codigo','est_nombre','est_tipo','est_provincia','est_latitud','est_longitud','est_altura','est_ficha']
+    fields = ['est_id', 'est_codigo','est_nombre','est_tipo','est_estado','est_provincia','est_latitud','est_longitud','est_altura','est_ficha']
     def form_valid(self, form):
         return super(EstacionCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -65,7 +65,7 @@ class EstacionDetail(DetailView):
     model=Estacion
 class EstacionUpdate(UpdateView):
     model=Estacion
-    fields = ['est_id', 'est_codigo','est_nombre','est_tipo','est_provincia','est_latitud','est_longitud','est_altura','est_ficha']
+    fields = ['est_id', 'est_codigo','est_nombre','est_tipo','est_estado','est_provincia','est_latitud','est_longitud','est_altura','est_ficha']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(EstacionUpdate, self).get_context_data(**kwargs)

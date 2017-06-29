@@ -235,7 +235,7 @@ class ClasificacionDelete(DeleteView):
 #Asociacion
 class AsociacionCreate(CreateView):
     model=Asociacion
-    fields = ['for_id','est_id']
+    fields = ['for_id','dat_id']
     def form_valid(self, form):
         return super(AsociacionCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -276,7 +276,7 @@ class AsociacionDetail(DetailView):
 
 class AsociacionUpdate(UpdateView):
     model=Asociacion
-    fields = ['for_id','est_id']
+    fields = ['for_id','dat_id']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(AsociacionUpdate, self).get_context_data(**kwargs)

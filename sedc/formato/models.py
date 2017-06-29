@@ -91,11 +91,11 @@ class Asociacion(models.Model):
     	blank=True,
     	null=True,
     	verbose_name="Formato")
-    est_id=models.ForeignKey(
-    	Estacion,
+    dat_id=models.ForeignKey(
+    	Datalogger,
     	models.SET_NULL,
     	blank=True,
     	null=True,
-    	verbose_name="Estación")
+    	verbose_name="Datalogger")
     def get_absolute_url(self):
         return reverse('formato:asociacion_detail', kwargs={'pk': self.pk})

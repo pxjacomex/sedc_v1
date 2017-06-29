@@ -13,7 +13,7 @@ class Unidad(models.Model):
     uni_nombre=models.CharField("Nombre",max_length=50)
     uni_sigla=models.CharField("Sigla",max_length=10)
     def __str__(self):
-        return self.uni_nombre
+        return self.uni_nombre.encode('utf-8')
     def get_absolute_url(self):
         return reverse('variable:unidad_detail', kwargs={'pk': self.pk})
 
@@ -29,12 +29,12 @@ class Variable(models.Model):
     var_nombre=models.CharField("Nombre",max_length=50)
     var_maximo=models.DecimalField("Máximo",max_digits=7,decimal_places=2)
     var_minimo=models.DecimalField("Mínimo",max_digits=7,decimal_places=2)
-    var_sos=models.DecimalField("Sos",max_digits=7,decimal_places=2)
-    var_err=models.DecimalField("Error",max_digits=7,decimal_places=2)
-    var_min=models.DecimalField("Error mínimo",max_digits=7,decimal_places=2)
+    var_sos=models.DecimalField("Sos",max_digits=7,decimal_places=2,null=True,blank=True)
+    var_err=models.DecimalField("Error",max_digits=7,decimal_places=2,null=True,blank=True)
+    var_min=models.DecimalField("Error mínimo",max_digits=7,decimal_places=2,null=True,blank=True)
     var_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
-        return self.var_nombre
+        return self.var_nombre.encode('utf-8')
     def get_absolute_url(self):
         return reverse('variable:variable_detail', kwargs={'pk': self.pk})
 

@@ -11,7 +11,7 @@ from django.core.paginator import Paginator
 #Variable views
 class VariableCreate(CreateView):
     model=Variable
-    fields = ['uni_id','var_codigo','var_nombre','var_maximo','var_minimo','var_sos','var_err','var_min']
+    fields = ['var_codigo','var_nombre','uni_id','var_maximo','var_minimo','var_sos','var_err','var_min']
     def form_valid(self, form):
         return super(VariableCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -52,7 +52,7 @@ class VariableDetail(DetailView):
 
 class VariableUpdate(UpdateView):
     model=Variable
-    fields = ['uni_id','var_codigo','var_nombre','var_maximo','var_minimo','var_sos','var_err','var_min']
+    fields = ['var_codigo','var_nombre','uni_id','var_maximo','var_minimo','var_sos','var_err','var_min']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(VariableUpdate, self).get_context_data(**kwargs)

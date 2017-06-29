@@ -11,7 +11,7 @@ from django.core.paginator import Paginator
 #Datalogger views
 class DataloggerCreate(CreateView):
     model = Datalogger
-    fields = ['est_id','dat_codigo','dat_nombre','dat_marca','dat_modelo','dat_serial']
+    fields = ['est_id','dat_codigo','dat_marca','dat_modelo','dat_serial']
     def form_valid(self, form):
         return super(DataloggerCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -52,7 +52,7 @@ class DataloggerDetail(DetailView):
 
 class DataloggerUpdate(UpdateView):
     model=Datalogger
-    fields = ['est_id','dat_codigo','dat_nombre','dat_marca','dat_modelo','dat_serial']
+    fields = ['est_id','dat_codigo','dat_marca','dat_modelo','dat_serial']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(DataloggerUpdate, self).get_context_data(**kwargs)
@@ -66,7 +66,7 @@ class DataloggerDelete(DeleteView):
 #Sensor
 class SensorCreate(CreateView):
     model = Sensor
-    fields = ['dat_id','sen_codigo','sen_nombre','sen_marca','sen_modelo','sen_serial']
+    fields = ['dat_id','sen_nombre','sen_marca','sen_modelo','sen_serial']
     def form_valid(self, form):
         return super(SensorCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -107,7 +107,7 @@ class SensorDetail(DetailView):
 
 class SensorUpdate(UpdateView):
     model=Sensor
-    fields = ['dat_id','sen_codigo','sen_nombre','sen_marca','sen_modelo','sen_serial']
+    fields = ['dat_id','sen_nombre','sen_marca','sen_modelo','sen_serial']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(SensorUpdate, self).get_context_data(**kwargs)

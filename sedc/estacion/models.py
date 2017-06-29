@@ -18,14 +18,14 @@ class Estacion(models.Model):
     est_codigo=models.CharField("Código",max_length=10)
     est_nombre=models.CharField("Nombre",max_length=100)
     est_tipo=models.CharField("Tipo",max_length=25,choices=TIPO_ESTACION)
-    est_estado=models.BooleanField(default=True)
+    est_estado=models.BooleanField("Activo",default=True)
     est_provincia=models.CharField("Provincia",max_length=50,null=True)
     est_latitud=models.DecimalField("Latitud",max_digits=10,decimal_places=2,null=True)
     est_longitud=models.DecimalField("Longitud",max_digits=10,decimal_places=2,null=True)
     est_altura=models.IntegerField("Altura",null=True,validators=[MaxValueValidator(6000), MinValueValidator(0)])
     est_ficha=models.FileField("Fichas",upload_to='documents/')
     def __str__(self):
-        return self.est_nombre
+        return self.est_codigo.encode('utf-8')
     def get_absolute_url(self):
         return reverse('estacion:estacion_detail', kwargs={'pk': self.pk})
 
