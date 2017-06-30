@@ -11,7 +11,7 @@ from django.core.paginator import Paginator
 #Formato views
 class FormatoCreate(CreateView):
     model = Formato
-    fields = ['ext_id','del_id','dat_id','for_nombre','for_descripcion','for_ubicacion',
+    fields = ['ext_id','del_id','for_nombre','for_descripcion','for_ubicacion',
               'for_archivo','for_num_col','for_fil_ini','for_fecha','for_col_fecha','for_hora',
               'for_col_hora']
     def form_valid(self, form):
@@ -54,7 +54,7 @@ class FormatoDetail(DetailView):
 
 class FormatoUpdate(UpdateView):
     model=Formato
-    fields = ['ext_id','del_id','dat_id','for_nombre','for_descripcion','for_ubicacion',
+    fields = ['ext_id','del_id','for_nombre','for_descripcion','for_ubicacion',
               'for_archivo','for_num_col','for_fil_ini','for_fecha','for_col_fecha','for_hora',
               'for_col_hora']
     def get_context_data(self, **kwargs):

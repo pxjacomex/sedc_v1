@@ -43,6 +43,8 @@ class Sensor(models.Model):
         ('Barómetro','Barómetro'),
         ('TDR','TDR'),
         ('Piranómetro','Piranómetro'),
+        ('Termómetro de agua','Termómetro de agua'),
+        ('Sensor de nivel','Sensor de nivel'),
     )
     sen_id=models.AutoField("Id",primary_key=True)
     dat_id=models.ForeignKey(
