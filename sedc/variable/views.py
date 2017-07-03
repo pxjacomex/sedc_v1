@@ -121,7 +121,7 @@ class UnidadDelete(DeleteView):
 #Control
 class ControlCreate(CreateView):
     model=Control
-    fields = ['var_id','sen_id','est_id','con_fecha_ini','con_fecha_fin']
+    fields = ['var_id','sen_id','est_id','con_fecha_ini','con_fecha_fin','con_estado']
     def form_valid(self, form):
         return super(ControlCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -162,7 +162,7 @@ class ControlDetail(DetailView):
 
 class ControlUpdate(UpdateView):
     model=Control
-    fields = ['var_id','sen_id','est_id','con_fecha_ini','con_fecha_fin']
+    fields = ['var_id','sen_id','est_id','con_fecha_ini','con_fecha_fin','con_estado']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ControlUpdate, self).get_context_data(**kwargs)

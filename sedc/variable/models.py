@@ -59,6 +59,7 @@ class Control(models.Model):
     	null=True,
     	verbose_name="Estación")
     con_fecha_ini=models.DateField("Fecha inicio")
-    con_fecha_fin=models.DateField("Fecha fin")
+    con_fecha_fin=models.DateField("Fecha fin",blank=True,null=True)
+    con_estado=models.BooleanField("Activo",default=True)
     def get_absolute_url(self):
         return reverse('variable:control_detail', kwargs={'pk': self.pk})
