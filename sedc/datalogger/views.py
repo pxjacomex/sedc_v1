@@ -66,7 +66,7 @@ class DataloggerDelete(DeleteView):
 #Sensor
 class SensorCreate(CreateView):
     model = Sensor
-    fields = ['dat_id','sen_nombre','sen_marca','sen_modelo','sen_serial']
+    fields = ['sen_nombre','sen_marca','sen_modelo','sen_serial']
     def form_valid(self, form):
         return super(SensorCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -107,7 +107,7 @@ class SensorDetail(DetailView):
 
 class SensorUpdate(UpdateView):
     model=Sensor
-    fields = ['dat_id','sen_nombre','sen_marca','sen_modelo','sen_serial']
+    fields = ['sen_nombre','sen_marca','sen_modelo','sen_serial']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(SensorUpdate, self).get_context_data(**kwargs)

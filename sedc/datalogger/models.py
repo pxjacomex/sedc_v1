@@ -47,19 +47,14 @@ class Sensor(models.Model):
         ('Sensor de nivel','Sensor de nivel'),
     )
     sen_id=models.AutoField("Id",primary_key=True)
-    dat_id=models.ForeignKey(
-        Datalogger,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Datalogger"
-    )
     sen_nombre=models.CharField("Nombre",max_length=20,choices=TIPO_NOMBRE)
     sen_marca=models.CharField("Marca",max_length=20,null=True,choices=TIPO_MARCA)
     sen_modelo=models.CharField("Modelo",max_length=20,null=True)
     sen_serial=models.CharField("Serial",max_length=20,null=True)
     sen_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
-        return (self.sen_nombre + " " + str(self.dat_id)).encode('utf-8')
+        return (self.sen_nombre + " " + self.sen_modelo + " " + self.sen_serial).encode('utf-8')
     def get_absolute_url(self):
         return reverse('datalogger:sensor_detail', kwargs={'pk': self.pk})
+    class Meta:
+        ordering=('sen_nombre','sen_marca','sen_modelo','sen_serial',)

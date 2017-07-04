@@ -63,3 +63,5 @@ class Control(models.Model):
     con_estado=models.BooleanField("Activo",default=True)
     def get_absolute_url(self):
         return reverse('variable:control_detail', kwargs={'pk': self.pk})
+    class Meta:
+        ordering=('est_id','var_id',)        
