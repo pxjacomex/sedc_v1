@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^',include('variable.urls',namespace='variable')),
     url(r'^',include('formato.urls',namespace='formato')),
     url(r'^',include('medicion.urls',namespace='medicion')),
+    url(r'^',include('vacios.urls',namespace='vacios')),
 
 ]
 

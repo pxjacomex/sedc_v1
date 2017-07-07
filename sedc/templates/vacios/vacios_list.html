@@ -6,7 +6,7 @@
   </div>
   <div class="col-lg-2" style="padding-top:20px;">
     <a style="float:right" class="btn btn-info"
-    href="{% url 'estacion:vacios_create' %}">
+    href="{% url 'vacios:vacios_create' %}">
     Nuevo</a>
   </div>
 </div>
@@ -15,9 +15,11 @@
   <thead>
     <tr>
       <th>Estación</th>
+      <th>Variable</th>
       <th>Fecha inicio</th>
+      <th>Hora inicio</th>
       <th>Fecha fin</th>
-      <th>Observación</th>
+      <th>Hora fin</th>
       <th></th>
     </tr>
   </thead>
@@ -25,17 +27,19 @@
     {% for item in object_list %}
     <tr>
       <td>{{ item.est_id }}</td>
+      <td>{{ item.var_id }}</td>
       <td>{{ item.vac_fecha_ini }}</td>
+      <td>{{ item.vac_hora_ini }}</td>
       <td>{{ item.vac_fecha_fin }}</td>
-      <td>{{ item.vac_observacion }}</td>
+      <td>{{ item.vac_hora_fin }}</td>
       <td>
-        <a href="{% url 'estacion:vacios_detail' item.vac_id %}">
+        <a href="{% url 'vacios:vacios_detail' item.vac_id %}">
           <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
         </a>
-        <a href="{% url 'estacion:vacios_update' item.vac_id %}">
+        <a href="{% url 'vacios:vacios_update' item.vac_id %}">
           <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
         </a>
-        <a href="{% url 'estacion:vacios_delete' item.vac_id %}">
+        <a href="{% url 'vacios:vacios_delete' item.vac_id %}">
           <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </a>
       </td>

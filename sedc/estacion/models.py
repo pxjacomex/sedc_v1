@@ -5,8 +5,6 @@ from django.db import models
 from django.urls import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-#from formato.models import Formato
-
 # Create your models here.
 class Estacion(models.Model):
     TIPO_ESTACION=(
@@ -28,20 +26,6 @@ class Estacion(models.Model):
         return self.est_codigo.encode('utf-8')
     def get_absolute_url(self):
         return reverse('estacion:estacion_detail', kwargs={'pk': self.pk})
-
-class Vacios(models.Model):
-    vac_id=models.AutoField("Id",primary_key=True)
-    est_id=models.ForeignKey(
-    	Estacion,
-    	models.SET_NULL,
-    	blank=True,
-    	null=True,
-    	verbose_name="Estación")
-    vac_fecha_ini=models.DateField("Fecha inicio")
-    vac_fecha_fin=models.DateField("Fecha fin")
-    vac_observacion=models.TextField("Observación",null=True)
-    def get_absolute_url(self):
-        return reverse('estacion:vacios_detail', kwargs={'pk': self.pk})
 
 class Registro(models.Model):
     reg_id=models.AutoField("Id",primary_key=True)

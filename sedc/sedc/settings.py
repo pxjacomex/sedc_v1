@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'datalogger.apps.DataloggerConfig',
     'estacion.apps.EstacionConfig',
     'medicion.apps.MedicionConfig',
+    'vacios.apps.VaciosConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

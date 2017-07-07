@@ -41,7 +41,7 @@ class Formato(models.Model):
         verbose_name="Delimitador")
     for_nombre=models.CharField("Nombre",max_length=50)
     for_descripcion=models.TextField("Descripción",null=True)
-    for_ubicacion=models.TextField("Ubicación")
+    for_ubicacion=models.CharField("Ubicación",max_length=300)
     for_archivo=models.CharField("Archivo",max_length=100,blank=True,null=True)
     for_num_col=models.IntegerField("Número de columnas")
     for_fil_ini=models.IntegerField("Fila de inicio")

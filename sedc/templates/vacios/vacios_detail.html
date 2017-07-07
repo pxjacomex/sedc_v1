@@ -14,12 +14,24 @@
         <td>{{vacios.est_id}}</td>
       </tr>
       <tr>
+        <th>Variable</th>
+        <td>{{vacios.var_id}}</td>
+      </tr>
+      <tr>
         <th>Fecha inicio</th>
         <td>{{vacios.vac_fecha_ini}}</td>
       </tr>
       <tr>
+        <th>Hora inicio</th>
+        <td>{{vacios.vac_hora_ini}}</td>
+      </tr>
+      <tr>
         <th>Fecha fin</th>
         <td>{{vacios.vac_fecha_fin}}</td>
+      </tr>
+      <tr>
+        <th>Hora fin</th>
+        <td>{{vacios.vac_hora_fin}}</td>
       </tr>
       <tr>
         <th>Observación</th>
@@ -30,9 +42,9 @@
 </div>
 <div class="row">
   <div class="col-lg-8">
-    <a class="btn btn-primary" href="{% url 'estacion:vacios_update' vacios.vac_id %}">Modificar</a>
-    <a class="btn btn-warning" href="{% url 'estacion:vacios_delete' vacios.vac_id %}">Borrar</a>
-    <a class="btn btn-default" href="{% url 'estacion:vacios_index' %}">Regresar</a>
+    <a class="btn btn-primary" href="{% url 'vacios:vacios_update' vacios.vac_id %}">Modificar</a>
+    <a class="btn btn-warning" href="{% url 'vacios:vacios_delete' vacios.vac_id %}">Borrar</a>
+    <a class="btn btn-default" href="{% url 'vacios:vacios_index' %}">Regresar</a>
   </div>
 </div>
 

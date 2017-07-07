@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Datalogger, Sensor
-from django.views.generic import ListView
+from django.views.generic import ListView,FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.core.paginator import Paginator
+from .forms import SensorSearchForm
 
 #Datalogger views
 class DataloggerCreate(CreateView):
@@ -75,32 +76,48 @@ class SensorCreate(CreateView):
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
         return context
-
+class FilterMixin(object):
+    def get_queryset_filters(self):
+        filters = {}
+        for item in self.allowed_filters:
+            if item in self.request.GET:
+                 filters[self.allowed_filters[item]] = self.request.GET[item]
+        return filters
+    def get_queryset(self):
+        return super(FilterMixin, self).get_queryset()\
+             .filter(**self.get_queryset_filters())
 class SensorList(ListView):
     model=Sensor
     paginate_by = 10
     def get_context_data(self, **kwargs):
         context = super(SensorList, self).get_context_data(**kwargs)
-    	lista=Sensor.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+        context.update(pagination(self.get_queryset(),page,10))
+        context.update(options_sensor())
+        context['page']=page if None else 1
+        context['sen_nombre']=self.request.GET.get('sen_nombre') if None else ''
+        context['sen_marca']=self.request.GET.get('sen_marca') if None else ''
+        #context['filter_form'] = SensorSearchForm(self.request.GET)
         return context
+    def get_queryset(self):
+        self.sen_nombre=self.request.GET.get('sen_nombre')
+        self.sen_marca=self.request.GET.get('sen_marca')
+        page= self.request.GET.get('page') if None else 1
+        Lista={}
+        if self.sen_nombre is None and self.sen_marca is None:
+            Lista=Sensor.objects.all()
+        if self.sen_nombre is '' and self.sen_marca is '':
+            Lista=Sensor.objects.all()
+        elif self.sen_nombre == '':
+            Lista=Sensor.objects.filter(sen_marca=self.sen_marca)
+        elif self.sen_marca == '':
+            Lista=Sensor.objects.filter(sen_nombre=self.sen_nombre)
+        elif page!=0 or self.sen_nombre == '' or self.sen_marca == '':
+            Lista=Sensor.objects.all()
+        else:
+            Lista=Sensor.objects.filter(sen_nombre=self.sen_nombre).filter(sen_marca=self.sen_marca)
+        return Lista
+
 
 class SensorDetail(DetailView):
     model=Sensor
@@ -117,3 +134,54 @@ class SensorUpdate(UpdateView):
 class SensorDelete(DeleteView):
     model=Sensor
     success_url = reverse_lazy('datalogger:sensor_index')
+
+def pagination(lista,page,num_reg):
+    #lista=model.objects.all()
+    paginator = Paginator(lista, num_reg)
+    if page is None:
+        page=1
+    else:
+        page=int(page)
+    if page == 1:
+        start=1
+        last=start+1
+    elif page == paginator.num_pages:
+        last=paginator.num_pages
+        start=last-1
+    else:
+        start=page-1
+        last=page+1
+    context={
+        'first':'1',
+        'last':paginator.num_pages,
+        'range':range(start,last+1),
+    }
+    return context
+def options_sensor():
+    TIPO_MARCA=(
+        ('CAMPBELL'),
+        ('VAISALA'),
+        ('YOUNG'),
+        ('APOGEE'),
+        ('TEXAS ELECTRONICS'),
+        ('HOBO'),
+        )
+    TIPO_NOMBRE=(
+        ('Termómetro'),
+        ('Higrómetro'),
+        ('Pluviógrafo'),
+        ('Veleta'),
+        ('Anemómetro'),
+        ('Barómetro'),
+        ('TDR'),
+        ('Piranómetro'),
+        ('Termómetro de agua'),
+        ('Sensor de nivel'),
+        )
+    #TIPO_NOMBRE=map(TIPO_NOMBRE.encode('utf-8'))
+    #TIPO_NOMBRE = [[word.encode("utf8") for word in sets] for sets in TIPO_NOMBRE]
+    context = {
+        'TIPO_NOMBRE':TIPO_NOMBRE,
+        'TIPO_MARCA':TIPO_MARCA,
+    }
+    return context
