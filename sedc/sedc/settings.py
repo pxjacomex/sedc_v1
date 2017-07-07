@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'bootstrapform',
+    #'bootstrapform',
     'bootstrap3',
     'variable.apps.VariableConfig',
     'formato.apps.FormatoConfig',
