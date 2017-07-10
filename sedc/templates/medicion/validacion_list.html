@@ -28,8 +28,8 @@
     {% for item in object_list %}
     <tr>
       <td>{{ item.med_id}}</td>
-      <td>{{ item.val_fecha}}</td>
-      <td>{{ item.val_hora}}</td>
+      <td>{{ item.val_fecha|date:"d/m/Y"}}</td>
+      <td>{{ item.val_hora|date:"H:i:s"}}</td>
       <td>{{ item.val_valor}}</td>
       <td>{{ item.val_maximo}}</td>
       <td>{{ item.val_minimo}}</td>

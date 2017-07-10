@@ -28,10 +28,10 @@
     <tr>
       <td>{{ item.est_id }}</td>
       <td>{{ item.var_id }}</td>
-      <td>{{ item.vac_fecha_ini }}</td>
-      <td>{{ item.vac_hora_ini }}</td>
-      <td>{{ item.vac_fecha_fin }}</td>
-      <td>{{ item.vac_hora_fin }}</td>
+      <td>{{ item.vac_fecha_ini|date:"d/m/Y" }}</td>
+      <td>{{ item.vac_hora_ini|date:"H:i:s" }}</td>
+      <td>{{ item.vac_fecha_fin|date:"d/m/Y" }}</td>
+      <td>{{ item.vac_hora_fin|date:"H:i:s" }}</td>
       <td>
         <a href="{% url 'vacios:vacios_detail' item.vac_id %}">
           <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>

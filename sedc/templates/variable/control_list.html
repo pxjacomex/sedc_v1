@@ -28,8 +28,8 @@
       <td>{{ item.var_id}}</td>
       <td>{{ item.sen_id}}</td>
       <td>{{ item.est_id}}</td>
-      <td>{{ item.con_fecha_ini}}</td>
-      <td>{{ item.con_fecha_fin}}</td>
+      <td>{{ item.con_fecha_ini|date:"d/m/Y"}}</td>
+      <td>{{ item.con_fecha_fin|date:"d/m/Y"}}</td>
       <td>{{ item.con_estado}}</td>
       <td>
         <a href="{% url 'variable:control_detail' item.con_id %}">

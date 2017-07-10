@@ -24,7 +24,7 @@
     {% for item in object_list %}
     <tr>
       <td>{{ item.est_id}}</td>
-      <td>{{ item.reg_fecha}}</td>
+      <td>{{ item.reg_fecha|date:"d/m/Y"}}</td>
       <td>{{ item.reg_archivo}}</td>
       <td>{{ item.reg_ubicacion}}</td>
       <td>

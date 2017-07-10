@@ -106,7 +106,7 @@ class SensorList(ListView):
         Lista={}
         if self.sen_nombre is None and self.sen_marca is None:
             Lista=Sensor.objects.all()
-        if self.sen_nombre is '' and self.sen_marca is '':
+        if self.sen_nombre is '' and self.sen_marca is 'source ':
             Lista=Sensor.objects.all()
         elif self.sen_nombre == '':
             Lista=Sensor.objects.filter(sen_marca=self.sen_marca)
