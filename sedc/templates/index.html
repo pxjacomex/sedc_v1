@@ -23,7 +23,7 @@
 		<span class="icon-bar"></span>
 		<span class="icon-bar"></span>
 	      </button>
-	      <a class="navbar-brand" href="/#">SEDC</a>
+	      <a class="navbar-brand" href="/home">SEDC</a>
 	    </div>
 
 	    <!-- Collect the nav links, forms, and other content for toggling -->
@@ -72,7 +72,7 @@
         <li role="separator" class="divider"></li>
         <li><a href="{% url 'medicion:medicion_index' %}">Medición</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="{% url 'variable:control_index' %}">Control</a></li>
+        <li><a href="{% url 'variable:control_index' %}">Instalaciones</a></li>
       </ul>
     </li>
 		<li><a href="#">Reportes</a></li>
@@ -92,6 +92,7 @@
 	    </div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
 	</nav>
+
 <div class="container">
     {% block content %}
     {% endblock %}
