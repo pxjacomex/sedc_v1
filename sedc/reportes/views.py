@@ -3,7 +3,7 @@ from .models import Medicion
 from django.db.models import Max, Min, Avg
 from django.db.models.functions import TruncMonth
 
-import plotly.plotly as opy
+import plotly.offline as opy
 import plotly.graph_objs as go
 
 class ReportesPageView(TemplateView):
@@ -68,7 +68,7 @@ def PlotGrafico(meses,max_simple,min_simple,avg_simple):
     data = go.Data([trace0, trace1, trace2])
 
     # Edit the layout
-    layout = go.Layout(title = 'Caudal Medio Mensual', xaxis={'title':'Meses'}, yaxis={'title':'Caudal (m3/s)'})
+    layout = go.Layout(title = "Caudal Medio Mensual", xaxis={'title':'Meses'}, yaxis={'title':'Caudal (m3/s)'})
     figure = go.Figure(data=data, layout=layout)
     div = opy.plot(figure, auto_open=False, output_type='div')
 
