@@ -23,12 +23,12 @@ class VariableCreate(CreateView):
 
 class VariableList(ListView):
     model=Variable
-    paginate_by = 10
+    paginate_by = 100
     def get_context_data(self, **kwargs):
         context = super(VariableList, self).get_context_data(**kwargs)
     	lista=Variable.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
+    	paginator = Paginator(lista, 100)
     	if page is None:
     	    page=1
     	else:

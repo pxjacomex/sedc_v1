@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row">
   <div class="col-lg-10">
-    <h3>Lista de controles</h3>
+    <h3>Lista de instalaciones</h3>
   </div>
   <div class="col-lg-2" style="padding-top:20px;">
     <a style="float:right" class="btn btn-info"
@@ -28,8 +28,8 @@
       <td>{{ item.var_id}}</td>
       <td>{{ item.sen_id}}</td>
       <td>{{ item.est_id}}</td>
-      <td>{{ item.con_fecha_ini}}</td>
-      <td>{{ item.con_fecha_fin}}</td>
+      <td>{{ item.con_fecha_ini|date:"d/m/Y"}}</td>
+      <td>{{ item.con_fecha_fin|date:"d/m/Y"}}</td>
       <td>{{ item.con_estado}}</td>
       <td>
         <a href="{% url 'variable:control_detail' item.con_id %}">

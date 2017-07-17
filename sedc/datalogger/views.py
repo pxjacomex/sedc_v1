@@ -99,6 +99,27 @@ class SensorList(ListView):
         page=self.request.GET.get('page')
         context.update(pagination(self.get_queryset(),page,10))
         return context
+#HEAD
+    def get_queryset(self):
+        self.sen_nombre=self.request.GET.get('sen_nombre')
+        self.sen_marca=self.request.GET.get('sen_marca')
+        page= self.request.GET.get('page') if None else 1
+        Lista={}
+        if self.sen_nombre is None and self.sen_marca is None:
+            Lista=Sensor.objects.all()
+        if self.sen_nombre is '' and self.sen_marca is 'source ':
+            Lista=Sensor.objects.all()
+        elif self.sen_nombre == '':
+            Lista=Sensor.objects.filter(sen_marca=self.sen_marca)
+        elif self.sen_marca == '':
+            Lista=Sensor.objects.filter(sen_nombre=self.sen_nombre)
+        elif page!=0 or self.sen_nombre == '' or self.sen_marca == '':
+            Lista=Sensor.objects.all()
+        else:
+            Lista=Sensor.objects.filter(sen_nombre=self.sen_nombre).filter(sen_marca=self.sen_marca)
+        return Lista
+
+#e0a13a3ea02aa825f98e00d6fc23bd5fa2053bcd
 
 class SensorDetail(DetailView):
     model=Sensor
