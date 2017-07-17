@@ -2,6 +2,8 @@
 {% block title %}Pagina Principal{% endblock %}
 
 {% block content %}
+
+{{matriz}}
 <div class="row">
   <div class="col-md-6" >
     <table class="table table-striped table-bordered table-condensed">
@@ -21,7 +23,7 @@
   </thead>
   <tbody>
 
-    {% for item in matrix %}
+    {% for item in matriz %}
 
     <tr>
       <td>{{ item.mes }}</td>
