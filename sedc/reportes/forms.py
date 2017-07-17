@@ -44,7 +44,7 @@ class AnuarioForm(forms.Form):
         var_simple = [d.get('var_id_id') for d in variables]
 
         for i in var_simple:
-            matriz = self.matrix(form.cleaned_data['estacion'],str(i),form.cleaned_data['anio'])
+            matriz = self.matrix(form.cleaned_data['estacion'],str(11),form.cleaned_data['anio'])
             context.update({'variables':i})
             #grafico = self.PlotGrafico(form.cleaned_data['estacion'],'10',form.cleaned_data['anio'])
             context.update({str(i) + '_matriz': matriz})
@@ -53,18 +53,17 @@ class AnuarioForm(forms.Form):
         return context
 
     def matrix(self,estacion, variable, anio):
+        matrix = []
         med_max=list(Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=anio).annotate(month=TruncMonth('med_fecha')).values('month').annotate(c=Max('med_valor')).values('c').order_by('month'))
         med_min=list(Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=anio).annotate(month=TruncMonth('med_fecha')).values('month').annotate(c=Min('med_valor')).values('c').order_by('month'))
         med_avg=list(Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=anio).annotate(month=TruncMonth('med_fecha')).values('month').annotate(c=Avg('med_valor')).values('c').order_by('month'))
-
-        max_simple = [d.get('c') for d in med_max]
-        min_simple = [d.get('c') for d in med_min]
-        avg_simple = [d.get('c') for d in med_avg]
-        meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-
-        matrix = []
-        for i in range(len(meses)):
-            matrix.append(Resumen(meses[i],max_simple[i],min_simple[i],avg_simple[i]))
+        if len(med_max)>0 and len(med_min)>0 and len(med_avg)>0:
+            max_simple = [d.get('c') for d in med_max]
+            min_simple = [d.get('c') for d in med_min]
+            avg_simple = [d.get('c') for d in med_avg]
+            meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+            for i in range(len(max_simple)):
+                matrix.append(Resumen(meses[i],max_simple[i],min_simple[i],avg_simple[i]))
         return matrix
     def PlotGrafico(self,estacion, variable, anio):
         med_max=list(Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=anio).annotate(month=TruncMonth('med_fecha')).values('month').annotate(c=Max('med_valor')).values('c').order_by('month'))
