@@ -24,7 +24,6 @@ class Datalogger(models.Model):
         return str(self.est_id) + " " + self.dat_marca
     def get_absolute_url(self):
         return reverse('datalogger:datalogger_detail', kwargs={'pk': self.pk})
-
 class Sensor(models.Model):
     TIPO_MARCA=(
         ('CAMPBELL','CAMPBELL'),

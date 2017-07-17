@@ -5,7 +5,7 @@ from .models import Datalogger, Sensor
 from django.views.generic import ListView,FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from .forms import SensorSearchForm
 
@@ -76,16 +76,21 @@ class SensorCreate(CreateView):
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
         return context
-class FilterMixin(object):
-    def get_queryset_filters(self):
-        filters = {}
-        for item in self.allowed_filters:
-            if item in self.request.GET:
-                 filters[self.allowed_filters[item]] = self.request.GET[item]
-        return filters
-    def get_queryset(self):
-        return super(FilterMixin, self).get_queryset()\
-             .filter(**self.get_queryset_filters())
+#class SensorSearch(FormView,ListView):
+class SensorSearch(FormView):
+    template_name='datalogger/list_search.html'
+    form_class=SensorSearchForm
+    success_url='/sensor/search/'
+    lista=[]
+    def post(self, request, *args, **kwargs):
+        form=SensorSearchForm(self.request.POST or None)
+        if form.is_valid():
+            self.lista=form.filtrar(form)
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        context = super(SensorSearch, self).get_context_data(**kwargs)
+        context['lista']=self.lista
+        return context
 class SensorList(ListView):
     model=Sensor
     paginate_by = 10
@@ -93,31 +98,7 @@ class SensorList(ListView):
         context = super(SensorList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
         context.update(pagination(self.get_queryset(),page,10))
-        context.update(options_sensor())
-        context['page']=page if None else 1
-        context['sen_nombre']=self.request.GET.get('sen_nombre') if None else ''
-        context['sen_marca']=self.request.GET.get('sen_marca') if None else ''
-        #context['filter_form'] = SensorSearchForm(self.request.GET)
         return context
-    def get_queryset(self):
-        self.sen_nombre=self.request.GET.get('sen_nombre')
-        self.sen_marca=self.request.GET.get('sen_marca')
-        page= self.request.GET.get('page') if None else 1
-        Lista={}
-        if self.sen_nombre is None and self.sen_marca is None:
-            Lista=Sensor.objects.all()
-        if self.sen_nombre is '' and self.sen_marca is '':
-            Lista=Sensor.objects.all()
-        elif self.sen_nombre == '':
-            Lista=Sensor.objects.filter(sen_marca=self.sen_marca)
-        elif self.sen_marca == '':
-            Lista=Sensor.objects.filter(sen_nombre=self.sen_nombre)
-        elif page!=0 or self.sen_nombre == '' or self.sen_marca == '':
-            Lista=Sensor.objects.all()
-        else:
-            Lista=Sensor.objects.filter(sen_nombre=self.sen_nombre).filter(sen_marca=self.sen_marca)
-        return Lista
-
 
 class SensorDetail(DetailView):
     model=Sensor
