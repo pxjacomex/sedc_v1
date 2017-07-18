@@ -23,49 +23,15 @@
 <br>
 
   <div class="row">
-    {% if matriz %}
-    <div class="col-md-5" >
-    <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
+    {% include "reportes/anuario/tag.html" %}
 
-    <thead>
-      <tr>
-        <th align="center" colspan='5'>Caudal - Valores medios diarios, medios maximos y mimimos</th>
-      </tr>
-      <tr>
-        <th rowspan='2'>Mes</th>
-        <th colspan='3'>Caudal (m3/s)</th>
-      </tr>
-      <tr>
-        <th>Max</th>
-        <th>Min</th>
-        <th>Media</th>
-      </tr>
-    </thead>
-    <tbody>
 
-      {% for item in matriz %}
-
-      <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.maximo }}</td>
-        <td>{{ item.minimo }}</td>
-        <td>{{ item.medio }}</td>
-      </tr>
-
-      {% endfor%}
-
-    </tbody>
-    </table>
-    </div>
-    {% endif %}
-
-    <div class="col-md-6">
-      {% if grafico %}
-      <div style="width:600;height:500">
-        {{ grafico|safe }}
-      </div>
-      {% endif %}
-    </div>
+  </div>
+  <div class="row">
+    {% include "reportes/anuario/cau.html" %}
+  </div>
+  <div class="row">
+    {% include "reportes/anuario/nag.html" %}
   </div>
 
 

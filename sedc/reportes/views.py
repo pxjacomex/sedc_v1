@@ -24,7 +24,7 @@ class ReportesPageView(TemplateView):
         meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
         matrix = []
-        for i in range(len(meses)):
+        for i in range(len(max_simple)):
             matrix.append(Resumen(meses[i],max_simple[i],min_simple[i],avg_simple[i]))
 
         context['matrix'] = matrix
