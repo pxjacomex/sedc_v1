@@ -6,7 +6,7 @@
   <form class="form" method="post">
     {% csrf_token %}
     {% for field in form%}
-      {% bootstrap_field field form_group_class='col-lg-4' %}
+    {% bootstrap_field field form_group_class='col-lg-4' %}
     {% endfor %}
 
     <div class="form-group col-lg-4">
@@ -22,49 +22,18 @@
 </div>
 <br>
 
-  <div class="row">
-<<<<<<< HEAD
-    {% include "reportes/anuario/tag.html" %}
-=======
-    {% if 10_matriz %}
-    <div class="col-md-5" >
-    <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
->>>>>>> 807e1cb0b384a30823a6aaf6c6ae4341e66da8ea
+<div class="row">
 
+  {% include "reportes/anuario/tag.html" %}
 
-<<<<<<< HEAD
-  </div>
-  <div class="row">
-    {% include "reportes/anuario/cau.html" %}
-  </div>
-  <div class="row">
-    {% include "reportes/anuario/nag.html" %}
-=======
-      {% for item in 10_matriz %}
+</div>
+<div class="row">
+  {% include "reportes/anuario/cau.html" %}
+</div>
+<div class="row">
+  {% include "reportes/anuario/nag.html" %}
 
-      <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.maximo }}</td>
-        <td>{{ item.minimo }}</td>
-        <td>{{ item.medio }}</td>
-      </tr>
-
-      {% endfor%}
-
-    </tbody>
-    </table>
-    </div>
-    {% endif %}
-
-    <div class="col-md-6">
-      {% if grafico %}
-      <div style="width:600;height:500">
-        {{ grafico|safe }}
-      </div>
-      {% endif %}
-    </div>
->>>>>>> 807e1cb0b384a30823a6aaf6c6ae4341e66da8ea
-  </div>
+</div>
 
 
 {% endblock %}

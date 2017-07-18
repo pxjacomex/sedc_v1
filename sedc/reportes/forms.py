@@ -42,17 +42,6 @@ class AnuarioForm(forms.Form):
         context = {}
         variables = list(Medicion.objects.filter(est_id=form.cleaned_data['estacion']).filter(med_fecha__year=form.cleaned_data['anio']).values('var_id_id').distinct('var_id_id'))
         #var_simple = [d.get('var_id_id') for d in variables]
-
-<<<<<<< HEAD
-=======
-        for i in var_simple:
-            matriz = self.matrix(form.cleaned_data['estacion'],str(11),form.cleaned_data['anio'])
-            context.update({'variables':i})
-            #grafico = self.PlotGrafico(form.cleaned_data['estacion'],'10',form.cleaned_data['anio'])
-            context.update({str(i) + '_matriz': matriz})
-            #context.update({str(var_simple[i]) + '_grapfico': grafico})
->>>>>>> 807e1cb0b384a30823a6aaf6c6ae4341e66da8ea
-
         for item in variables:
             matriz = self.matriz_hidrologica(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
             grafico = self.grafico_hidrologica(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
@@ -60,7 +49,6 @@ class AnuarioForm(forms.Form):
             context.update({str(item.get('var_id_id')) + '_grafico': grafico})
             #context.update({'variables':self.titulo_grafico(item.get('var_id_id'))})
         return context
-<<<<<<< HEAD
     #consulta de maximo, minimo y promedio mensual
     def consulta_hidrologica(self,estacion,variable,anio):
         #annotate agrupa los valores en base a un campo y a una operacion
@@ -78,21 +66,6 @@ class AnuarioForm(forms.Form):
         matrix = []
         for i in range(len(max_simple)):
             matrix.append(Resumen(meses[i],max_simple[i],min_simple[i],avg_simple[i]))
-=======
-
-    def matrix(self,estacion, variable, anio):
-        matrix = []
-        med_max=list(Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=anio).annotate(month=TruncMonth('med_fecha')).values('month').annotate(c=Max('med_valor')).values('c').order_by('month'))
-        med_min=list(Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=anio).annotate(month=TruncMonth('med_fecha')).values('month').annotate(c=Min('med_valor')).values('c').order_by('month'))
-        med_avg=list(Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=anio).annotate(month=TruncMonth('med_fecha')).values('month').annotate(c=Avg('med_valor')).values('c').order_by('month'))
-        if len(med_max)>0 and len(med_min)>0 and len(med_avg)>0:
-            max_simple = [d.get('c') for d in med_max]
-            min_simple = [d.get('c') for d in med_min]
-            avg_simple = [d.get('c') for d in med_avg]
-            meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-            for i in range(len(max_simple)):
-                matrix.append(Resumen(meses[i],max_simple[i],min_simple[i],avg_simple[i]))
->>>>>>> 807e1cb0b384a30823a6aaf6c6ae4341e66da8ea
         return matrix
     def grafico_hidrologica(self,estacion, variable, anio):
         max_simple,min_simple,avg_simple,meses=self.consulta_hidrologica(estacion, variable, anio)
