@@ -1,7 +1,7 @@
 from django import forms
 from estacion.models import Estacion
 from medicion.models import Medicion
-from variable.models import Variable
+from variable.models import Variable,Unidad
 from django.db.models.functions import TruncMonth
 from django.db.models import Max, Min, Avg, Count
 
@@ -47,8 +47,9 @@ class AnuarioForm(forms.Form):
             grafico = self.grafico_hidrologica(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
             context.update({str(item.get('var_id_id')) + '_matriz': matriz})
             context.update({str(item.get('var_id_id')) + '_grafico': grafico})
-            #context.update({'variables':self.titulo_grafico(item.get('var_id_id'))})
+            context.update({'variables':self.unidad(item.get('var_id_id'))})
         return context
+
     #consulta de maximo, minimo y promedio mensual
     def consulta_hidrologica(self,estacion,variable,anio):
         #annotate agrupa los valores en base a un campo y a una operacion
@@ -105,3 +106,7 @@ class AnuarioForm(forms.Form):
         consulta=list(Variable.objects.filter(var_id=variable))
         #return consulta[0].get('var_nombre')
         return consulta[0]
+    def unidad(self,variable):
+        var=list(Variable.objects.filter(var_id=variable).values())
+        uni=list(Unidad.objects.filter(uni_id=var[0].get('uni_id_id')))
+        return uni[0]
