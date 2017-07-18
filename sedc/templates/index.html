@@ -75,12 +75,13 @@
         <li><a href="{% url 'variable:control_index' %}">Instalaciones</a></li>
       </ul>
     </li>
-		<li><a href="{% url 'reportes:anuario' %}">Reportes</a></li>
-	      </ul>
-	      <ul class="nav navbar-nav navbar-right">
-		  <li><a href="#">Link</a></li>
-		  </ul>
-		</li>
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Reportes<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li><a href="{% url 'reportes:anuario' %}">Anuario</a></li>
+      </ul>
+    </li>
+
 	      </ul>
 	    </div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
