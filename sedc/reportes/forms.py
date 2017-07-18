@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django import forms
 from estacion.models import Estacion
 from medicion.models import Medicion
@@ -35,22 +37,55 @@ class AnuarioForm(forms.Form):
     )
 
     lista=[]
-    estacion = forms.ChoiceField(required=False,choices=ESTACION)
-    anio = forms.ChoiceField(required=False,choices=YEAR)
+    estacion = forms.ChoiceField(required=False,choices=ESTACION,label='Estación')
+    anio = forms.ChoiceField(required=False,choices=YEAR,label='Año')
 
     def filtrar(self,form):
         context = {}
+
+        typeI = [6,8,9,10,11]
+        typeII = [1]
+        typeIII = [2]
+        typeIV = [3]
+        typeV = [4,5]
+        typeVI = [7]
+
         variables = list(Medicion.objects.filter(est_id=form.cleaned_data['estacion']).filter(med_fecha__year=form.cleaned_data['anio']).values('var_id_id').distinct('var_id_id'))
-        #var_simple = [d.get('var_id_id') for d in variables]
         for item in variables:
-            matriz = self.matriz_hidrologica(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
-            grafico = self.grafico_hidrologica(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
-            context.update({str(item.get('var_id_id')) + '_matriz': matriz})
-            context.update({str(item.get('var_id_id')) + '_grafico': grafico})
-            #context.update({'variables':self.titulo_grafico(item.get('var_id_id'))})
+            if item.get('var_id_id') in typeI:
+                matriz = self.matriz_typeI(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
+                grafico = self.grafico_typeI(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
+                context.update({str(item.get('var_id_id')) + '_matriz': matriz})
+                context.update({str(item.get('var_id_id')) + '_grafico': grafico})
+            elif item.get('var_id_id') in typeII:
+                matriz = self.matriz_typeII(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
+                grafico = self.grafico_typeII(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
+                context.update({str(item.get('var_id_id')) + '_matriz': matriz})
+                context.update({str(item.get('var_id_id')) + '_grafico': grafico})
+            elif item.get('var_id_id') in typeIII:
+                matriz = self.matriz_typeIII(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
+                grafico = self.grafico_typeIII(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
+                context.update({str(item.get('var_id_id')) + '_matriz': matriz})
+                context.update({str(item.get('var_id_id')) + '_grafico': grafico})
+            elif item.get('var_id_id') in typeIV:
+                matriz = self.matriz_typeIV(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
+                grafico = self.grafico_typeIV(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
+                context.update({str(item.get('var_id_id')) + '_matriz': matriz})
+                context.update({str(item.get('var_id_id')) + '_grafico': grafico})
+            elif item.get('var_id_id') in typeV:
+                matriz = self.matriz_typeV(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
+                grafico = self.grafico_typeV(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
+                context.update({str(item.get('var_id_id')) + '_matriz': matriz})
+                context.update({str(item.get('var_id_id')) + '_grafico': grafico})
+            elif item.get('var_id_id') in typeVI:
+                matriz = self.matriz_typeVI(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
+                grafico = self.grafico_typeVI(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
+                context.update({str(item.get('var_id_id')) + '_matriz': matriz})
+                context.update({str(item.get('var_id_id')) + '_grafico': grafico})
         return context
+
     #consulta de maximo, minimo y promedio mensual
-    def consulta_hidrologica(self,estacion,variable,anio):
+    def consulta_typeI(self,estacion,variable,anio):
         #annotate agrupa los valores en base a un campo y a una operacion
         consulta=Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=anio).annotate(month=TruncMonth('med_fecha')).values('month')
         med_max=list(consulta.annotate(c=Max('med_valor')).values('c').order_by('month'))
@@ -61,14 +96,14 @@ class AnuarioForm(forms.Form):
         avg_simple = [d.get('c') for d in med_avg]
         meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         return max_simple,min_simple,avg_simple,meses
-    def matriz_hidrologica(self,estacion, variable, anio):
-        max_simple,min_simple,avg_simple,meses=self.consulta_hidrologica(estacion, variable, anio)
+    def matriz_typeI(self,estacion, variable, anio):
+        max_simple,min_simple,avg_simple,meses=self.consulta_typeI(estacion, variable, anio)
         matrix = []
         for i in range(len(max_simple)):
             matrix.append(Resumen(meses[i],max_simple[i],min_simple[i],avg_simple[i]))
         return matrix
-    def grafico_hidrologica(self,estacion, variable, anio):
-        max_simple,min_simple,avg_simple,meses=self.consulta_hidrologica(estacion, variable, anio)
+    def grafico_typeI(self,estacion, variable, anio):
+        max_simple,min_simple,avg_simple,meses=self.consulta_typeI(estacion, variable, anio)
         # Create and style traces
         trace0 = go.Scatter(
             x = meses,
