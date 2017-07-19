@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
-    url(r'^reportes/$', ReportesPageView.as_view(), name='reportes'),
+    #url(r'^reportes/$', ReportesPageView.as_view(), name='reportes'),
     url(r'^reportes/anuario/$', ReportesAnuario.as_view(), name='anuario'),
 
 ]
