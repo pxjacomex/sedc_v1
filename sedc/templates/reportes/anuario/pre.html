@@ -4,7 +4,7 @@
 
     <thead>
       <tr>
-        <th align="center" colspan='5'>Precipitacion - Valores mensuales y maximos diarios</th>
+        <th style="text-align:center" colspan='5'>Precipitacion - Valores mensuales y maximos diarios</th>
       </tr>
       <tr>
         <th rowspan='3'>Mes</th>
@@ -23,14 +23,14 @@
     </thead>
     <tbody>
 
-      {% for item in 2_matriz %}
+      {% for item in 1_matriz %}
 
       <tr>
         <td>{{ item.mes }}</td>
-        <td>{{ item.mensual }}</td>
-        <td>{{ item.max24H }}</td>
+        <td>{{ item.mensual|floatformat:2 }}</td>
+        <td>{{ item.max24H|floatformat:2 }}</td>
         <td>{{ item.maxdia }}</td>
-        <td>{{ item.dias }}</td>
+        <td>{{ item.totdias }}</td>
       </tr>
 
       {% endfor%}

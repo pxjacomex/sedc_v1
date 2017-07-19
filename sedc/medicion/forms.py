@@ -44,6 +44,7 @@ class MedicionSearchForm(forms.Form):
         .filter(var_id=form.cleaned_data['variable'])
         #.filter(med_fecha__year=form.cleaned_data['periodo']))
         .filter(med_fecha__range=[form.cleaned_data['inicio'],form.cleaned_data['fin']]))
+        #.filter(med_fecha__month=2))
         if(form.cleaned_data['frecuencia']==str(1)):
             consulta=consulta.annotate(time=ExtractHour('med_hora')).values('time')
         elif(form.cleaned_data['frecuencia']==str(2)):
