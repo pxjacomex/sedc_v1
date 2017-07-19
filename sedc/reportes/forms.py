@@ -52,7 +52,6 @@ class AnuarioForm(forms.Form):
 
         variables = list(Medicion.objects.filter(est_id=form.cleaned_data['estacion']).filter(med_fecha__year=form.cleaned_data['anio']).values('var_id_id').distinct('var_id_id'))
         for item in variables:
-<<<<<<< HEAD
             if item.get('var_id_id') in typeI:
                 matriz = self.matriz_typeI(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
                 grafico = self.grafico_typeI(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
@@ -83,13 +82,6 @@ class AnuarioForm(forms.Form):
                 grafico = self.grafico_typeVI(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id_id')) + '_matriz': matriz})
                 context.update({str(item.get('var_id_id')) + '_grafico': grafico})
-=======
-            matriz = self.matriz_hidrologica(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
-            grafico = self.grafico_hidrologica(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
-            context.update({str(item.get('var_id_id')) + '_matriz': matriz})
-            context.update({str(item.get('var_id_id')) + '_grafico': grafico})
-            context.update({'variables':self.unidad(item.get('var_id_id'))})
->>>>>>> f8cabd8e829ed5044203be1cb00dc7389193ba8a
         return context
 
     #consulta de maximo, minimo y promedio mensual
@@ -140,7 +132,7 @@ class AnuarioForm(forms.Form):
         data = go.Data([trace0, trace1, trace2])
 
         # Edit the layout
-        layout = go.Layout(title = str(self.titulo_grafico(variable)), yaxis={'title':'Caudal (m3/s)'})
+        layout = go.Layout(title = str(self.titulo_grafico(variable)) + str(" (") + str(self.unidad(variable)) + str(")"))
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
         return div
@@ -150,5 +142,5 @@ class AnuarioForm(forms.Form):
         return consulta[0]
     def unidad(self,variable):
         var=list(Variable.objects.filter(var_id=variable).values())
-        uni=list(Unidad.objects.filter(uni_id=var[0].get('uni_id_id')))
-        return uni[0]
+        uni=list(Unidad.objects.filter(uni_id=var[0].get('uni_id_id')).values())
+        return (uni[0].get('uni_sigla')).encode('utf-8')

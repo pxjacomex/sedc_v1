@@ -90,7 +90,7 @@ DATABASES = {
         'NAME': 'db_sedc',
         'USER':'usr_sedc',
         'PASSWORD':'dev123*',
-        'HOST':'192.168.0.26',
+        'HOST':'192.168.19.8',
         'PORT':'5432'
     }
 }
