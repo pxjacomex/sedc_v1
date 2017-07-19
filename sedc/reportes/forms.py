@@ -40,7 +40,10 @@ class AnuarioForm(forms.Form):
 
     def filtrar(self,form):
         context = {}
-        variables = list(Medicion.objects.filter(est_id=form.cleaned_data['estacion']).filter(med_fecha__year=form.cleaned_data['anio']).values('var_id_id').distinct('var_id_id'))
+        variables = list(Medicion.objects
+            .filter(est_id=form.cleaned_data['estacion'])
+            .filter(med_fecha__year=form.cleaned_data['anio'])
+            .values('var_id_id').distinct('var_id_id'))
         #var_simple = [d.get('var_id_id') for d in variables]
         for item in variables:
             matriz = self.matriz_hidrologica(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])

@@ -2,11 +2,12 @@
 from __future__ import unicode_literals
 from django.shortcuts import render
 from .models import Medicion, Validacion
-from django.views.generic import ListView
+from django.views.generic import ListView,FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from medicion.forms import MedicionSearchForm
 
 #Medicion views
 class MedicionCreate(CreateView):
@@ -22,7 +23,7 @@ class MedicionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class MedicionList(ListView):
+"""class MedicionList(ListView):
     model=Medicion
     paginate_by = 10
     def get_context_data(self, **kwargs):
@@ -46,6 +47,23 @@ class MedicionList(ListView):
         context['first'] = 1
         context['last'] = paginator.num_pages
         context['range'] = range(start,last+1)
+        return context"""
+class MedicionList(FormView):
+    template_name='medicion/medicion_list.html'
+    form_class=MedicionSearchForm
+    success_url='/medicion/'
+    lista=[]
+    frecuencia=str("")
+    def post(self, request, *args, **kwargs):
+        form=MedicionSearchForm(self.request.POST or None)
+        if form.is_valid():
+            self.lista=form.filtrar(form)
+            self.frecuencia=form.cleaned_data["frecuencia"]
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        context = super(MedicionList, self).get_context_data(**kwargs)
+        context['lista']=self.lista
+        context['frecuencia']=self.frecuencia
         return context
 
 class MedicionDetail(DetailView):
