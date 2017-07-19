@@ -1,6 +1,7 @@
 {% extends "index.html" %}
 {% block content %}
 {% load bootstrap3 %}
+{% load humanize %}
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
@@ -8,8 +9,12 @@ $(document).ready(function() {
 
   // JQuery code to be added in here.
   $( function() {
-    $( "#id_inicio" ).datepicker();
-  } );
+    $( "#id_inicio" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+      dateFormat:"dd/mm/yy"
+    });
+  });
 
 });
 </script>

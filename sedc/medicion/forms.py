@@ -34,14 +34,16 @@ class MedicionSearchForm(forms.Form):
     )
     estacion=forms.ChoiceField(choices=lista_estaciones())
     variable=forms.ChoiceField(choices=lista_variables())
-    periodo=forms.ChoiceField(choices=lista_year())
+    #periodo=forms.ChoiceField(choices=lista_year())
     frecuencia=forms.ChoiceField(choices=FRECUENCIA)
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
+    fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
     def filtrar(self,form):
         consulta=(Medicion.objects
         .filter(est_id=form.cleaned_data['estacion'])
         .filter(var_id=form.cleaned_data['variable'])
-        .filter(med_fecha__year=form.cleaned_data['periodo']))
+        #.filter(med_fecha__year=form.cleaned_data['periodo']))
+        .filter(med_fecha__range=[form.cleaned_data['inicio'],form.cleaned_data['fin']]))
         if(form.cleaned_data['frecuencia']==str(1)):
             consulta=consulta.annotate(time=ExtractHour('med_hora')).values('time')
         elif(form.cleaned_data['frecuencia']==str(2)):
