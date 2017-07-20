@@ -37,14 +37,7 @@ class TypeII(Titulos):
             .annotate(valor=Sum('med_valor'))
             .values('valor','month','day').order_by('month','day'))
 
-        #med_max=list(consulta.annotate(c=Max('med_valor')).values('c','med_fecha').order_by('month'))
-        #med_totdias=list(consulta.aggregate(c=Sum(Case(When('med_valor'>0, then=1),output_field=IntegerField()))).values('c').order_by('month'))
-        #med_totdias=range(1,13)
         mensual_simple = [d.get('c') for d in med_mensual]
-        #max24H_simple = [d.get('c') for d in med_max]
-        #maxdia_simple = [d.get('med_fecha') for d in med_max]
-        #totdias_simple = [d.get('c') for d in med_totdias]
-        #totdias_simple=range(1,13)
         max24H_simple,maxdia_simple,totdias_simple = self.maximospre(datos_diarios)
         meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         return mensual_simple,max24H_simple,maxdia_simple,totdias_simple,meses
@@ -56,29 +49,27 @@ class TypeII(Titulos):
         return matrix
     def grafico(self,estacion, variable, periodo):
         mensual_simple,max24H_simple,maxdia_simple,totdias_simple,meses=self.consulta(estacion, variable, periodo)
+        '''
+        data=[go.Bar(
+            x=meses,
+            y=mensual_simple
+        )]
+
+        div = opy.plot(data, auto_open=False, output_type='div')
+        return div
+        '''
         trace1 = go.Bar(
             x=meses,
             y=mensual_simple,
             name='Precipitacion (mm)'
         )
-        ''' Incluir si tiene media historica
-        trace2 = go.Bar(
-            x=meses,
-            y=media historica,
-            name='Media Historica'
-        )
 
-        data = [trace1, trace2]
-
-        layout = go.Layout(
-            barmode='group'
-        )
-        '''
         data = go.Data([trace1])
         layout = go.Layout(title = str(self.titulo_grafico(variable)) + str(" (") + str(self.titulo_unidad(variable)) + str(")"))
-        matriz = go.matriz(data=data, layout=layout)
-        div = opy.plot(matriz, auto_open=False, output_type='div')
+        figure = go.Figure(data=data, layout=layout)
+        div = opy.plot(figure, auto_open=False, output_type='div')
         return div
+
 
     def maximospre(self, datos_diarios):
         max24H = []
