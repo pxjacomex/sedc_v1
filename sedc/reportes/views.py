@@ -39,29 +39,41 @@ class ConsultasPeriodo(FormView):
     success_url='/reportes/consultas'
     lista=[]
     frecuencia=str("")
-    consulta=str("")
+    valores=[]
+    #def get(self, request, *args, **kwargs):
+
     def post(self, request, *args, **kwargs):
         form=MedicionSearchForm(self.request.POST or None)
         if form.is_valid():
             self.lista=form.filtrar(form)
             self.frecuencia=form.cleaned_data["frecuencia"]
-            self.consulta=form.cadena(form)
-
-
+            if 'visualizar'in request.POST:
+                return self.export_datos(self.lista,self.frecuencia)
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(ConsultasPeriodo, self).get_context_data(**kwargs)
         context['lista']=self.lista
         context['frecuencia']=self.frecuencia
-        context['consulta']=self.consulta
+        context['valores']=self.valores
         return context
     def export_datos(self,datos,frecuencia):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
-
         writer = csv.writer(response)
-        writer.writerow(['Mes', 'Valor'])
-        for fila in datos:
-            writer.writerow([fila.get('time'), fila.get('valor')])
+        if frecuencia=="1":
+            writer.writerow(['anio', 'mes','dia','hora','valor'])
+            for fila in datos:
+                writer.writerow([fila.get('year'), fila.get('month')
+                    , fila.get('day'), fila.get('hour'), fila.get('valor')])
+        elif frecuencia=="2":
+            writer.writerow(['anio', 'mes','dia','valor'])
+            for fila in datos:
+                writer.writerow([fila.get('year'), fila.get('month')
+                    , fila.get('day'), fila.get('valor')])
 
+        else:
+            writer.writerow(['anio','mes', 'valor'])
+            for fila in datos:
+                writer.writerow([fila.get('year'), fila.get('month'),
+                fila.get('valor')])
         return response
