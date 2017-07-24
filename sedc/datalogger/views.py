@@ -77,19 +77,32 @@ class SensorCreate(CreateView):
         context['title'] = "Crear"
         return context
 #class SensorSearch(FormView,ListView):
-class SensorSearch(FormView):
+class SensorSearch(ListView,FormView):
+    #parámetros ListView
+    model=Sensor
+    paginate_by=10
+    #parámetros FormView
     template_name='datalogger/list_search.html'
     form_class=SensorSearchForm
     success_url='/sensor/search/'
-    lista=[]
-    def post(self, request, *args, **kwargs):
-        form=SensorSearchForm(self.request.POST or None)
+    #parametros propios
+    cadena=str("")
+    def get(self, request, *args, **kwargs):
+        form=SensorSearchForm(self.request.GET or None)
+        self.object_list=Sensor.objects.all()
         if form.is_valid():
-            self.lista=form.filtrar(form)
+            self.object_list=form.filtrar(form)
+            self.cadena=form.cadena(form)
+        elif 'sen_nombre' and 'sen_marca' in request.GET:
+            self.object_list=form.consultar(self.request)
+            prueba=(self.request.GET or None)
+
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(SensorSearch, self).get_context_data(**kwargs)
-        context['lista']=self.lista
+        page=self.request.GET.get('page')
+        context.update(pagination(self.object_list,page,10))
+        context["cadena"]=self.cadena
         return context
 class SensorList(ListView):
     model=Sensor
@@ -157,33 +170,5 @@ def pagination(lista,page,num_reg):
         'first':'1',
         'last':paginator.num_pages,
         'range':range(start,last+1),
-    }
-    return context
-def options_sensor():
-    TIPO_MARCA=(
-        ('CAMPBELL'),
-        ('VAISALA'),
-        ('YOUNG'),
-        ('APOGEE'),
-        ('TEXAS ELECTRONICS'),
-        ('HOBO'),
-        )
-    TIPO_NOMBRE=(
-        ('Termómetro'),
-        ('Higrómetro'),
-        ('Pluviógrafo'),
-        ('Veleta'),
-        ('Anemómetro'),
-        ('Barómetro'),
-        ('TDR'),
-        ('Piranómetro'),
-        ('Termómetro de agua'),
-        ('Sensor de nivel'),
-        )
-    #TIPO_NOMBRE=map(TIPO_NOMBRE.encode('utf-8'))
-    #TIPO_NOMBRE = [[word.encode("utf8") for word in sets] for sets in TIPO_NOMBRE]
-    context = {
-        'TIPO_NOMBRE':TIPO_NOMBRE,
-        'TIPO_MARCA':TIPO_MARCA,
     }
     return context
