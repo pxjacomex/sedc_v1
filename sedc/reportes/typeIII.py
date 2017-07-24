@@ -116,7 +116,7 @@ class TypeIII(Titulos):
                 if fila.get('month') == i:
                     val_min_abs.append(fila.get('valor'))
                     val_mindia.append(fila.get('day'))
-            min_abs.append(max(val_min_abs))
+            min_abs.append(min(val_min_abs))
             mindia.append(val_mindia[val_min_abs.index(min(val_min_abs))])
             avgmin.append(sum(val_min_abs) / (len(val_min_abs)))
         return min_abs,mindia,avgmin

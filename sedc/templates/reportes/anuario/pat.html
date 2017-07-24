@@ -22,9 +22,9 @@
 
       <tr>
         <td>{{ item.mes }}</td>
-        <td>{{ item.maximo }}</td>
-        <td>{{ item.minimo }}</td>
-        <td>{{ item.medio }}</td>
+        <td>{{ item.maximo|floatformat:2 }}</td>
+        <td>{{ item.minimo|floatformat:2 }}</td>
+        <td>{{ item.medio|floatformat:2 }}</td>
       </tr>
 
       {% endfor%}
