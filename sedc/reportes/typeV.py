@@ -34,13 +34,22 @@ class Resumen(object):
         self.obs = obs #listo
         self.vel_mayor = vel_mayor #listo
         self.vel_mayor_dir = vel_mayor_dir
-        self.vel_media = vel_media
+        self.vel_media = vel_media #listo
 
 class TypeV(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 3'''
     def consulta(self,estacion,periodo):
         #annotate agrupa los valores en base a un campo y a una operacion
         #consulta=Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=periodo).annotate(month=TruncMonth('med_fecha')).values('month')
+        datos_dvi=list(Medicion.objects
+            .filter(est_id=estacion)
+            .filter(var_id=5)
+            .filter(med_fecha__year=periodo)
+            .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
+            .values('month','day')
+            .annotate(valor=Max('med_valor'))
+            .values('valor','month','day').order_by('month','day'))
+
         datos_calma=list(Medicion.objects
             .filter(est_id=estacion)
             .filter(var_id=4)
@@ -64,17 +73,19 @@ class TypeV(Titulos):
         vel_media=list(consulta.annotate(c=Avg('med_valor')).values('c').order_by('month'))
         vel_mayor_simple = [d.get('c') for d in vel_mayor]
         vel_media_simple = [d.get('c') for d in vel_media]
-        vel_media_kmh = [x * int(3.6) for x in vel_media_simple]
+        vel_media_kmh = [x * 3.6 for x in vel_media_simple]
 
         meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         #return max_simple,maxdia_simple,min_simple,mindia_simple,avg_simple,meses
         return calma,obs,vel_mayor_simple,vel_media_kmh
+
     def matriz(self,estacion, variable, periodo):
         max_simple,maxdia_simple,min_simple,mindia_simple,avg_simple,meses=self.consulta(estacion, variable, periodo)
         matrix = []
         for i in range(len(max_simple)):
             matrix.append(Resumen(meses[i],max_simple[i],maxdia_simple[i],min_simple[i],mindia_simple[i],avg_simple[i]))
         return matrix
+
     def grafico(self,estacion, variable, periodo):
         max_simple,maxdia_simple,min_simple,mindia_simple,avg_simple,meses=self.consulta(estacion, variable, periodo)
         trace0 = go.Scatter(
@@ -107,35 +118,6 @@ class TypeV(Titulos):
         div = opy.plot(figure, auto_open=False, output_type='div')
         return div
 
-    """def maximostai(self, datos_diarios_max):
-        max_abs = []
-        maxdia = []
-        for i in range(1,13):
-            val_max_abs=[]
-            val_maxdia = []
-            for fila in datos_diarios_max:
-                if fila.get('month') == i:
-                    val_max_abs.append(fila.get('valor'))
-                    val_maxdia.append(fila.get('day'))
-            max_abs.append(max(val_max_abs))
-            maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
-        return max_abs,maxdia
-
-    def minimostai(self, datos_diarios_min):
-        min_abs = []
-        mindia = []
-        for i in range(1,13):
-            val_min_abs=[]
-            val_mindia = []
-            for fila in datos_diarios_min:
-                if fila.get('month') == i:
-                    val_min_abs.append(fila.get('valor'))
-                    val_mindia.append(fila.get('day'))
-            min_abs.append(min(val_min_abs))
-            mindia.append(val_mindia[val_min_abs.index(min(val_min_abs))])
-        return min_abs,mindia"""
-
-
     def calmaobs(self,datos_calma,datos_obs):
         calma = []
         obs = []
@@ -152,3 +134,25 @@ class TypeV(Titulos):
             obs.append(count_obs)
         calma_p = [(float(calmai)/obsi)*100 for calmai,obsi in zip(calma,obs)]
         return calma_p, obs
+
+    def categoria(self, datos_dvi):
+        categoria = []
+        for i in datos_dvi:
+            if i < 22.5:
+                categoria.append('N')
+            elif i < 67.4:
+                categoria.append('NE')
+            elif i < 112.5:
+                categoria.append('E')
+            elif i < 157.5:
+                categoria.append('SE')
+            elif i < 202.5:
+                categoria.append('S')
+            elif i < 247.5:
+                categoria.append('SO')
+            elif i < 292.5:
+                categoria.append('O')
+            elif i <337.5:
+                categoria.append('NO')
+            elif i < 360:
+                categoria.append('N')

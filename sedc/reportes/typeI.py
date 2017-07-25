@@ -20,7 +20,11 @@ class TypeI(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variables: 6,8,9,10,11'''
     def consulta(self,estacion,variable,periodo):
         #annotate agrupa los valores en base a un campo y a una operacion
-        consulta=Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=periodo).annotate(month=TruncMonth('med_fecha')).values('month')
+        consulta=Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=periodo)
+        if variable == 8:
+            consulta = consulta.exclude(med_valor = 0, med_maximo = 0, med_minimo = 0)
+
+        consulta=consulta.annotate(month=TruncMonth('med_fecha')).values('month')
         med_max=list(consulta.annotate(c=Max('med_valor')).values('c').order_by('month'))
         med_min=list(consulta.annotate(c=Min('med_valor')).values('c').order_by('month'))
         med_avg=list(consulta.annotate(c=Avg('med_valor')).values('c').order_by('month'))
