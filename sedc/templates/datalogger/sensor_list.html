@@ -61,8 +61,8 @@
 <nav aria-label="Page navigation" style="float:right">
   <ul class="pagination justify-content-center">
     {% if page_obj.has_previous %}
-    <li><a href="?page={{ first }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">&lt;&lt;</a></li>
-    <li><a href="?page={{ page_obj.previous_page_number }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">&lt;</a></li>
+    <li><a href="?page={{ first }}">&lt;&lt;</a></li>
+    <li><a href="?page={{ page_obj.previous_page_number }}">&lt;</a></li>
     {% else %}
     <li class="disabled"><span>&lt;</span></li>
     <li class="disabled"><span>&lt;&lt;</span></li>
@@ -72,13 +72,13 @@
     {% if page_obj.number == i %}
     <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
     {% else %}
-    <li><a href="?page={{ i }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">{{ i }}</a></li>
+    <li><a href="?page={{ i }}">{{ i }}</a></li>
     {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-    <li><a href="?page={{ page_obj.next_page_number }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">&gt;</a></li>
-    <li><a href="?page={{ last }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">&gt;&gt;</a></li>
+    <li><a href="?page={{ page_obj.next_page_number }}">&gt;</a></li>
+    <li><a href="?page={{ last }}">&gt;&gt;</a></li>
     {% else %}
     <li class="disabled"><span>&gt;</span></li>
     <li class="disabled"><span>&gt;&gt;</span></li>

@@ -32,38 +32,65 @@ class MedicionSearchForm(forms.Form):
         ('2','Diario'),
         ('3','Mensual'),
     )
-    ELECCION=(
-        ('true','Si'),
-        ('false','No'),
-    )
     estacion=forms.ChoiceField(choices=lista_estaciones())
     variable=forms.ChoiceField(choices=lista_variables())
     #periodo=forms.ChoiceField(choices=lista_year())
     frecuencia=forms.ChoiceField(choices=FRECUENCIA)
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
-
+    #consulta para agrupar los datos por hora, diario y mes
     def filtrar(self,form):
+        #filtrar los datos por estacion, variable y rango de fechas
         consulta=(Medicion.objects
         .filter(est_id=form.cleaned_data['estacion'])
         .filter(var_id=form.cleaned_data['variable'])
-        #.filter(med_fecha__year=form.cleaned_data['periodo']))
-        .filter(med_fecha__range=[form.cleaned_data['inicio'],form.cleaned_data['fin']]))
-        #.filter(med_fecha__month=2))
+        .filter(med_fecha__range=[form.cleaned_data['inicio'],
+            form.cleaned_data['fin']]))
+        #frecuencia horaria
         if(form.cleaned_data['frecuencia']==str(1)):
-            consulta=consulta.annotate(time=ExtractHour('med_hora')).values('time')
+            consulta=consulta.annotate(
+                year=ExtractYear('med_fecha'),
+                month=ExtractMonth('med_fecha'),
+                day=ExtractDay('med_fecha'),
+                hour=ExtractHour('med_hora')
+            ).values('year','month','day','hour')
+            if(form.cleaned_data['variable']==str(1)):
+                consulta=consulta.annotate(valor=Sum('med_valor')).\
+                values('valor','year','month','day','hour').\
+                order_by('month','day','year','hour')
+            else:
+                consulta=consulta.annotate(valor=Avg('med_valor')).\
+                values('valor','year','month','day','hour').\
+                order_by('month','day','year','hour')
+        #frecuencia diaria
         elif(form.cleaned_data['frecuencia']==str(2)):
-            consulta=consulta.annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha')).values('month','day')
+            consulta=consulta.annotate(
+                year=ExtractYear('med_fecha'),
+                month=ExtractMonth('med_fecha'),
+                day=ExtractDay('med_fecha')
+            ).values('year','month','day')
             if(form.cleaned_data['variable']==str(1)):
-                consulta=consulta.annotate(valor=Sum('med_valor')).values('valor','month','day').order_by('month','day')
+                consulta=consulta.annotate(valor=Sum('med_valor')).\
+                values('valor','year','month','day').\
+                order_by('month','day','year')
             else:
-                consulta=consulta.annotate(valor=Avg('med_valor')).values('valor','month','day').order_by('month','day')
+                consulta=consulta.annotate(valor=Avg('med_valor')).\
+                values('valor','year','month','day').\
+                order_by('month','day','year')
+        #frecuencia mensual
         else:
-            consulta=consulta.annotate(time=ExtractMonth('med_fecha')).values('time')
+            consulta=consulta.annotate(
+                year=ExtractYear('med_fecha'),
+                month=ExtractMonth('med_fecha')
+            ).values('month','year')
             if(form.cleaned_data['variable']==str(1)):
-                consulta=consulta.annotate(valor=Sum('med_valor')).values('valor','time').order_by('time')
+                consulta=consulta.annotate(valor=Sum('med_valor')).\
+                values('valor','month','year').\
+                order_by('month')
             else:
-                consulta=consulta.annotate(valor=Avg('med_valor')).values('valor','time').order_by('time')
+                consulta=consulta.annotate(valor=Avg('med_valor')).\
+                values('valor','month','year').\
+                order_by('month')
         return consulta
     def cadena(self,form):
         keys=form.cleaned_data.keys()

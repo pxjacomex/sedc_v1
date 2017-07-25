@@ -3,12 +3,10 @@
 {% load bootstrap3 %}
 
 <div class ="row">
-  <form class="form" method="post">
-    {% csrf_token %}
+  <form class="form" method="get">
     {% for field in form%}
       {% bootstrap_field field form_group_class='col-lg-4' %}
     {% endfor %}
-
     <div class="form-group col-lg-4">
       <label>&nbsp;</label><br>
       <button type="submit" class="btn btn-default btn-primary">
@@ -32,7 +30,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for item in lista %}
+      {% for item in object_list %}
       <tr>
         <td>{{ item.sen_nombre}}</td>
         <td>{{ item.sen_marca}}</td>
@@ -61,8 +59,8 @@
 <nav aria-label="Page navigation" style="float:right">
   <ul class="pagination justify-content-center">
     {% if page_obj.has_previous %}
-    <li><a href="?page={{ first }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">&lt;&lt;</a></li>
-    <li><a href="?page={{ page_obj.previous_page_number }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">&lt;</a></li>
+    <li><a href="?page={{ first }}{{cadena}}">&lt;&lt;</a></li>
+    <li><a href="?page={{ page_obj.previous_page_number }}{{cadena}}">&lt;</a></li>
     {% else %}
     <li class="disabled"><span>&lt;</span></li>
     <li class="disabled"><span>&lt;&lt;</span></li>
@@ -72,13 +70,13 @@
     {% if page_obj.number == i %}
     <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
     {% else %}
-    <li><a href="?page={{ i }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">{{ i }}</a></li>
+    <li><a href="?page={{ i }}{{cadena}}">{{ i }}</a></li>
     {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-    <li><a href="?page={{ page_obj.next_page_number }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">&gt;</a></li>
-    <li><a href="?page={{ last }}&sen_nombre={{sen_nombre}}&sen_marca={{sen_marca}}">&gt;&gt;</a></li>
+    <li><a href="?page={{ page_obj.next_page_number }}{{cadena}}">&gt;</a></li>
+    <li><a href="?page={{ last }}{{cadena}}">&gt;&gt;</a></li>
     {% else %}
     <li class="disabled"><span>&gt;</span></li>
     <li class="disabled"><span>&gt;&gt;</span></li>
