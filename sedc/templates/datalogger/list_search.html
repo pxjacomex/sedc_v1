@@ -3,7 +3,7 @@
 {% load bootstrap3 %}
 
 <div class ="row">
-  <form class="form" method="get">
+  <form class="form" method="get" action="{% url 'datalogger:sensor_index'%}">
     {% for field in form%}
       {% bootstrap_field field form_group_class='col-lg-4' %}
     {% endfor %}
@@ -59,24 +59,24 @@
 <nav aria-label="Page navigation" style="float:right">
   <ul class="pagination justify-content-center">
     {% if page_obj.has_previous %}
-    <li><a href="?page={{ first }}{{cadena}}">&lt;&lt;</a></li>
-    <li><a href="?page={{ page_obj.previous_page_number }}{{cadena}}">&lt;</a></li>
+    <li><a href="{% url 'datalogger:sensor_index' first %}{{cadena}}">&lt;&lt;</a></li>
+    <li><a href="{% url 'datalogger:sensor_index' page_obj.previous_page_number %}{{cadena}}">&lt;</a></li>
     {% else %}
     <li class="disabled"><span>&lt;</span></li>
     <li class="disabled"><span>&lt;&lt;</span></li>
     {% endif %}
 
-    {% for i in range %}
+    {% for i in paginator.page_range %}
     {% if page_obj.number == i %}
     <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
     {% else %}
-    <li><a href="?page={{ i }}{{cadena}}">{{ i }}</a></li>
+    <li><a href="{% url 'datalogger:sensor_index' i %}{{cadena}}">{{ i }}</a></li>
     {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-    <li><a href="?page={{ page_obj.next_page_number }}{{cadena}}">&gt;</a></li>
-    <li><a href="?page={{ last }}{{cadena}}">&gt;&gt;</a></li>
+    <li><a href="{% url 'datalogger:sensor_index' page_obj.next_page_number %}{{cadena}}">&gt;</a></li>
+    <li><a href="{% url 'datalogger:sensor_index' last %}{{cadena}}">&gt;&gt;</a></li>
     {% else %}
     <li class="disabled"><span>&gt;</span></li>
     <li class="disabled"><span>&gt;&gt;</span></li>

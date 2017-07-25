@@ -77,14 +77,14 @@ class SensorCreate(CreateView):
         context['title'] = "Crear"
         return context
 #class SensorSearch(FormView,ListView):
-class SensorSearch(ListView,FormView):
+class SensorList(ListView,FormView):
     #parámetros ListView
     model=Sensor
     paginate_by=10
     #parámetros FormView
     template_name='datalogger/list_search.html'
     form_class=SensorSearchForm
-    success_url='/sensor/search/'
+    #success_url='/sensor/'
     #parametros propios
     cadena=str("")
     def get(self, request, *args, **kwargs):
@@ -93,46 +93,23 @@ class SensorSearch(ListView,FormView):
         if form.is_valid():
             self.object_list=form.filtrar(form)
             self.cadena=form.cadena(form)
-        elif 'sen_nombre' and 'sen_marca' in request.GET:
-            self.object_list=form.consultar(self.request)
-            prueba=(self.request.GET or None)
+
 
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
-        context = super(SensorSearch, self).get_context_data(**kwargs)
+        context = super(SensorList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
         context.update(pagination(self.object_list,page,10))
         context["cadena"]=self.cadena
         return context
-class SensorList(ListView):
+"""class SensorList(ListView):
     model=Sensor
     paginate_by = 10
     def get_context_data(self, **kwargs):
         context = super(SensorList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
         context.update(pagination(self.get_queryset(),page,10))
-        return context
-#HEAD
-    def get_queryset(self):
-        self.sen_nombre=self.request.GET.get('sen_nombre')
-        self.sen_marca=self.request.GET.get('sen_marca')
-        page= self.request.GET.get('page') if None else 1
-        Lista={}
-        if self.sen_nombre is None and self.sen_marca is None:
-            Lista=Sensor.objects.all()
-        if self.sen_nombre is '' and self.sen_marca is 'source ':
-            Lista=Sensor.objects.all()
-        elif self.sen_nombre == '':
-            Lista=Sensor.objects.filter(sen_marca=self.sen_marca)
-        elif self.sen_marca == '':
-            Lista=Sensor.objects.filter(sen_nombre=self.sen_nombre)
-        elif page!=0 or self.sen_nombre == '' or self.sen_marca == '':
-            Lista=Sensor.objects.all()
-        else:
-            Lista=Sensor.objects.filter(sen_nombre=self.sen_nombre).filter(sen_marca=self.sen_marca)
-        return Lista
-
-#e0a13a3ea02aa825f98e00d6fc23bd5fa2053bcd
+        return context"""
 
 class SensorDetail(DetailView):
     model=Sensor

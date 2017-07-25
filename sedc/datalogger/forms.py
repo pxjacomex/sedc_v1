@@ -42,7 +42,7 @@ class SensorSearchForm(forms.Form):
         return lista
     def cadena(self,form):
         keys=form.cleaned_data.keys()
-        string=str("&")
+        string=str("?")
         i=1
         for item in keys:
             if i<len(keys):
