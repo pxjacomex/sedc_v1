@@ -33,13 +33,6 @@ class SensorSearchForm(forms.Form):
             sen_marca=form.cleaned_data['sen_marca']
         )
         return lista
-    def consultar(self,request):
-        lista=Sensor.objects.filter(
-            sen_nombre=request.GET['sen_nombre']
-        ).filter(
-            sen_marca=request.GET['sen_marca']
-        )
-        return lista
     def cadena(self,form):
         keys=form.cleaned_data.keys()
         string=str("?")

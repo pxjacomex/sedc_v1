@@ -1,12 +1,8 @@
 from django.views.generic.base import TemplateView
-#from .models import Medicion
-#from django.db.models import Max, Min, Avg
-#from django.db.models.functions import TruncMonth
 from django.views.generic import FormView
 from reportes.forms import AnuarioForm
 from reportes.consultas.forms import MedicionSearchForm
-#import plotly.offline as opy
-#import plotly.graph_objs as go
+
 import csv
 from django.http import HttpResponse
 from django.template import loader, Context

@@ -22,7 +22,8 @@
   </form>
 </div>
 <br>
-{{ consulta }}
+
+{{consulta}}
 {% if 1_matriz %}
 <div class="row">
   {% include "reportes/anuario/pre.html" %}
@@ -38,12 +39,7 @@
   {% include "reportes/anuario/hai.html" %}
 </div>
 {% endif %}
-{% if 4_matriz %}
-<div class="row">
-  {% include "reportes/anuario/vvi.html" %}
-</div>
-{% endif %}
-{% if 5_matriz %}
+{% if 4_matriz or 5_matriz %}
 <div class="row">
   {% include "reportes/anuario/dvi.html" %}
 </div>
