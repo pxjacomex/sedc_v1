@@ -37,10 +37,6 @@ class Resumen(object):
         """self.vel_mayor = vel_mayor #listo
         self.vel_mayor_dir = vel_mayor_dir
         self.vel_media = vel_media #listo"""
-class Viento(object):
-    def __init__(self,dvi,vvi):
-        self.dvi=dvi
-        self.vvi=vvi
 #clase para agrupar la velocidad y direccion del viento.
 class TypeV(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 3'''
@@ -124,7 +120,7 @@ class TypeV(Titulos):
             .values('med_valor').order_by('med_fecha','med_hora')
         )
         for val_dvi,val_vvi in zip(dat_dvi,dat_vvi):
-            item=Viento(val_dvi.get('med_valor'),val_vvi.get('med_valor'))
+            #item=Viento(val_dvi.get('med_valor'),val_vvi.get('med_valor'))
             if val_vvi.get('med_valor') is not None:
                 if val_dvi.get('med_valor') < 22.5 or val_dvi.get('med_valor')>337.5:
                     vvi[0].append(val_vvi.get('med_valor'))

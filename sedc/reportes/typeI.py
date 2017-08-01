@@ -15,7 +15,7 @@ class Resumen(object):
         self.maximo= maximo
         self.minimo = minimo
         self.medio = medio
-
+#clase para las variables HSU, PAT, TAG, CAU, NAG
 class TypeI(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variables: 6,8,9,10,11'''
     def consulta(self,estacion,variable,periodo):
@@ -23,7 +23,6 @@ class TypeI(Titulos):
         consulta=Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=periodo)
         if variable == 8:
             consulta = consulta.exclude(med_valor = 0, med_maximo = 0, med_minimo = 0)
-
         consulta=consulta.annotate(month=TruncMonth('med_fecha')).values('month')
         med_max=list(consulta.annotate(c=Max('med_valor')).values('c').order_by('month'))
         med_min=list(consulta.annotate(c=Min('med_valor')).values('c').order_by('month'))

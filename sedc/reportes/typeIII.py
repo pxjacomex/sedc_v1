@@ -21,7 +21,7 @@ class Resumen(object):
         self.maximo= maximo
         self.minimo = minimo
         self.medio = medio
-
+#clase para la variable TAI
 class TypeIII(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 2'''
     def consulta(self,estacion,variable,periodo):

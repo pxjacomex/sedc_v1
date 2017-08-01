@@ -125,7 +125,7 @@ class ExtensionDelete(DeleteView):
 #Delimitador
 class DelimitadorCreate(CreateView):
     model=Delimitador
-    fields = ['del_valor', 'del_codigo']
+    fields = ['del_nombre', 'del_caracter']
     def form_valid(self, form):
         return super(DelimitadorCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -166,7 +166,7 @@ class DelimitadorDetail(DetailView):
 
 class DelimitadorUpdate(UpdateView):
     model=Delimitador
-    fields = ['del_valor','del_codigo']
+    fields = ['del_nombre', 'del_caracter']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(DelimitadorUpdate, self).get_context_data(**kwargs)

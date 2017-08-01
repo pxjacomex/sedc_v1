@@ -19,7 +19,7 @@ class Resumen(object):
         self.minimo = minimo
         self.mindia = mindia
         self.medio = medio
-
+#clase para la variable HAI
 class TypeIV(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 3'''
     def consulta(self,estacion,variable,periodo):
