@@ -30,7 +30,6 @@ class Resumen(object):
         self.O_p = vvi[13]
         self.NO_vel = vvi[14]
         self.NO_p = vvi[15]
-
         self.calma = calma
         self.obs = obs
         self.vel_mayor = vel_mayor
@@ -169,7 +168,7 @@ class TypeV(Titulos):
                 valores.append('NO')
         return valores
 
-'''
+''' Rosa de viento:
     def grafico(self,vvi):
         i=0
         trace = []

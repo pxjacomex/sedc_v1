@@ -2,11 +2,13 @@
 from __future__ import unicode_literals
 from django.shortcuts import render
 from .models import Formato, Extension, Delimitador, Clasificacion, Asociacion
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from .forms import FormatoSearchForm, ClasificacionSearchForm
+
 
 #Formato views
 class FormatoCreate(CreateView):
@@ -23,30 +25,28 @@ class FormatoCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class FormatoList(ListView):
+class FormatoList(ListView,FormView):
+    #parámetros ListView
     model=Formato
-    paginate_by = 10
+    paginate_by=10
+    #parámetros FormView
+    template_name='formato/formato_list.html'
+    form_class=FormatoSearchForm
+    #parametros propios
+    cadena=str("")
+    def get(self, request, *args, **kwargs):
+        form=FormatoSearchForm(self.request.GET or None)
+        self.object_list=Formato.objects.all()
+        if form.is_valid():
+            self.object_list=form.filtrar(form)
+            self.cadena=form.cadena(form)
+        return self.render_to_response(self.get_context_data(form=form))
+
     def get_context_data(self, **kwargs):
         context = super(FormatoList, self).get_context_data(**kwargs)
-    	lista=Formato.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+        context.update(pagination(self.object_list,page,10))
+        context["cadena"]=self.cadena
         return context
 
 class FormatoDetail(DetailView):
@@ -87,23 +87,7 @@ class ExtensionList(ListView):
         context = super(ExtensionList, self).get_context_data(**kwargs)
     	lista=Extension.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+        context.update(pagination(self.object_list,page,10))
         return context
 
 class ExtensionDetail(DetailView):
@@ -125,7 +109,7 @@ class ExtensionDelete(DeleteView):
 #Delimitador
 class DelimitadorCreate(CreateView):
     model=Delimitador
-    fields = ['del_valor', 'del_codigo']
+    fields = ['del_nombre', 'del_caracter']
     def form_valid(self, form):
         return super(DelimitadorCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -142,23 +126,7 @@ class DelimitadorList(ListView):
         context = super(DelimitadorList, self).get_context_data(**kwargs)
     	lista=Delimitador.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+    	context.update(pagination(self.object_list,page,10))
         return context
 
 class DelimitadorDetail(DetailView):
@@ -166,7 +134,7 @@ class DelimitadorDetail(DetailView):
 
 class DelimitadorUpdate(UpdateView):
     model=Delimitador
-    fields = ['del_valor','del_codigo']
+    fields = ['del_nombre', 'del_caracter']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(DelimitadorUpdate, self).get_context_data(**kwargs)
@@ -190,30 +158,28 @@ class ClasificacionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class ClasificacionList(ListView):
+class ClasificacionList(ListView,FormView):
+    #parámetros ListView
     model=Clasificacion
-    paginate_by = 10
+    paginate_by=10
+    #parámetros FormView
+    template_name='formato/clasificacion_list.html'
+    form_class=ClasificacionSearchForm
+    #parametros propios
+    cadena=str("")
+    def get(self, request, *args, **kwargs):
+        form=ClasificacionSearchForm(self.request.GET or None)
+        self.object_list=Clasificacion.objects.all()
+        if form.is_valid():
+            self.object_list=form.filtrar(form)
+            self.cadena=form.cadena(form)
+        return self.render_to_response(self.get_context_data(form=form))
+
     def get_context_data(self, **kwargs):
         context = super(ClasificacionList, self).get_context_data(**kwargs)
-    	lista=Clasificacion.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+        context.update(pagination(self.object_list,page,10))
+        context["cadena"]=self.cadena
         return context
 
 class ClasificacionDetail(DetailView):
@@ -252,23 +218,7 @@ class AsociacionList(ListView):
         context = super(AsociacionList, self).get_context_data(**kwargs)
     	lista=Asociacion.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+    	context.update(pagination(self.object_list,page,10))
         return context
 
 class AsociacionDetail(DetailView):
@@ -286,3 +236,26 @@ class AsociacionUpdate(UpdateView):
 class AsociacionDelete(DeleteView):
     model=Asociacion
     success_url = reverse_lazy('formato:asociacion_index')
+
+def pagination(lista,page,num_reg):
+    #lista=model.objects.all()
+    paginator = Paginator(lista, num_reg)
+    if page is None:
+        page=1
+    else:
+        page=int(page)
+    if page == 1:
+        start=1
+        last=start+1
+    elif page == paginator.num_pages:
+        last=paginator.num_pages
+        start=last-1
+    else:
+        start=page-1
+        last=page+1
+    context={
+        'first':'1',
+        'last':paginator.num_pages,
+        'range':range(start,last+1),
+    }
+    return context

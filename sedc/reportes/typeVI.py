@@ -52,7 +52,7 @@ class Resumen(object):
         self.min_18 = min_18
         self.min_abs = min_abs
         self.min_hora = min_hora
-
+#clase para la variable RAD
 class TypeVI(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 7'''
     def consulta(self,estacion,variable,periodo):

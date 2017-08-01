@@ -7,7 +7,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-from .forms import SensorSearchForm
+from .forms import DataloggerSearchForm, SensorSearchForm
 
 #Datalogger views
 class DataloggerCreate(CreateView):
@@ -22,30 +22,28 @@ class DataloggerCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class DataloggerList(ListView):
+class DataloggerList(ListView,FormView):
+    #parámetros ListView
     model=Datalogger
-    paginate_by = 10
+    paginate_by=10
+    #parámetros FormView
+    template_name='datalogger/datalogger_list.html'
+    form_class=DataloggerSearchForm
+    #parametros propios
+    cadena=str("")
+    def get(self, request, *args, **kwargs):
+        form=DataloggerSearchForm(self.request.GET or None)
+        self.object_list=Datalogger.objects.all()
+        if form.is_valid():
+            self.object_list=form.filtrar(form)
+            self.cadena=form.cadena(form)
+        return self.render_to_response(self.get_context_data(form=form))
+
     def get_context_data(self, **kwargs):
         context = super(DataloggerList, self).get_context_data(**kwargs)
-    	lista=Datalogger.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+        context.update(pagination(self.object_list,page,10))
+        context["cadena"]=self.cadena
         return context
 
 class DataloggerDetail(DetailView):
@@ -76,13 +74,13 @@ class SensorCreate(CreateView):
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
         return context
-#class SensorSearch(FormView,ListView):
+
 class SensorList(ListView,FormView):
     #parámetros ListView
     model=Sensor
     paginate_by=10
     #parámetros FormView
-    template_name='datalogger/list_search.html'
+    template_name='datalogger/sensor_list.html'
     form_class=SensorSearchForm
     #success_url='/sensor/'
     #parametros propios
@@ -93,23 +91,14 @@ class SensorList(ListView,FormView):
         if form.is_valid():
             self.object_list=form.filtrar(form)
             self.cadena=form.cadena(form)
-
-
         return self.render_to_response(self.get_context_data(form=form))
+
     def get_context_data(self, **kwargs):
         context = super(SensorList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
         context.update(pagination(self.object_list,page,10))
         context["cadena"]=self.cadena
         return context
-"""class SensorList(ListView):
-    model=Sensor
-    paginate_by = 10
-    def get_context_data(self, **kwargs):
-        context = super(SensorList, self).get_context_data(**kwargs)
-        page=self.request.GET.get('page')
-        context.update(pagination(self.get_queryset(),page,10))
-        return context"""
 
 class SensorDetail(DetailView):
     model=Sensor

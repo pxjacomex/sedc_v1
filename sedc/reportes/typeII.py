@@ -18,7 +18,7 @@ class ResTypeII(object):
         self.max24H = max24H
         self.maxdia = maxdia
         self.totdias = totdias
-
+#clase para la variable PRE
 class TypeII(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variables: 1'''
     def consulta(self,estacion,variable,periodo):

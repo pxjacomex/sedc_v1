@@ -18,10 +18,10 @@ class Extension(models.Model):
 
 class Delimitador(models.Model):
     del_id=models.AutoField("Id",primary_key=True)
-    del_valor=models.CharField("Valor",max_length=50)
-    del_codigo=models.IntegerField("Código",null=True)
+    del_nombre=models.CharField("Nombre",max_length=50)
+    del_caracter=models.CharField("Caracter",max_length=5)
     def __str__(self):
-        return self.del_valor.encode('utf-8')
+        return self.del_nombre.encode('utf-8')
     def get_absolute_url(self):
         return reverse('formato:delimitador_detail', kwargs={'pk': self.pk})
 
@@ -47,11 +47,11 @@ class Formato(models.Model):
     for_fil_ini=models.IntegerField("Fila de inicio")
     for_fecha=models.CharField("Formato de fecha",max_length=12)
     for_col_fecha=models.IntegerField("Columna fecha")
-    for_hora=models.CharField("Formato de hora",max_length=10)
+    for_hora=models.CharField("Formato de hora",max_length=12)
     for_col_hora=models.IntegerField("Columna de hora")
     for_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
-        return (self.for_nombre + " " + self.for_descripcion).encode('utf-8')
+        return (self.for_descripcion).encode('utf-8')
     def get_absolute_url(self):
         return reverse('formato:formato_detail', kwargs={'pk': self.pk})
 
