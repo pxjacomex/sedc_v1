@@ -12,8 +12,7 @@ from django.db.models.functions import (
     ExtractYear,ExtractMonth,ExtractDay,ExtractHour)
 
 class Resumen(object):
-    #def __init__(self,mes,N_vel,N_p,NE_vel,NE_p,E_vel,E_p,SE_vel,SE_p,S_vel,S_p,SO_vel,SO_p,O_vel,O_p,NO_vel,NO_p,calma,obs,vel_mayor,vel_mayor_dir,vel_media):
-    def __init__(self,mes,vvi,calma,obs,vvi_max):
+    def __init__(self,mes,vvi,calma,obs,vel_mayor,vel_mayor_dir,vel_media_kmh):
         self.mes = mes
         self.N_vel = vvi[0]
         self.N_p = vvi[1]
@@ -34,22 +33,24 @@ class Resumen(object):
 
         self.calma = calma
         self.obs = obs
-        self.vel_mayor = vvi_max[0]
-        self.vel_mayor_dir = vvi_max[1]
-        #self.vel_media = vel_media
+        self.vel_mayor = vel_mayor
+        self.vel_mayor_dir = vel_mayor_dir
+        self.vel_media_kmh = vel_media_kmh
+
 class Viento(object):
     def __init__(self,dvi,vvi):
         self.dvi=dvi
         self.vvi=vvi
 #clase para agrupar la velocidad y direccion del viento.
+
 class TypeV(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 4,5'''
 
     def matriz(self,estacion, variable, periodo):
-        meses,vvi,calma,obs,vvi_max=self.observaciones(estacion, periodo)
+        meses,vvi,calma,obs,vel_mayor,vel_mayor_dir,vel_media_kmh=self.observaciones(estacion, periodo)
         matrix = []
         for i in range(len(meses)):
-            matrix.append(Resumen(meses[i],vvi[i],calma[i],obs[i],vvi_max[i]))
+            matrix.append(Resumen(meses[i],vvi[i],calma[i],obs[i],vel_mayor[i],vel_mayor_dir[i],vel_media_kmh[i]))
         #grafico = self.grafico(vvi)
         return matrix #, grafico
 
@@ -57,8 +58,14 @@ class TypeV(Titulos):
         obs=[]
         calma=[]
         vvi=[]
-        vvi_max=self.viento_max(estacion,periodo)
+        vel_mayor,vel_mayor_dir=self.viento_max(estacion,periodo)
         meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
+        consulta=Medicion.objects.filter(est_id=estacion).filter(var_id=4).filter(med_fecha__year=periodo).annotate(month=TruncMonth('med_fecha')).values('month')
+        vel_media=list(consulta.annotate(c=Avg('med_valor')).values('c').order_by('month'))
+        vel_media_simple = [d.get('c') for d in vel_media]
+        vel_media_kmh = [x * int(3.6) for x in vel_media_simple]
+
         for i in range(1,13):
             datos_obs=(Medicion.objects
                 .filter(est_id=estacion).filter(var_id=4)
@@ -74,7 +81,7 @@ class TypeV(Titulos):
             calma.append((float(datos_calma)/datos_obs)*100)
             vvi.append(self.viento(estacion,periodo,i,datos_obs))
 
-        return meses,vvi,calma,obs,vvi_max
+        return meses,vvi,calma,obs,vel_mayor,vel_mayor_dir,vel_media_kmh
 
     def viento(self,estacion,periodo,mes,datos_obs):
         vvi=[[0 for x in range(0)] for y in range(8)]
@@ -114,32 +121,53 @@ class TypeV(Titulos):
         return valores
 
     def viento_max(self,estacion,periodo):
-        vvi=[[0 for x in range(0)] for y in range(8)]
-
         dat_dvi=list(Medicion.objects
             .filter(est_id=estacion).filter(var_id=5)
             .filter(med_fecha__year=periodo)
-            .values('med_valor').order_by('med_fecha','med_hora')
+            .annotate(month=ExtractMonth('med_fecha'))
+            .values('med_valor','month').order_by('med_fecha','med_hora')
         )
         dat_vvi=list(Medicion.objects
             .filter(est_id=estacion).filter(var_id=4)
             .filter(med_fecha__year=periodo)
-            .values('med_valor').order_by('med_fecha','med_hora')
+            .values('med_maximo').order_by('med_fecha','med_hora')
         )
-        for val_dvi,val_vvi in zip(dat_dvi,dat_vvi):
-            item=Viento(val_dvi.get('med_valor'),val_vvi.get('med_valor'))
-            vel_mayor = []
-            vel_mayor_dir = []
-            for i in range(1,13):
-                val_vel_mayor=[]
-                val_mayor_dir = []
-                for fila in dat_dvi:
-                    if fila.get('month') == i:
-                        val_vel_mayor.append(val_dvi.get('med_valor'))
-                        val_mayor_dir.append(val_vvi.get('med_valor'))
-                vel_mayor.append(max(val_vel_mayor))
-                vel_mayor_dir.append(val_mayor_dir[val_vel_mayor.index(max(val_vel_mayor))])
-            return vel_mayor,vel_mayor_dir
+
+        vel_mayor = []
+        vel_mayor_dir = []
+        for i in range(1,13):
+            val_vel_mayor=[]
+            val_mayor_dir = []
+            for val_dvi,val_vvi in zip(dat_dvi,dat_vvi):
+                item=Viento(val_dvi.get('med_valor'),val_vvi.get('med_maximo'))
+                if val_dvi.get('month') == i:
+                    val_vel_mayor.append(val_vvi.get('med_maximo'))
+                    val_mayor_dir.append(val_dvi.get('med_valor'))
+            vel_mayor.append(max(val_vel_mayor))
+            vel_mayor_dir.append(val_mayor_dir[val_vel_mayor.index(max(val_vel_mayor))])
+        vel_mayor_dir=self.direccion(vel_mayor_dir)
+        return vel_mayor,vel_mayor_dir
+
+    def direccion(self,angles):
+        valores = []
+        for val in angles:
+            if val < 22.5 or val > 337.5:
+                valores.append('N')
+            elif val < 67.5:
+                valores.append('NE')
+            elif val < 112.5:
+                valores.append('E')
+            elif val < 157.5:
+                valores.append('SE')
+            elif val < 202.5:
+                valores.append('S')
+            elif val < 247.5:
+                valores.append('SO')
+            elif val < 292.5:
+                valores.append('O')
+            elif val < 337.5:
+                valores.append('NO')
+        return valores
 
 '''
     def grafico(self,vvi):
