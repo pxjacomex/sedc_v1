@@ -10,11 +10,13 @@ import plotly.graph_objs as go
 from reportes.titulos import Titulos
 from django.db.models.functions import (
     ExtractYear,ExtractMonth,ExtractDay,ExtractHour)
-import time
+import datetime
 
 class Resumen(object):
-    def __init__(self,mes,max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,max_15,max_16,max_17,max_18,max_abs,max_hora,
-                 min_5,min_6,min_7,min_8,min_9,min_10,min_11,min_12,min_13,min_14,min_15,min_16,min_17,min_18,min_abs,min_hora):
+    def __init__(self,mes,max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,\
+                 max_13,max_14,max_15,max_16,max_17,max_18,max_abs,max_hora,\
+                 min_5,min_6,min_7,min_8,min_9,min_10,min_11,min_12,min_13,\
+                 min_14,min_15,min_16,min_17,min_18,min_abs,min_hora):
         self.mes = mes
         self.max_5 = max_5
         self.max_6 = max_6
@@ -60,7 +62,8 @@ class TypeVI(Titulos):
             .filter(est_id=estacion)
             .filter(var_id=variable)
             .filter(med_fecha__year=periodo)
-            .filter(med_hora__range=['05:00:00','18:00:00'])
+            .filter(med_hora__range=(datetime.datetime.strptime('05:00:00', '%H:%M:%S').time()\
+                                     ,datetime.datetime.strptime('18:00:00', '%H:%M:%S').time()))
             .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'),hour=ExtractHour('med_hora'))
             .values('month','day','hour')
             .annotate(valor=Max('med_valor'))
@@ -69,19 +72,25 @@ class TypeVI(Titulos):
             .filter(est_id=estacion)
             .filter(var_id=variable)
             .filter(med_fecha__year=periodo)
+            .filter(med_hora__range=(datetime.datetime.strptime('05:00:00', '%H:%M:%S').time()\
+                                     ,datetime.datetime.strptime('18:00:00', '%H:%M:%S').time()))
             .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'),hour=ExtractHour('med_hora'))
             .values('month','day','hour')
             .annotate(valor=Min('med_valor'))
             .values('valor','month','day','hour').order_by('month'))
 
 
-        max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,max_15,max_16,max_17,max_18 = self.max_hora_rad(datos_diarios_max)
-        min_5,min_6,min_7,min_8,min_9,min_10,min_11,min_12,min_13,min_14,min_15,min_16,min_17,min_18 = self.min_hora_rad(datos_diarios_min)
+        max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,max_15,\
+        max_16,max_17,max_18 = self.max_hora_rad(datos_diarios_max)
+        min_5,min_6,min_7,min_8,min_9,min_10,min_11,min_12,min_13,min_14,min_15,\
+        min_16,min_17,min_18 = self.min_hora_rad(datos_diarios_min)
         max_abs,max_hora = self.maximosrad(datos_diarios_max)
         min_abs,min_hora = self.minimosrad(datos_diarios_min)
 
         mes=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-        return mes,max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,max_15,max_16,max_17,max_18,max_abs,max_hora,min_5,min_6,min_7,min_8,min_9,min_10,min_11,min_12,min_13,min_14,min_15,min_16,min_17,min_18,min_abs,min_hora
+        return mes,max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,\
+        max_15,max_16,max_17,max_18,max_abs,max_hora,min_5,min_6,min_7,min_8,min_9,\
+        min_10,min_11,min_12,min_13,min_14,min_15,min_16,min_17,min_18,min_abs,min_hora
 
     def matriz(self,estacion, variable, periodo):
         mes,max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,\
@@ -198,7 +207,8 @@ class TypeVI(Titulos):
             max_16.append(max(val_max_16))
             max_17.append(max(val_max_17))
             max_18.append(max(val_max_18))
-        return max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,max_15,max_16,max_17,max_18
+        return max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,\
+        max_15,max_16,max_17,max_18
 
     def min_hora_rad(self, datos_diarios_min):
         min_5 = []
@@ -274,4 +284,5 @@ class TypeVI(Titulos):
             min_16.append(min(val_min_16))
             min_17.append(min(val_min_17))
             min_18.append(min(val_min_18))
-        return min_5,min_6,min_7,min_8,min_9,min_10,min_11,min_12,min_13,min_14,min_15,min_16,min_17,min_18
+        return min_5,min_6,min_7,min_8,min_9,min_10,min_11,min_12,min_13,min_14,\
+        min_15,min_16,min_17,min_18
