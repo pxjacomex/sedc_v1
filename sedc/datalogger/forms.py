@@ -19,7 +19,7 @@ class DataloggerSearchForm(forms.Form):
     Modelo = forms.CharField(required=False,max_length=25)
 
     def filtrar(self,form):
-        if form.cleaned_data['Marca'] and form.cleaned_data['Modelo'] != "":
+        if form.cleaned_data['Marca'] and form.cleaned_data['Modelo']:
             lista=Datalogger.objects.filter(
                 dat_marca=form.cleaned_data['Marca']
             ).filter(
@@ -77,7 +77,7 @@ class SensorSearchForm(forms.Form):
     Marca = forms.ChoiceField(required=False,choices=TIPO_MARCA)
 
     def filtrar(self,form):
-        if form.cleaned_data['Nombre'] and form.cleaned_data['Marca'] != "":
+        if form.cleaned_data['Nombre'] and form.cleaned_data['Marca']:
             lista=Sensor.objects.filter(
                 sen_nombre=form.cleaned_data['Nombre']
             ).filter(

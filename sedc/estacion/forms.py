@@ -22,7 +22,7 @@ class EstacionSearchForm(forms.Form):
     Codigo = forms.CharField(required=False,max_length=10)
 
     def filtrar(self,form):
-        if form.cleaned_data['Tipo'] and form.cleaned_data['Codigo'] != "":
+        if form.cleaned_data['Tipo'] and form.cleaned_data['Codigo']:
             lista=Estacion.objects.filter(
                 est_tipo=form.cleaned_data['Tipo']
             ).filter(

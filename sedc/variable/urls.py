@@ -17,7 +17,8 @@ urlpatterns=[
     url(r'unidad/(?P<pk>[0-9]+)/$', views.UnidadUpdate.as_view(), name='unidad_update'),
     url(r'unidad/(?P<pk>[0-9]+)/delete/$', views.UnidadDelete.as_view(), name='unidad_delete'),
 
-    url(r'^control/$',views.ControlList.as_view(),name='control_index'),
+    url(r'control/$',views.ControlList.as_view(),name='control_index'),
+    url(r'control/(?P<page>[0-9]+)/$',views.ControlList.as_view(),name='control_index'),
     url(r'control/create/$', views.ControlCreate.as_view(), name='control_create'),
     url(r'control/detail/(?P<pk>[0-9]+)/$', views.ControlDetail.as_view(), name='control_detail'),
     url(r'control/(?P<pk>[0-9]+)/$', views.ControlUpdate.as_view(), name='control_update'),

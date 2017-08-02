@@ -43,6 +43,7 @@ class ConsultasPeriodo(FormView):
         if form.is_valid():
             self.lista=form.filtrar(form)
             self.frecuencia=form.cleaned_data["frecuencia"]
+            self.grafico=form.grafico(form)
             if 'visualizar'in request.POST:
                 return self.export_datos(self.lista,self.frecuencia)
         return self.render_to_response(self.get_context_data(form=form))
@@ -51,6 +52,7 @@ class ConsultasPeriodo(FormView):
         context['lista']=self.lista
         context['frecuencia']=self.frecuencia
         context['valores']=self.valores
+        context['grafico']=self.grafico
         return context
     def export_datos(self,datos,frecuencia):
         response = HttpResponse(content_type='text/csv')

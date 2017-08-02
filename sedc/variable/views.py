@@ -2,11 +2,12 @@
 from __future__ import unicode_literals
 from django.shortcuts import render
 from .models import Variable, Unidad, Control
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from .forms import ControlSearchForm
 
 #Variable views
 class VariableCreate(CreateView):
@@ -28,23 +29,7 @@ class VariableList(ListView):
         context = super(VariableList, self).get_context_data(**kwargs)
     	lista=Variable.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 100)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-            start=page-1
-            last=page
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+    	context.update(pagination(self.object_list,page,10))
         return context
 
 class VariableDetail(DetailView):
@@ -83,23 +68,7 @@ class UnidadList(ListView):
         context = super(UnidadList, self).get_context_data(**kwargs)
     	lista=Unidad.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-            start=page-1
-            last=page
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+    	context.update(pagination(self.object_list,page,10))
         return context
 
 class UnidadDetail(DetailView):
@@ -131,30 +100,28 @@ class ControlCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class ControlList(ListView):
+class ControlList(ListView,FormView):
+    #parámetros ListView
     model=Control
-    paginate_by = 10
+    paginate_by=10
+    #parámetros FormView
+    template_name='variable/control_list.html'
+    form_class=ControlSearchForm
+    #parametros propios
+    cadena=str("")
+    def get(self, request, *args, **kwargs):
+        form=ControlSearchForm(self.request.GET or None)
+        self.object_list=Control.objects.all()
+        if form.is_valid():
+            self.object_list=form.filtrar(form)
+            self.cadena=form.cadena(form)
+        return self.render_to_response(self.get_context_data(form=form))
+
     def get_context_data(self, **kwargs):
         context = super(ControlList, self).get_context_data(**kwargs)
-    	lista=Control.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+        context.update(pagination(self.object_list,page,10))
+        context["cadena"]=self.cadena
         return context
 
 class ControlDetail(DetailView):
@@ -172,3 +139,26 @@ class ControlUpdate(UpdateView):
 class ControlDelete(DeleteView):
     model=Control
     success_url = reverse_lazy('variable:control_index')
+
+def pagination(lista,page,num_reg):
+    #lista=model.objects.all()
+    paginator = Paginator(lista, num_reg)
+    if page is None:
+        page=1
+    else:
+        page=int(page)
+    if page == 1:
+        start=1
+        last=start+1
+    elif page == paginator.num_pages:
+        last=paginator.num_pages
+        start=last-1
+    else:
+        start=page-1
+        last=page+1
+    context={
+        'first':'1',
+        'last':paginator.num_pages,
+        'range':range(start,last+1),
+    }
+    return context

@@ -9,7 +9,7 @@ class FormatoSearchForm(forms.Form):
     Descripcion = forms.CharField(required=False,max_length=100)
 
     def filtrar(self,form):
-        if form.cleaned_data['Descripcion'] != "":
+        if form.cleaned_data['Descripcion']:
             lista=Formato.objects.filter(
                 for_descripcion__icontains=form.cleaned_data['Descripcion']
             )
@@ -55,7 +55,7 @@ class ClasificacionSearchForm(forms.Form):
     Formato = forms.ChoiceField(required=False,choices=lista_formato())
 
     def filtrar(self,form):
-        if form.cleaned_data['Variable'] and form.cleaned_data['Formato'] != "":
+        if form.cleaned_data['Variable'] and form.cleaned_data['Formato']:
             lista=Clasificacion.objects.filter(
                 var_id=form.cleaned_data['Variable']
             ).filter(

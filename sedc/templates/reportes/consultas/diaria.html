@@ -25,3 +25,11 @@
 {%else%}
 <label>No hay información para los parametros ingresados</label>
 {%endif%}
+
+<div class="col-md-6">
+  {% if grafico %}
+  <div style="width:600;height:400">
+    {{ grafico|safe }}
+  </div>
+  {% endif %}
+</div>
