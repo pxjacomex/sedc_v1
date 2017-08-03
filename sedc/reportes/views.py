@@ -36,6 +36,7 @@ class ConsultasPeriodo(FormView):
     lista=[]
     frecuencia=str("")
     valores=[]
+    grafico =[]
     #def get(self, request, *args, **kwargs):
 
     def post(self, request, *args, **kwargs):
