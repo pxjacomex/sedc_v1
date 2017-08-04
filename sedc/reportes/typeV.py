@@ -31,24 +31,12 @@ class Resumen(object):
         self.O_p = vvi[13]
         self.NO_vel = vvi[14]
         self.NO_p = vvi[15]
-
-<<<<<<< HEAD
-        self.calma = calma #listo
-        self.obs = obs #listo
-        """self.vel_mayor = vel_mayor #listo
-        self.vel_mayor_dir = vel_mayor_dir
-        self.vel_media = vel_media #listo"""
-=======
         self.calma = calma
         self.obs = obs
         self.vel_mayor = vvi_max[0]
         self.vel_mayor_dir = vvi_max[1]
         #self.vel_media = vel_media
-class Viento(object):
-    def __init__(self,dvi,vvi):
-        self.dvi=dvi
-        self.vvi=vvi
->>>>>>> 49978a2e2f00b1035412811555deb9745240d700
+
 #clase para agrupar la velocidad y direccion del viento.
 class TypeV(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 4,5'''

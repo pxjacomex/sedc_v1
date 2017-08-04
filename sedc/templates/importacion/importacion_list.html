@@ -6,7 +6,7 @@
   </div>
   <div class="col-lg-2" style="padding-top:20px;">
     <a style="float:right" class="btn btn-info"
-    href="{% url 'importacion:importacion_create' %}">
+    href="{% url 'importacion:importar' %}">
     Nuevo</a>
   </div>
 </div>
@@ -29,9 +29,6 @@
       <td>{{ item.imp_archivo}}</td>
       <td>
         <a href="{% url 'importacion:importacion_detail' item.imp_id %}">
-          <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-        </a>
-        <a href="{% url 'importacion:importar' item.imp_id %}">
           <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
         </a>
       </td>

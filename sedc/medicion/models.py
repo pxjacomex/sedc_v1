@@ -32,9 +32,9 @@ class Medicion(models.Model):
     def __str__(self):
         return str(self.med_valor)
     def get_absolute_url(self):
-        return reverse('medicion:medicion_detail', kwargs={'pk': self.pk})
+        return reverse('medicion:medicion_index')
 
-class Validacion(models.Model):
+'''class Validacion(models.Model):
     val_id=models.AutoField("Id",primary_key=True)
     med_id=models.ForeignKey(
     	Medicion,
@@ -49,4 +49,4 @@ class Validacion(models.Model):
     val_minimo=models.DecimalField("Mínimo",max_digits=14,decimal_places=6)
     val_mensaje=models.CharField("Mensaje",max_length=100)
     def get_absolute_url(self):
-        return reverse('medicion:validacion_detail', kwargs={'pk': self.pk})
+        return reverse('medicion:validacion_detail', kwargs={'pk': self.pk})'''

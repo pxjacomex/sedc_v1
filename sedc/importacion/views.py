@@ -3,30 +3,23 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render,redirect
 from importacion.models import Importacion
-from formato.models import Formato,Clasificacion,Delimitador
+"""from formato.models import Formato,Clasificacion,Delimitador
 from estacion.models import Estacion
+from medicion.models import Medicion
+from variable.models import Variable
+from datalogger.models import Sensor"""
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.core.paginator import Paginator
-import time
-from datetime import datetime
-from django.conf import settings
-class ImportacionCreate(CreateView):
-    model=Importacion
-    fields = ['est_id','for_id','imp_archivo','imp_sobreescribir']
-    def form_valid(self, form):
-        #agregar valor al campo created_by
-        form.instance.imp_fecha = time.strftime('%Y-%m-%d')
-        form.instance.imp_hora = time.strftime('%H:%M')
-        return super(ImportacionCreate, self).form_valid(form)
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(ImportacionCreate, self).get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context['title'] = "Subir"
-        return context
+#from django.views.generic.edit import CreateView, UpdateView, DeleteView
+#from django.urls import reverse_lazy
+#from django.core.paginator import Paginator
+#import time
+#from datetime import datetime
+#from django.conf import settings
+
+from django.http import HttpResponseRedirect
+#from django.shortcuts import render
+from importacion.forms import UploadFileForm, procesar_archivo
 
 class ImportacionList(ListView):
     model=Importacion
@@ -36,9 +29,19 @@ class ImportacionList(ListView):
 
 class ImportacionDetail(DetailView):
     model=Importacion
-def subir(request,id):
+def importar_archivo(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            procesar_archivo(request.FILES['archivo'],form)
+            return HttpResponseRedirect('/importacion/')
+    else:
+        form = UploadFileForm()
+    return render(request, 'importacion/importacion_form.html', {'form': form})
+
+"""def subir(request,id):
     importacion=Importacion.objects.get(imp_id=id)
-    print importacion.for_id_id
+    #print importacion.for_id_id
     formato=Formato.objects.get(for_id=importacion.for_id_id)
     estacion=Estacion.objects.get(est_id=importacion.est_id_id)
     clasificacion=list(Clasificacion.objects.filter(
@@ -55,17 +58,29 @@ def subir(request,id):
             valores=linea.split(delimitador.del_caracter)
             if formato.for_col_hora==formato.for_col_hora:
                 fecha_hora=datetime.strptime(valores[formato.for_col_hora], formato.for_fecha+str(" ")+formato.for_hora)
-                fecha=fecha_hora.strftime("%Y-%m-%d")
-                hora=fecha_hora.strftime("%H:%M:%S")
+                fecha=fecha_hora.strftime('%Y-%m-%d')
+                hora=fecha_hora.strftime('%H:%M')
             for fila in clasificacion:
-                var_id=fila['var_id_id']
+                variable=Variable.objects.get(var_id=fila['var_id_id'])
                 if fila['cla_valor'] is not None:
-                    valor=linea[fila['cla_valor']]
+                    valor=float(valores[fila['cla_valor']])
+                else:
+                    valor=None
                 if fila['cla_maximo'] is not None:
-                    maximo=linea[fila['cla_maximo']]
+                    maximo=float(valores[fila['cla_maximo']])
+                else:
+                    maximo=None
                 if fila['cla_minimo'] is not None:
-                    minimo=linea[fila['cla_minimo']]
-                    
-
+                    minimo=float(valores[fila['cla_minimo']])
+                else:
+                    minimo=None
+                print estacion.est_id,variable,fecha,hora,valor,maximo,minimo
+                med=Medicion(var_id=variable,est_id=estacion,
+                    med_fecha=fecha,med_hora=hora,
+                    med_valor=valor,med_maximo=maximo,med_minimo=minimo,
+                    med_estado=True)
+                med.save()
         i+=1
+
     return redirect('/importacion/')
+#consultar el intervalo de datos por estación"""
