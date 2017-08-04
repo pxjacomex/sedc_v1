@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'medicion.apps.MedicionConfig',
     'vacios.apps.VaciosConfig',
     'importacion.apps.ImportacionConfig',
+    'validacion.apps.ValidacionConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

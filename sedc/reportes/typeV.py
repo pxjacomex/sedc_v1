@@ -35,13 +35,7 @@ class Resumen(object):
         self.vel_mayor = vel_mayor
         self.vel_mayor_dir = vel_mayor_dir
         self.vel_media_kmh = vel_media_kmh
-
-class Viento(object):
-    def __init__(self,dvi,vvi):
-        self.dvi=dvi
-        self.vvi=vvi
 #clase para agrupar la velocidad y direccion del viento.
-
 class TypeV(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 4,5'''
 
