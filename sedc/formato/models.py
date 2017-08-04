@@ -51,7 +51,7 @@ class Formato(models.Model):
     for_col_hora=models.IntegerField("Columna de hora")
     for_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
-        return (self.for_nombre + " " + self.for_descripcion).encode('utf-8')
+        return (self.for_descripcion).encode('utf-8')
     def get_absolute_url(self):
         return reverse('formato:formato_detail', kwargs={'pk': self.pk})
 

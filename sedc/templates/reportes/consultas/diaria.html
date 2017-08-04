@@ -1,3 +1,11 @@
+<div class="col-md-8">
+  {% if grafico %}
+  <div style="width:800;height:400">
+    {{ grafico|safe }}
+  </div>
+  {% endif %}
+</div>
+
 {% if lista%}
 <table class="table table-striped table-bordered table-condensed">
   <thead>

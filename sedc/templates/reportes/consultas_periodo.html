@@ -12,7 +12,7 @@ $(document).ready(function() {
     $( "#id_inicio" ).datepicker({
       changeMonth: true,
       changeYear: true,
-      dateFormat:"dd/mm/yy"
+      dateFormat:"dd/mm/yy" 
     });
     $( "#id_inicio" ).on( "change", function() {
       $( "#id_fin" ).datepicker( "option", "minDate", getDate( this ) );

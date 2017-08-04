@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from .models import Estacion, Registro
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from .forms import EstacionSearchForm
+
 
 # Create your views here.
 class EstacionCreate(CreateView):
@@ -33,32 +35,28 @@ class EstacionCreate(CreateView):
             'form': form
         })
 
-class EstacionList(ListView):
+class EstacionList(ListView,FormView):
+    #parámetros ListView
     model=Estacion
-    paginate_by = 10
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(EstacionList, self).get_context_data(**kwargs)
-    	lista=Estacion.objects.all()
-        page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
+    paginate_by=10
+    #parámetros FormView
+    template_name='estacion/estacion_list.html'
+    form_class=EstacionSearchForm
+    #parametros propios
+    cadena=str("")
+    def get(self, request, *args, **kwargs):
+        form=EstacionSearchForm(self.request.GET or None)
+        self.object_list=Estacion.objects.all()
+        if form.is_valid():
+            self.object_list=form.filtrar(form)
+            self.cadena=form.cadena(form)
+        return self.render_to_response(self.get_context_data(form=form))
 
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+    def get_context_data(self, **kwargs):
+        context = super(EstacionList, self).get_context_data(**kwargs)
+        page=self.request.GET.get('page')
+        context.update(pagination(self.object_list,page,10))
+        context["cadena"]=self.cadena
         return context
 
 class EstacionDetail(DetailView):
@@ -96,23 +94,7 @@ class RegistroList(ListView):
         context = super(RegistroList, self).get_context_data(**kwargs)
     	lista=Registro.objects.all()
         page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
+        context.update(pagination(self.object_list,page,10))
         return context
 
 class RegistroDetail(DetailView):
@@ -130,3 +112,26 @@ class RegistroUpdate(UpdateView):
 class RegistroDelete(DeleteView):
     model=Registro
     success_url = reverse_lazy('estacion:registro_index')
+
+def pagination(lista,page,num_reg):
+    #lista=model.objects.all()
+    paginator = Paginator(lista, num_reg)
+    if page is None:
+        page=1
+    else:
+        page=int(page)
+    if page == 1:
+        start=1
+        last=start+1
+    elif page == paginator.num_pages:
+        last=paginator.num_pages
+        start=last-1
+    else:
+        start=page-1
+        last=page+1
+    context={
+        'first':'1',
+        'last':paginator.num_pages,
+        'range':range(start,last+1),
+    }
+    return context
