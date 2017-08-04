@@ -63,11 +63,11 @@ class MedicionSearchForm(forms.Form):
             if(form.cleaned_data['variable']==str(1)):
                 consulta_avg=consulta_avg.annotate(valor=Sum('med_valor')).\
                 values('valor','year','month','day','hour').\
-                order_by('month','day','year','hour')
+                order_by('year','month','day','hour')
             else:
                 consulta_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
                 values('valor','year','month','day','hour').\
-                order_by('month','day','year','hour')
+                order_by('year','month','day','hour')
 
         #frecuencia diaria
         elif(form.cleaned_data['frecuencia']==str(2)):
@@ -79,11 +79,11 @@ class MedicionSearchForm(forms.Form):
             if(form.cleaned_data['variable']==str(1)):
                 consulta_avg=consulta_avg.annotate(valor=Sum('med_valor')).\
                 values('valor','year','month','day').\
-                order_by('month','day','year')
+                order_by('year','month','day')
             else:
                 consulta_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
                 values('valor','year','month','day').\
-                order_by('month','day','year')
+                order_by('year','month','day')
 
         #frecuencia mensual
         else:
@@ -94,11 +94,11 @@ class MedicionSearchForm(forms.Form):
             if(form.cleaned_data['variable']==str(1)):
                 consulta_avg=consulta_avg.annotate(valor=Sum('med_valor')).\
                 values('valor','month','year').\
-                order_by('month')
+                order_by('year','month')
             else:
                 consulta_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
                 values('valor','month','year').\
-                order_by('month')
+                order_by('year','month')
 
         return consulta_avg
 
@@ -121,15 +121,15 @@ class MedicionSearchForm(forms.Form):
 
             consulta_avg_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
             values('valor','year','month','day','hour').\
-            order_by('month','day','year','hour')
+            order_by('year','month','day','hour')
 
-            consulta_avg_max=consulta_avg.annotate(valor=Avg('med_maximo')).\
+            consulta_avg_max=consulta_avg.annotate(valor=Max('med_maximo')).\
             values('valor','year','month','day','hour').\
-            order_by('month','day','year','hour')
+            order_by('year','month','day','hour')
 
-            consulta_avg_min=consulta_avg.annotate(valor=Avg('med_minimo')).\
+            consulta_avg_min=consulta_avg.annotate(valor=Min('med_minimo')).\
             values('valor','year','month','day','hour').\
-            order_by('month','day','year','hour')
+            order_by('year','month','day','hour')
 
         #frecuencia diaria
         elif(form.cleaned_data['frecuencia']==str(2)):
@@ -141,15 +141,15 @@ class MedicionSearchForm(forms.Form):
 
             consulta_avg_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
             values('valor','year','month','day').\
-            order_by('month','day','year')
+            order_by('year','month','day')
 
-            consulta_avg_max=consulta_avg.annotate(valor=Avg('med_maximo')).\
+            consulta_avg_max=consulta_avg.annotate(valor=Max('med_maximo')).\
             values('valor','year','month','day').\
-            order_by('month','day','year')
+            order_by('year','month','day')
 
-            consulta_avg_min=consulta_avg.annotate(valor=Avg('med_minimo')).\
+            consulta_avg_min=consulta_avg.annotate(valor=Min('med_minimo')).\
             values('valor','year','month','day').\
-            order_by('month','day','year')
+            order_by('year','month','day')
 
         #frecuencia mensual
         else:
@@ -160,15 +160,15 @@ class MedicionSearchForm(forms.Form):
 
             consulta_avg_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
             values('valor','year','month').\
-            order_by('month')
+            order_by('year','month')
 
             consulta_avg_max=consulta_avg.annotate(valor=Max('med_maximo')).\
             values('valor','year','month').\
-            order_by('month')
+            order_by('year','month')
 
             consulta_avg_min=consulta_avg.annotate(valor=Min('med_minimo')).\
             values('valor','year','month').\
-            order_by('month')
+            order_by('year','month')
 
         return consulta_avg_avg,consulta_avg_max,consulta_avg_min
 
