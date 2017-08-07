@@ -33,178 +33,203 @@ class MedicionSearchForm(forms.Form):
             lista=lista+i
         return lista
     FRECUENCIA=(
+        ('0','Instantaneo'),
         ('1','Horario'),
         ('2','Diario'),
         ('3','Mensual'),
     )
     estacion=forms.ChoiceField(choices=lista_estaciones())
     variable=forms.ChoiceField(choices=lista_variables())
-    #periodo=forms.ChoiceField(choices=lista_year())
     frecuencia=forms.ChoiceField(choices=FRECUENCIA)
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
 
-    #consulta_avg para agrupar los datos por hora, diario y mes
+    #consulta para agrupar los datos por hora, diario y mes
     def filtrar(self,form):
         #filtrar los datos por estacion, variable y rango de fechas
-        consulta_avg=(Medicion.objects
+        consulta=(Medicion.objects
         .filter(est_id=form.cleaned_data['estacion'])
         .filter(var_id=form.cleaned_data['variable'])
         .filter(med_fecha__range=[form.cleaned_data['inicio'],
             form.cleaned_data['fin']]))
+
+        #frecuencia instantanea
+        if(form.cleaned_data['frecuencia']==str(0)):
+            consulta=consulta.values('med_valor','med_fecha','med_hora').\
+            order_by('med_fecha','med_hora')
+
         #frecuencia horaria
-        if(form.cleaned_data['frecuencia']==str(1)):
-            consulta_avg=consulta_avg.annotate(
+        elif(form.cleaned_data['frecuencia']==str(1)):
+            consulta=consulta.annotate(
                 year=ExtractYear('med_fecha'),
                 month=ExtractMonth('med_fecha'),
                 day=ExtractDay('med_fecha'),
                 hour=ExtractHour('med_hora')
             ).values('year','month','day','hour')
             if(form.cleaned_data['variable']==str(1)):
-                consulta_avg=consulta_avg.annotate(valor=Sum('med_valor')).\
+                consulta=consulta.annotate(valor=Sum('med_valor')).\
                 values('valor','year','month','day','hour').\
                 order_by('year','month','day','hour')
             else:
-                consulta_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
+                consulta=consulta.annotate(valor=Avg('med_valor')).\
                 values('valor','year','month','day','hour').\
                 order_by('year','month','day','hour')
 
         #frecuencia diaria
         elif(form.cleaned_data['frecuencia']==str(2)):
-            consulta_avg=consulta_avg.annotate(
+            consulta=consulta.annotate(
                 year=ExtractYear('med_fecha'),
                 month=ExtractMonth('med_fecha'),
                 day=ExtractDay('med_fecha')
             ).values('year','month','day')
             if(form.cleaned_data['variable']==str(1)):
-                consulta_avg=consulta_avg.annotate(valor=Sum('med_valor')).\
+                consulta=consulta.annotate(valor=Sum('med_valor')).\
                 values('valor','year','month','day').\
                 order_by('year','month','day')
             else:
-                consulta_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
+                consulta=consulta.annotate(valor=Avg('med_valor')).\
                 values('valor','year','month','day').\
                 order_by('year','month','day')
 
         #frecuencia mensual
         else:
-            consulta_avg=consulta_avg.annotate(
+            consulta=consulta.annotate(
                 year=ExtractYear('med_fecha'),
                 month=ExtractMonth('med_fecha')
             ).values('month','year')
             if(form.cleaned_data['variable']==str(1)):
-                consulta_avg=consulta_avg.annotate(valor=Sum('med_valor')).\
+                consulta=consulta.annotate(valor=Sum('med_valor')).\
                 values('valor','month','year').\
                 order_by('year','month')
             else:
-                consulta_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
+                consulta=consulta.annotate(valor=Avg('med_valor')).\
                 values('valor','month','year').\
                 order_by('year','month')
 
-        return consulta_avg
+        return consulta
 
     def filtrar_temp(self,form):
         #filtrar los datos por estacion, variable y rango de fechas
         #SOLO PARA TEMPERATURA
-        consulta_avg=(Medicion.objects
+        consulta=(Medicion.objects
         .filter(est_id=form.cleaned_data['estacion'])
         .filter(var_id=form.cleaned_data['variable'])
         .filter(med_fecha__range=[form.cleaned_data['inicio'],
             form.cleaned_data['fin']]))
+
+        #frecuencia instantanea
+        if(form.cleaned_data['frecuencia']==str(0)):
+            consulta_avg=consulta.values('med_valor','med_fecha','med_hora').\
+            order_by('med_fecha','med_hora')
+            consulta_max=consulta.values('med_maximo','med_fecha','med_hora').\
+            order_by('med_fecha','med_hora')
+            consulta_min=consulta.values('med_minimo','med_fecha','med_hora').\
+            order_by('med_fecha','med_hora')
+
         #frecuencia horaria
-        if(form.cleaned_data['frecuencia']==str(1)):
-            consulta_avg=consulta_avg.annotate(
+        elif(form.cleaned_data['frecuencia']==str(1)):
+            consulta=consulta.annotate(
                 year=ExtractYear('med_fecha'),
                 month=ExtractMonth('med_fecha'),
                 day=ExtractDay('med_fecha'),
                 hour=ExtractHour('med_hora')
             ).values('year','month','day','hour')
 
-            consulta_avg_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
+            consulta_avg=consulta.annotate(valor=Avg('med_valor')).\
             values('valor','year','month','day','hour').\
             order_by('year','month','day','hour')
 
-            consulta_avg_max=consulta_avg.annotate(valor=Max('med_maximo')).\
+            consulta_max=consulta.annotate(valor=Max('med_maximo')).\
             values('valor','year','month','day','hour').\
             order_by('year','month','day','hour')
 
-            consulta_avg_min=consulta_avg.annotate(valor=Min('med_minimo')).\
+            consulta_min=consulta.annotate(valor=Min('med_minimo')).\
             values('valor','year','month','day','hour').\
             order_by('year','month','day','hour')
 
         #frecuencia diaria
         elif(form.cleaned_data['frecuencia']==str(2)):
-            consulta_avg=consulta_avg.annotate(
+            consulta=consulta.annotate(
                 year=ExtractYear('med_fecha'),
                 month=ExtractMonth('med_fecha'),
                 day=ExtractDay('med_fecha')
             ).values('year','month','day')
 
-            consulta_avg_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
+            consulta_avg=consulta.annotate(valor=Avg('med_valor')).\
             values('valor','year','month','day').\
             order_by('year','month','day')
 
-            consulta_avg_max=consulta_avg.annotate(valor=Max('med_maximo')).\
+            consulta_max=consulta.annotate(valor=Max('med_maximo')).\
             values('valor','year','month','day').\
             order_by('year','month','day')
 
-            consulta_avg_min=consulta_avg.annotate(valor=Min('med_minimo')).\
+            consulta_min=consulta.annotate(valor=Min('med_minimo')).\
             values('valor','year','month','day').\
             order_by('year','month','day')
 
         #frecuencia mensual
         else:
-            consulta_avg=consulta_avg.annotate(
+            consulta=consulta.annotate(
                 year=ExtractYear('med_fecha'),
                 month=ExtractMonth('med_fecha')
             ).values('month','year')
 
-            consulta_avg_avg=consulta_avg.annotate(valor=Avg('med_valor')).\
+            consulta_avg=consulta.annotate(valor=Avg('med_valor')).\
             values('valor','year','month').\
             order_by('year','month')
 
-            consulta_avg_max=consulta_avg.annotate(valor=Max('med_maximo')).\
+            consulta_max=consulta.annotate(valor=Max('med_maximo')).\
             values('valor','year','month').\
             order_by('year','month')
 
-            consulta_avg_min=consulta_avg.annotate(valor=Min('med_minimo')).\
+            consulta_min=consulta.annotate(valor=Min('med_minimo')).\
             values('valor','year','month').\
             order_by('year','month')
 
-        return consulta_avg_avg,consulta_avg_max,consulta_avg_min
+        return consulta_avg,consulta_max,consulta_min
 
     def data_simple(self,form):
-        consulta_avg = self.filtrar(form)
+        consulta = self.filtrar(form)
 
-        val = [d.get('valor') for d in consulta_avg]
-        #frecuencia horaria
-        if(form.cleaned_data['frecuencia']==str(1)):
-            hour = [d.get('hour') for d in consulta_avg]
-            day = [d.get('day') for d in consulta_avg]
-            month = [d.get('month') for d in consulta_avg]
-            year = [d.get('year') for d in consulta_avg]
+        #frecuencia instantanea
+        if(form.cleaned_data['frecuencia']==str(0)):
+            val = [d.get('med_valor') for d in consulta]
             freq = []
-            for i in range(len(list(consulta_avg))):
+            for fila in list(consulta):
+                freq.append(datetime.datetime.combine(fila['med_fecha'],fila['med_hora']))
+
+        #frecuencia horaria
+        elif(form.cleaned_data['frecuencia']==str(1)):
+            val = [d.get('valor') for d in consulta]
+            hour = [d.get('hour') for d in consulta]
+            day = [d.get('day') for d in consulta]
+            month = [d.get('month') for d in consulta]
+            year = [d.get('year') for d in consulta]
+            freq = []
+            for i in range(len(list(consulta))):
                 fecha_str = str(year[i])+":"+str(month[i])+":"+str(day[i])
                 fecha = datetime.datetime.strptime(fecha_str,'%Y:%m:%d').date()
                 freq.append(datetime.datetime.combine(fecha,datetime.time(hour[i])))
 
         #frecuencia diaria
         elif(form.cleaned_data['frecuencia']==str(2)):
-            day = [d.get('day') for d in consulta_avg]
-            month = [d.get('month') for d in consulta_avg]
-            year = [d.get('year') for d in consulta_avg]
+            val = [d.get('valor') for d in consulta]
+            day = [d.get('day') for d in consulta]
+            month = [d.get('month') for d in consulta]
+            year = [d.get('year') for d in consulta]
             freq = []
-            for i in range(len(list(consulta_avg))):
+            for i in range(len(list(consulta))):
                 fecha_str = str(year[i])+":"+str(month[i])+":"+str(day[i])
                 fecha = datetime.datetime.strptime(fecha_str,'%Y:%m:%d').date()
                 freq.append(fecha)
 
         #frecuencia mensual
         else:
-            month = [d.get('month') for d in consulta_avg]
-            year = [d.get('year') for d in consulta_avg]
+            val = [d.get('valor') for d in consulta]
+            month = [d.get('month') for d in consulta]
+            year = [d.get('year') for d in consulta]
             freq = []
-            for i in range(len(list(consulta_avg))):
+            for i in range(len(list(consulta))):
                 fecha_str = str(calendar.month_abbr[month[i]])+" "+str(year[i])
                 freq.append(fecha_str)
 
@@ -214,11 +239,20 @@ class MedicionSearchForm(forms.Form):
         #SOLO PARA TEMPERATURA
         consulta_avg,consulta_max,consulta_min = self.filtrar_temp(form)
 
-        val_avg = [d.get('valor') for d in consulta_avg]
-        val_max = [d.get('valor') for d in consulta_max]
-        val_min = [d.get('valor') for d in consulta_min]
+        #frecuencia instantanea
+        if(form.cleaned_data['frecuencia']==str(0)):
+            val_avg = [d.get('med_valor') for d in consulta_avg]
+            val_max = [d.get('med_maximo') for d in consulta_max]
+            val_min = [d.get('med_minimo') for d in consulta_min]
+            freq = []
+            for fila in list(consulta_avg):
+                freq.append(datetime.datetime.combine(fila['med_fecha'],fila['med_hora']))
 
-        if(form.cleaned_data['frecuencia']==str(1)):
+        #frecuencia horaria
+        elif(form.cleaned_data['frecuencia']==str(1)):
+            val_avg = [d.get('valor') for d in consulta_avg]
+            val_max = [d.get('valor') for d in consulta_max]
+            val_min = [d.get('valor') for d in consulta_min]
             hour = [d.get('hour') for d in consulta_avg]
             day = [d.get('day') for d in consulta_avg]
             month = [d.get('month') for d in consulta_avg]
@@ -231,6 +265,9 @@ class MedicionSearchForm(forms.Form):
 
         #frecuencia diaria
         elif(form.cleaned_data['frecuencia']==str(2)):
+            val_avg = [d.get('valor') for d in consulta_avg]
+            val_max = [d.get('valor') for d in consulta_max]
+            val_min = [d.get('valor') for d in consulta_min]
             day = [d.get('day') for d in consulta_avg]
             month = [d.get('month') for d in consulta_avg]
             year = [d.get('year') for d in consulta_avg]
@@ -242,6 +279,9 @@ class MedicionSearchForm(forms.Form):
 
         #frecuencia mensual
         else:
+            val_avg = [d.get('valor') for d in consulta_avg]
+            val_max = [d.get('valor') for d in consulta_max]
+            val_min = [d.get('valor') for d in consulta_min]
             month = [d.get('month') for d in consulta_avg]
             year = [d.get('year') for d in consulta_avg]
             freq = []
@@ -260,7 +300,7 @@ class MedicionSearchForm(forms.Form):
                 y = val_max,
                 name = 'Max',
                 line = dict(
-                    color = ('rgb(22, 96, 167)'),
+                    color = ('rgb(205, 12, 24)'),
                     width = 4)
             )
             trace1 = go.Scatter(
@@ -268,7 +308,7 @@ class MedicionSearchForm(forms.Form):
                 y = val_min,
                 name = 'Min',
                 line = dict(
-                    color = ('rgb(205, 12, 24)'),
+                    color = ('rgb(50, 205, 50)'),
                     width = 4,)
             )
             trace2 = go.Scatter(
@@ -276,7 +316,7 @@ class MedicionSearchForm(forms.Form):
                 y = val_avg,
                 name = 'Media',
                 line = dict(
-                    color = ('rgb(50, 205, 50)'),
+                    color = ('rgb(22, 96, 167)'),
                     width = 4,)
             )
             data = go.Data([trace0, trace1, trace2])
@@ -304,12 +344,12 @@ class MedicionSearchForm(forms.Form):
         return div
 
     def titulo_estacion(self,estacion):
-        consulta_avg=list(Estacion.objects.filter(est_id=estacion))
-        return consulta_avg[0]
+        consulta=list(Estacion.objects.filter(est_id=estacion))
+        return consulta[0]
 
     def titulo_variable(self,variable):
-        consulta_avg=list(Variable.objects.filter(var_id=variable))
-        return consulta_avg[0]
+        consulta=list(Variable.objects.filter(var_id=variable))
+        return consulta[0]
 
     def titulo_unidad(self,variable):
         var=list(Variable.objects.filter(var_id=variable).values())
@@ -318,7 +358,9 @@ class MedicionSearchForm(forms.Form):
 
     def titulo_frecuencia(self,frecuencia):
         nombre = []
-        if frecuencia == '1':
+        if frecuencia == '0':
+            nombre = 'Instantanea'
+        elif frecuencia == '1':
             nombre = 'Horaria'
         elif frecuencia == '2':
             nombre = 'Diaria'

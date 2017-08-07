@@ -57,9 +57,14 @@ class ConsultasPeriodo(FormView):
         return context
     def export_datos(self,datos,frecuencia):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+        response['Content-Disposition'] = 'attachment; filename="reporte.csv"'
         writer = csv.writer(response)
-        if frecuencia=="1":
+        if frecuencia=="0":
+            writer.writerow(['med_fecha', 'med_hora','med_valor'])
+            for fila in datos:
+                writer.writerow([fila.get('med_fecha'), fila.get('med_hora')
+                    , fila.get('med_valor')])
+        elif frecuencia=="1":
             writer.writerow(['anio', 'mes','dia','hora','valor'])
             for fila in datos:
                 writer.writerow([fila.get('year'), fila.get('month')
