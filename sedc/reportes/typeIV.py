@@ -32,7 +32,7 @@ class TypeIV(Titulos):
             .exclude(med_valor=0)
             .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
             .values('month','day')
-            .annotate(valor=Max('med_valor'))
+            .annotate(valor=Max('med_maximo'))
             .values('valor','month','day').order_by('month','day'))
         datos_diarios_min=list(Medicion.objects
             .filter(est_id=estacion)
@@ -41,7 +41,7 @@ class TypeIV(Titulos):
             .exclude(med_valor=0)
             .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
             .values('month','day')
-            .annotate(valor=Min('med_valor'))
+            .annotate(valor=Min('med_minimo'))
             .values('valor','month','day').order_by('month','day'))
 
         med_avg=list(consulta.exclude(med_valor=0).annotate(c=Avg('med_valor')).values('c').order_by('month'))
