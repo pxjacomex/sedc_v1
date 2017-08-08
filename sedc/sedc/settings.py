@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'estacion.apps.EstacionConfig',
     'medicion.apps.MedicionConfig',
     'vacios.apps.VaciosConfig',
+    'frecuencia.apps.FrecuenciaConfig',
     'importacion.apps.ImportacionConfig',
     'validacion.apps.ValidacionConfig',
     'django.contrib.admin',
