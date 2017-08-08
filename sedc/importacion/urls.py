@@ -8,4 +8,5 @@ urlpatterns=[
     #url(r'importacion/create/$', views.ImportacionCreate.as_view(), name='importacion_create'),
     url(r'importacion/detail/(?P<pk>[0-9]+)/$', views.ImportacionDetail.as_view(), name='importacion_detail'),
     url(r'importacion/importar/$', views.importar_archivo, name='importar'),
+    url(r'^ajax/formatos',views.lista_formatos,name='formatos')
 ]
