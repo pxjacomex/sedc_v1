@@ -3,23 +3,15 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render,redirect
 from importacion.models import Importacion
-"""from formato.models import Formato,Clasificacion,Delimitador
-from estacion.models import Estacion
-from medicion.models import Medicion
-from variable.models import Variable
-from datalogger.models import Sensor"""
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
-#from django.views.generic.edit import CreateView, UpdateView, DeleteView
-#from django.urls import reverse_lazy
-#from django.core.paginator import Paginator
-#import time
-#from datetime import datetime
-#from django.conf import settings
+from django.http import JsonResponse
+
 
 from django.http import HttpResponseRedirect
 #from django.shortcuts import render
 from importacion.forms import UploadFileForm, procesar_archivo
+from importacion.functions import consultar_formatos
 
 class ImportacionList(ListView):
     model=Importacion
@@ -33,11 +25,26 @@ def importar_archivo(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            procesar_archivo(request.FILES['archivo'],form)
-            return HttpResponseRedirect('/importacion/')
+            valid,message=procesar_archivo(request.FILES['archivo'],form)
+            if valid:
+                return HttpResponseRedirect('/importacion/')
+            else:
+                context={
+                    'form':form,
+                    'message':message,
+                }
+                return render(request, 'importacion/importacion_form.html',context)
     else:
         form = UploadFileForm()
     return render(request, 'importacion/importacion_form.html', {'form': form})
+#lista de formatos por estacion y datalogger
+def lista_formatos(request):
+    dat_id=request.GET.get('datalogger',None)
+    datos=consultar_formatos(dat_id)
+    data={
+        'datos':datos,
+    }
+    return JsonResponse(datos)
 
 """def subir(request,id):
     importacion=Importacion.objects.get(imp_id=id)

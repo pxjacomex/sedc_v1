@@ -1,8 +1,35 @@
 {% extends "index.html" %}
+{% block javascript %}
+<script>
+$("#id_datalogger").change(function () {
+  var datalogger = $(this).val();
+  $("#id_formato").find('option').remove().end()
+  $.ajax({
+    url: '/ajax/formatos/',
+    data: {
+      'datalogger': datalogger
+    },
+    dataType: 'json',
+    success: function (data) {
+      //datos=JSON.parse(data)
+
+      $.each(data, function(index, value) {
+          $("#id_formato").append('<option value="' + index + '">' + value + '</option>');
+          //console.log(value)
+      });
+    }
+  });
+
+});
+</script>
+{% endblock %}
 {% block content %}
 {% load bootstrap3 %}
 
 <div class="col-lg-4 col-md-4">
+  {%if message%}
+  <div class="alert alert-danger" role="alert">{{message}}</div>
+  {%endif%}
   <div class="panel panel-default">
     <div class="panel-heading">{{title}} Registro</div>
     <div class="panel-body">
