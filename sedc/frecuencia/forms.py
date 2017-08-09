@@ -26,46 +26,22 @@ class FrecuenciaSearchForm(forms.Form):
     lista=[]
     Variable = forms.ChoiceField(required=False,choices=lista_variables())
     Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
-    Fecha = forms.DateField(required=False,input_formats=['%d/%m/%Y'],label="Fecha (dd/mm/yyyy)")
+    #Fecha = forms.DateField(required=False,input_formats=['%d/%m/%Y'],label="Fecha (dd/mm/yyyy)")
 
     def filtrar(self,form):
-        if form.cleaned_data['Variable'] and form.cleaned_data['Estacion'] and form.cleaned_data['Fecha']:
+        if form.cleaned_data['Variable'] and form.cleaned_data['Estacion']:
             lista=Frecuencia.objects.filter(
                 var_id=form.cleaned_data['Variable']
             ).filter(
                 est_id=form.cleaned_data['Estacion']
-            ).filter(
-                fre_fecha_ini=form.cleaned_data['Fecha']
-            )
-        elif form.cleaned_data['Variable'] == "" and form.cleaned_data['Estacion'] == "":
-            lista=Frecuencia.objects.filter(
-                fre_fecha_ini=form.cleaned_data['Fecha']
-            )
-        elif form.cleaned_data['Variable'] == "" and form.cleaned_data['Fecha'] == "":
-            lista=Frecuencia.objects.filter(
-                est_id=form.cleaned_data['Estacion']
-            )
-        elif form.cleaned_data['Estacion'] == "" and form.cleaned_data['Fecha'] == "":
-            lista=Frecuencia.objects.filter(
-                var_id=form.cleaned_data['Variable']
             )
         elif form.cleaned_data['Variable']  == "":
             lista=Frecuencia.objects.filter(
                 est_id=form.cleaned_data['Estacion']
-            ).filter(
-                fre_fecha_ini=form.cleaned_data['Fecha']
             )
         elif form.cleaned_data['Estacion'] == "":
             lista=Frecuencia.objects.filter(
                 var_id=form.cleaned_data['Variable']
-            ).filter(
-                fre_fecha_ini=form.cleaned_data['Fecha']
-            )
-        elif form.cleaned_data['Fecha'] == "":
-            lista=Frecuencia.objects.filter(
-                var_id=form.cleaned_data['Variable']
-            ).filter(
-                est_id=form.cleaned_data['Estacion']
             )
         else:
             lista=Frecuencia.objects.all()

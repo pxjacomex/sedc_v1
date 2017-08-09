@@ -32,7 +32,6 @@
       <th>Estación</th>
       <th>Fecha inicio</th>
       <th>Fecha fin</th>
-      <th>Estado</th>
     </tr>
   </thead>
   <tbody>
@@ -43,7 +42,6 @@
       <td>{{ item.est_id}}</td>
       <td>{{ item.con_fecha_ini|date:"d/m/Y"}}</td>
       <td>{{ item.con_fecha_fin|date:"d/m/Y"}}</td>
-      <td>{{ item.con_estado}}</td>
       <td>
         <a href="{% url 'variable:control_detail' item.con_id %}">
           <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
