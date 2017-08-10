@@ -52,7 +52,7 @@ class Resumen(object):
         self.min_18 = min_18
         self.min_abs = min_abs
         self.min_hora = min_hora
-#clase para la variable RAD
+#clase para anuario de la variable RAD
 class TypeVI(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 7'''
     def consulta(self,estacion,variable,periodo):
@@ -87,7 +87,8 @@ class TypeVI(Titulos):
         max_abs,max_hora = self.maximosrad(datos_diarios_max)
         min_abs,min_hora = self.minimosrad(datos_diarios_min)
 
-        mes=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+        mes=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto',\
+             'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         return mes,max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,max_13,max_14,\
         max_15,max_16,max_17,max_18,max_abs,max_hora,min_5,min_6,min_7,min_8,min_9,\
         min_10,min_11,min_12,min_13,min_14,min_15,min_16,min_17,min_18,min_abs,min_hora
@@ -106,6 +107,7 @@ class TypeVI(Titulos):
         return matrix
 
     def maximosrad(self, datos_diarios_max):
+        #retorna maxima rad mensual y en que dia sucedio
         max_abs = []
         max_hora = []
         for i in range(1,13):
@@ -120,6 +122,7 @@ class TypeVI(Titulos):
         return max_abs,max_hora
 
     def minimosrad(self, datos_diarios_min):
+        #retorna minima rad mensual y en que dia sucedio
         min_abs = []
         min_hora = []
         for i in range(1,13):
@@ -134,6 +137,7 @@ class TypeVI(Titulos):
         return min_abs,min_hora
 
     def max_hora_rad(self, datos_diarios_max):
+        #retorna maximos de cada hora (5 a 18) por cada mes
         max_5 = []
         max_6 = []
         max_7 = []
@@ -211,6 +215,7 @@ class TypeVI(Titulos):
         max_15,max_16,max_17,max_18
 
     def min_hora_rad(self, datos_diarios_min):
+        #retorna minimos de cada hora (5 a 18) por cada mes
         min_5 = []
         min_6 = []
         min_7 = []

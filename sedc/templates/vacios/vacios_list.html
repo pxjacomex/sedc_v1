@@ -14,7 +14,7 @@ $(document).ready(function() {
       changeYear: true,
       dateFormat:"dd/mm/yy"
     });
-    
+
 
     $("#btn_exportar").click(function(){
       $("id_exportar").val("True")
@@ -34,11 +34,17 @@ $(document).ready(function() {
 });
 </script>
 
+
 <div class ="row">
-  <div >
+  <div class="col-lg-10">
     <h3>Lista de vacios</h3>
   </div>
-  <br>
+  <div class="col-lg-2" style="padding-top:20px;">
+    <a style="float:right" class="btn btn-info"
+    href="{% url 'vacios:vacios_create' %}">
+    Nuevo</a>
+
+  </div>
   <form class="form" method="get" action="{% url 'vacios:vacios_index'%}">
     {% for field in form%}
       {% bootstrap_field field form_group_class='col-lg-4' %}

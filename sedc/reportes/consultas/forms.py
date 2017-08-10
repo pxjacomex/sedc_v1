@@ -299,25 +299,28 @@ class MedicionSearchForm(forms.Form):
                 x = freq,
                 y = val_max,
                 name = 'Max',
+                mode = 'lines',
                 line = dict(
                     color = ('rgb(205, 12, 24)'),
-                    width = 4)
+                    )
             )
             trace1 = go.Scatter(
                 x = freq,
                 y = val_min,
                 name = 'Min',
+                mode = 'lines',
                 line = dict(
                     color = ('rgb(50, 205, 50)'),
-                    width = 4,)
+                    )
             )
             trace2 = go.Scatter(
                 x = freq,
                 y = val_avg,
                 name = 'Media',
+                mode = 'lines',
                 line = dict(
                     color = ('rgb(22, 96, 167)'),
-                    width = 4,)
+                    )
             )
             data = go.Data([trace0, trace1, trace2])
 

@@ -15,7 +15,7 @@ class Resumen(object):
         self.maximo= maximo
         self.minimo = minimo
         self.medio = medio
-#clase para las variables HSU, PAT, TAG, CAU, NAG
+#clase para anuario de las las variables HSU, PAT, TAG, CAU, NAG
 class TypeI(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variables: 6,8,9,10,11'''
     def consulta(self,estacion,variable,periodo):

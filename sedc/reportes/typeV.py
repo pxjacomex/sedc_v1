@@ -35,7 +35,14 @@ class Resumen(object):
         self.vel_mayor = vel_mayor
         self.vel_mayor_dir = vel_mayor_dir
         self.vel_media_kmh = vel_media_kmh
-#clase para agrupar la velocidad y direccion del viento.
+
+class Viento(object):
+     #clase para agrupar la velocidad y direccion del viento.
+     def __init__(self,dvi,vvi):
+         self.dvi=dvi
+         self.vvi=vvi
+
+#clase para anuario de la variable VVI y DVI
 class TypeV(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 4,5'''
 
@@ -70,14 +77,14 @@ class TypeV(Titulos):
                 .filter(med_fecha__year=periodo)
                 .filter(med_fecha__month=i)
                 .filter(med_valor__lt=0.5).count())
-            obs.append(datos_obs)
-            calma.append((float(datos_calma)/datos_obs)*100)
+            obs.append(datos_obs)                                   #cuantas observaciones en ese mes
+            calma.append((float(datos_calma)/datos_obs)*100)        #porcentaje de viento menor de 0.5
             vvi.append(self.viento(estacion,periodo,i,datos_obs))
 
         return meses,vvi,calma,obs,vel_mayor,vel_mayor_dir,vel_media_kmh
 
     def viento(self,estacion,periodo,mes,datos_obs):
-        vvi=[[0 for x in range(0)] for y in range(8)]
+        vvi=[[0 for x in range(0)] for y in range(8)] #crea una matriz en blanco
         dat_dvi=list(Medicion.objects
             .filter(est_id=estacion).filter(var_id=5)
             .filter(med_fecha__year=periodo).filter(med_fecha__month=mes)
@@ -90,6 +97,7 @@ class TypeV(Titulos):
         )
         for val_dvi,val_vvi in zip(dat_dvi,dat_vvi):
             item=Viento(val_dvi.get('med_valor'),val_vvi.get('med_valor'))
+            #agrupa las velocidades por direccion
             if val_vvi.get('med_valor') is not None:
                 if val_dvi.get('med_valor') < 22.5 or val_dvi.get('med_valor')>337.5:
                     vvi[0].append(val_vvi.get('med_valor'))
@@ -109,11 +117,12 @@ class TypeV(Titulos):
                     vvi[7].append(val_vvi.get('med_valor'))
         valores=[]
         for j in range(8):
-            valores.append(float(sum(vvi[j])/len(vvi[j])))
-            valores.append(float(len(vvi[j]))/datos_obs*100)
+            valores.append(float(sum(vvi[j])/len(vvi[j])))      #velocidades medias en esa direccion
+            valores.append(float(len(vvi[j]))/datos_obs*100)    #porcentaje en esa direccion
         return valores
 
     def viento_max(self,estacion,periodo):
+        #returns monthly max wind and the direccion in which it occured
         dat_dvi=list(Medicion.objects
             .filter(est_id=estacion).filter(var_id=5)
             .filter(med_fecha__year=periodo)
@@ -138,10 +147,11 @@ class TypeV(Titulos):
                     val_mayor_dir.append(val_dvi.get('med_valor'))
             vel_mayor.append(max(val_vel_mayor))
             vel_mayor_dir.append(val_mayor_dir[val_vel_mayor.index(max(val_vel_mayor))])
-        vel_mayor_dir=self.direccion(vel_mayor_dir)
+        vel_mayor_dir=self.direccion(vel_mayor_dir) #turns angle to N,NE,E,S,SE,S,SO,O,NO
         return vel_mayor,vel_mayor_dir
 
     def direccion(self,angles):
+        #retorna direccion en base a angulo
         valores = []
         for val in angles:
             if val < 22.5 or val > 337.5:
