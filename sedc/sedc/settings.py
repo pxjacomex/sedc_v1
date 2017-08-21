@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'vacios.apps.VaciosConfig',
     'importacion.apps.ImportacionConfig',
     'validacion.apps.ValidacionConfig',
+    'marca.apps.MarcaConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

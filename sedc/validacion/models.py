@@ -28,6 +28,6 @@ class Validacion(models.Model):
     val_validado=models.DecimalField("Validado",max_digits=14,decimal_places=6,blank=True,null=True)
     val_estado=models.NullBooleanField("Estado",default=True)
     def __str__(self):
-        return str(self.med_valor)
+        return str(self.val_valor)
     #def get_absolute_url(self):
         #return reverse('validacion:medicion_index')

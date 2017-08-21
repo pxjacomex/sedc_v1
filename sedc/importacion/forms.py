@@ -2,11 +2,11 @@
 from django import forms
 from estacion.models import Estacion
 from medicion.models import Medicion
-#from variable.models import Variable
+from variable.models import Variable
 from datalogger.models import Datalogger
 from validacion.models import Validacion
 from datetime import datetime,timedelta
-from formato.models import Formato,Asociacion
+from formato.models import Formato,Asociacion,Clasificacion
 from importacion.functions import construir_matriz
 class UploadFileForm(forms.Form):
     def lista_estaciones():
@@ -36,7 +36,6 @@ class UploadFileForm(forms.Form):
     sobreescribir=forms.BooleanField(required=False)
     archivo = forms.FileField()
 def procesar_archivo(archivo,form):
-
     try:
         formato=Formato.objects.get(for_id=form.cleaned_data['formato'])
         estacion=Estacion.objects.get(est_id=form.cleaned_data['estacion'])
@@ -44,15 +43,43 @@ def procesar_archivo(archivo,form):
         datos=construir_matriz(archivo,formato,estacion)
         valid=validar_fechas(datos)
         message=str("")
-        if not valid:
+        if not valid and not sobreescribir:
             message="Datos existentes, por favor seleccione la opcion sobreescribir"
+        context={
+            'variables':informacion_archivo(formato),
+            'fechas':rango_fecha(datos),
+            'message':message,
+            'valid':valid,
+            'datos':datos
+        }
     except ValueError:
-        valid=False
-        messagge="El formato del datalogger no coincide con el archivo"
-    return valid,message
+        context={
+            'message':"El formato del datalogger no coincide con el archivo",
+            'valid':False
+        }
 
-
-
+    return context
+def informacion_archivo(formato):
+    clasificacion=list(Clasificacion.objects.filter(
+        for_id=formato.for_id).values())
+    i=1
+    cadena="Variables: "
+    for fila in clasificacion:
+        variable=Variable.objects.get(var_id=fila['var_id_id'])
+        if i<len(clasificacion):
+            cadena+=variable.var_nombre+","
+        else:
+            cadena+=variable.var_nombre
+        i+=1
+    return cadena
+def rango_fecha(datos):
+    fecha_ini=datos[0].val_fecha
+    hora_ini=datos[0].val_hora
+    fecha_fin=datos[-1].val_fecha
+    hora_fin=datos[-1].val_hora
+    cadena="Rango: "+fecha_ini+str(" ")+hora_ini+" al "+ \
+        fecha_fin+str(" ")+hora_fin
+    return cadena
 #verificar los datos del archivo
 def validar_fechas(datos):
     fecha_ini=datos[0].val_fecha

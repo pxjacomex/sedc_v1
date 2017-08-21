@@ -6,6 +6,7 @@ from validacion.models import Validacion
 from variable.models import Variable
 from datalogger.models import Datalogger
 from formato.models import Clasificacion,Delimitador
+datos=[]
 #consultar formatos por datalogger y estacion
 def consultar_formatos(datalogger):
     asociacion=Asociacion.objects.filter(dat_id=datalogger).values()
@@ -22,16 +23,21 @@ def construir_matriz(archivo,formato,estacion):
     clasificacion=list(Clasificacion.objects.filter(
         for_id=formato.for_id).values())
     delimitador=Delimitador.objects.get(del_id=formato.del_id_id)
-    datos=[]
+
     i=0
+    variables=[]
+    for fila in clasificacion:
+        variable=Variable.objects.get(var_id=fila['var_id_id'])
+        variables.append(variable)
     for linea in archivo.readlines():
         i+=1
         #controlar la fila de inicio
         if i>=formato.for_fil_ini:
             valores=linea.split(delimitador.del_caracter)
             fecha,hora=formato_fecha(formato,valores,cambiar_fecha)
+            j=0
             for fila in clasificacion:
-                variable=Variable.objects.get(var_id=fila['var_id_id'])
+                #variable=Variable.objects.get(var_id=fila['var_id_id'])
                 if fila['cla_valor'] is not None:
                     valor=float(valores[fila['cla_valor']])
                 else:
@@ -45,18 +51,22 @@ def construir_matriz(archivo,formato,estacion):
                 else:
                     minimo=None
                 print estacion.est_id,variable,fecha,hora,valor,maximo,minimo
-                dato=Validacion(var_id=variable,est_id=estacion,
+                dato=Validacion(var_id=variables[j],est_id=estacion,
                     val_fecha=fecha,val_hora=hora,
                     val_valor=valor,val_maximo=maximo,val_minimo=minimo,
                     val_estado=True)
                 #med.save()
                 #Validacion.objects.all().delete()
                 datos.append(dato)
+                j+=1
     return datos
+def guardar_datos():
+    for valor in datos:
+        valor.save()
+    Validacion.objects.all().delete()
 #validar si son datalogger VAISALA para restar 5 horas
 def validar_datalogger(for_id):
     asociacion=Asociacion.objects.filter(for_id=for_id).values()[0]
-    print asociacion
     datalogger=Datalogger.objects.get(dat_id=asociacion['dat_id_id'])
     if datalogger.dat_marca=='VAISALA':
         return True

@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from . import views
+from datalogger import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
@@ -11,7 +11,7 @@ urlpatterns=[
     url(r'datalogger/detail/(?P<pk>[0-9]+)/$', views.DataloggerDetail.as_view(), name='datalogger_detail'),
     url(r'datalogger/(?P<pk>[0-9]+)/$', views.DataloggerUpdate.as_view(), name='datalogger_update'),
     url(r'datalogger/(?P<pk>[0-9]+)/delete/$', views.DataloggerDelete.as_view(), name='datalogger_delete'),
-    
+
     url(r'sensor/$',views.SensorList.as_view(),name='sensor_index'),
     url(r'sensor/(?P<page>[0-9]+)/$',views.SensorList.as_view(),name='sensor_index'),
     url(r'sensor/create/$', views.SensorCreate.as_view(), name='sensor_create'),
