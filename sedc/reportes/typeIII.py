@@ -21,7 +21,7 @@ class Resumen(object):
         self.maximo= maximo
         self.minimo = minimo
         self.medio = medio
-#clase para la variable TAI
+#clase para anuario de la variable TAI
 class TypeIII(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 2'''
     def consulta(self,estacion,variable,periodo):
@@ -90,6 +90,8 @@ class TypeIII(Titulos):
         return div
 
     def maximostai(self, datos_diarios_max):
+        # retorna maxima temp mensual y en que dia sucedio y media mensual de las maximas
+
         max_abs = []
         maxdia = []
         avgmax = []
@@ -106,6 +108,8 @@ class TypeIII(Titulos):
         return max_abs,maxdia, avgmax
 
     def minimostai(self, datos_diarios_min):
+        # retorna minima temp mensual y en que dia sucedio y media mensual de las minimas
+
         min_abs = []
         mindia = []
         avgmin = []

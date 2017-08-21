@@ -19,7 +19,7 @@ class Resumen(object):
         self.minimo = minimo
         self.mindia = mindia
         self.medio = medio
-#clase para la variable HAI
+#clase para anuario de la variable HAI
 class TypeIV(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variable: 3'''
     def consulta(self,estacion,variable,periodo):
@@ -47,8 +47,8 @@ class TypeIV(Titulos):
         med_avg=list(consulta.exclude(med_valor=0).annotate(c=Avg('med_valor')).values('c').order_by('month'))
         avg_simple = [d.get('c') for d in med_avg]
 
-        max_simple,maxdia_simple = self.maximostai(datos_diarios_max)
-        min_simple,mindia_simple = self.minimostai(datos_diarios_min)
+        max_simple,maxdia_simple = self.maximoshai(datos_diarios_max)
+        min_simple,mindia_simple = self.minimoshai(datos_diarios_min)
         meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         return max_simple,maxdia_simple,min_simple,mindia_simple,avg_simple,meses
     def matriz(self,estacion, variable, periodo):
@@ -89,7 +89,8 @@ class TypeIV(Titulos):
         div = opy.plot(figure, auto_open=False, output_type='div')
         return div
 
-    def maximostai(self, datos_diarios_max):
+    def maximoshai(self, datos_diarios_max):
+        # retorna maxima humedad mensual y en que dia sucedio
         max_abs = []
         maxdia = []
         for i in range(1,13):
@@ -103,7 +104,8 @@ class TypeIV(Titulos):
             maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
         return max_abs,maxdia
 
-    def minimostai(self, datos_diarios_min):
+    def minimoshai(self, datos_diarios_min):
+        # retorna minima humedad mensual y en que dia sucedio
         min_abs = []
         mindia = []
         for i in range(1,13):

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from vacios.models import Vacios
+from frecuencia.models import Frecuencia
 from estacion.models import Estacion
 from formato.models import Variable
 
-class VaciosSearchForm(forms.Form):
+class FrecuenciaSearchForm(forms.Form):
     def lista_estaciones():
         lista = ()
         lista = lista + (('','----'),)
@@ -30,21 +30,21 @@ class VaciosSearchForm(forms.Form):
 
     def filtrar(self,form):
         if form.cleaned_data['Variable'] and form.cleaned_data['Estacion']:
-            lista=Vacios.objects.filter(
+            lista=Frecuencia.objects.filter(
                 var_id=form.cleaned_data['Variable']
             ).filter(
                 est_id=form.cleaned_data['Estacion']
             )
         elif form.cleaned_data['Variable']  == "":
-            lista=Vacios.objects.filter(
+            lista=Frecuencia.objects.filter(
                 est_id=form.cleaned_data['Estacion']
             )
         elif form.cleaned_data['Estacion'] == "":
-            lista=Vacios.objects.filter(
+            lista=Frecuencia.objects.filter(
                 var_id=form.cleaned_data['Variable']
             )
         else:
-            lista=Vacios.objects.all()
+            lista=Frecuencia.objects.all()
         return lista
 
     def cadena(self,form):

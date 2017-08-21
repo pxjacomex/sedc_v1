@@ -61,9 +61,10 @@
 		    <li><a href="{% url 'importacion:importar'%}">Importación</a></li>
 		    <li role="separator" class="divider"></li>
 		    <li><a href="{% url 'formato:asociacion_index' %}">Asociación</a></li>
-
         <li role="separator" class="divider"></li>
         <li><a href="{% url 'vacios:vacios_index' %}">Vacios</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="{% url 'frecuencia:frecuencia_index' %}">Frecuencia</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="{% url 'formato:clasificacion_index' %}">Clasificación</a></li>
 		  </ul>
@@ -71,8 +72,6 @@
     <li class="dropdown">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Validación<span class="caret"></span></a>
       <ul class="dropdown-menu">
-
-        <li role="separator" class="divider"></li>
         <li><a href="{% url 'medicion:medicion_index' %}">Medición</a></li>
 
       </ul>
@@ -81,6 +80,7 @@
       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Reportes<span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li><a href="{% url 'reportes:anuario' %}">Anuario</a></li>
+        <li role="separator" class="divider"></li>
         <li><a href="{% url 'reportes:consultas_periodo' %}">Consultas por Periodo</a></li>
       </ul>
     </li>

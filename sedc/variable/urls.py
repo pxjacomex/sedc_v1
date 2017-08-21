@@ -21,7 +21,7 @@ urlpatterns=[
     url(r'control/(?P<page>[0-9]+)/$',views.ControlList.as_view(),name='control_index'),
     url(r'control/create/$', views.ControlCreate.as_view(), name='control_create'),
     url(r'control/detail/(?P<pk>[0-9]+)/$', views.ControlDetail.as_view(), name='control_detail'),
-    url(r'control/(?P<pk>[0-9]+)/$', views.ControlUpdate.as_view(), name='control_update'),
+    url(r'control/edit/(?P<pk>[0-9]+)/$', views.ControlUpdate.as_view(), name='control_update'),
     url(r'control/(?P<pk>[0-9]+)/delete/$', views.ControlDelete.as_view(), name='control_delete'),
 
 ]

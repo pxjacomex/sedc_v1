@@ -18,7 +18,7 @@ class ResTypeII(object):
         self.max24H = max24H
         self.maxdia = maxdia
         self.totdias = totdias
-#clase para la variable PRE
+#clase para anuario de la variable PRE
 class TypeII(Titulos):
     '''consulta y crea la matriz de datos y el grafico para variables: 1'''
     def consulta(self,estacion,variable,periodo):
@@ -49,15 +49,6 @@ class TypeII(Titulos):
         return matrix
     def grafico(self,estacion, variable, periodo):
         mensual_simple,max24H_simple,maxdia_simple,totdias_simple,meses=self.consulta(estacion, variable, periodo)
-        '''
-        data=[go.Bar(
-            x=meses,
-            y=mensual_simple
-        )]
-
-        div = opy.plot(data, auto_open=False, output_type='div')
-        return div
-        '''
         trace1 = go.Bar(
             x=meses,
             y=mensual_simple,
@@ -72,6 +63,7 @@ class TypeII(Titulos):
 
 
     def maximospre(self, datos_diarios):
+        # retorna maxima precipitacion mensual y en que dia sucedio y cuantos dias hubo precipitacion
         max24H = []
         maxdia = []
         totdias= []
