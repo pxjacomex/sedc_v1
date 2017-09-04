@@ -2,27 +2,26 @@
 
 from django import forms
 from datalogger.models import Datalogger, Sensor
+from marca.models import Marca
 
 class DataloggerSearchForm(forms.Form):
-    TIPO_MARCA=(
-        ('','----'),
-        ('CAMPBELL','CAMPBELL'),
-        ('VAISALA','VAISALA'),
-        ('YOUNG','YOUNG'),
-        ('APOGEE','APOGEE'),
-        ('TEXAS ELECTRONICS','TEXAS ELECTRONICS'),
-        ('HOBO','HOBO'),
-    )
-
+    def lista_marcas():
+        lista=()
+        lista = lista + (('','----'),)
+        marcas=Marca.objects.all()
+        for item in marcas:
+            fila=((str(item.mar_id),item.mar_nombre),)
+            lista=lista+fila
+        return lista
     lista=[]
-    Marca = forms.ChoiceField(required=False,choices=TIPO_MARCA)
+    Marca = forms.ChoiceField(required=False,choices=lista_marcas())
     Modelo = forms.CharField(required=False,max_length=25)
 
     def filtrar(self,form):
         #filtra los resultados en base al form
         if form.cleaned_data['Marca'] and form.cleaned_data['Modelo']:
             lista=Datalogger.objects.filter(
-                dat_marca=form.cleaned_data['Marca']
+                mar_id=form.cleaned_data['Marca']
             ).filter(
                 dat_modelo=form.cleaned_data['Modelo']
             )
@@ -32,7 +31,7 @@ class DataloggerSearchForm(forms.Form):
             )
         elif form.cleaned_data['Modelo'] == "":
             lista=Datalogger.objects.filter(
-                dat_marca=form.cleaned_data['Marca']
+                mar_id=form.cleaned_data['Marca']
             )
         else:
             lista=Datalogger.objects.all()
@@ -52,15 +51,14 @@ class DataloggerSearchForm(forms.Form):
         return string
 
 class SensorSearchForm(forms.Form):
-    TIPO_MARCA=(
-        ('','----'),
-        ('CAMPBELL','CAMPBELL'),
-        ('VAISALA','VAISALA'),
-        ('YOUNG','YOUNG'),
-        ('APOGEE','APOGEE'),
-        ('TEXAS ELECTRONICS','TEXAS ELECTRONICS'),
-        ('HOBO','HOBO'),
-    )
+    def lista_marcas():
+        lista=()
+        lista = lista + (('','----'),)
+        marcas=Marca.objects.all()
+        for item in marcas:
+            fila=((str(item.mar_id),item.mar_nombre),)
+            lista=lista+fila
+        return lista
     TIPO_NOMBRE=(
         ('','----'),
         ('Termómetro','Termómetro'),
@@ -76,7 +74,7 @@ class SensorSearchForm(forms.Form):
     )
     lista=[]
     Nombre = forms.ChoiceField(required=False,choices=TIPO_NOMBRE)
-    Marca = forms.ChoiceField(required=False,choices=TIPO_MARCA)
+    Marca = forms.ChoiceField(required=False,choices=lista_marcas())
 
     def filtrar(self,form):
         #filtra los resultados en base al form
@@ -84,11 +82,11 @@ class SensorSearchForm(forms.Form):
             lista=Sensor.objects.filter(
                 sen_nombre=form.cleaned_data['Nombre']
             ).filter(
-                sen_marca=form.cleaned_data['Marca']
+                mar_id=form.cleaned_data['Marca']
             )
         elif form.cleaned_data['Nombre'] == "":
             lista=Sensor.objects.filter(
-                sen_marca=form.cleaned_data['Marca']
+                mar_id=form.cleaned_data['Marca']
             )
         elif form.cleaned_data['Marca'] == "":
             lista=Sensor.objects.filter(

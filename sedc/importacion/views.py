@@ -14,6 +14,8 @@ from django.http import HttpResponseRedirect
 from importacion.forms import UploadFileForm, procesar_archivo
 from importacion.functions import consultar_formatos,guardar_datos
 
+from django.db import transaction
+
 class ImportacionList(ListView):
     model=Importacion
     def get_context_data(self, **kwargs):
@@ -27,9 +29,16 @@ def importar_archivo(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             informacion=procesar_archivo(request.FILES['archivo'],form)
-
-            if informacion['valid']:
+            if informacion['valid'] and not form.cleaned_data['sobreescribir']:
                 return render(request, 'importacion/confirmacion.html',informacion)
+            elif not informacion['valid'] and form.cleaned_data['sobreescribir']:
+                return render(request, 'importacion/confirmacion.html',informacion)
+            elif informacion['valid'] and form.cleaned_data['sobreescribir']:
+                context={
+                    'form':form,
+                    'message':informacion['message'],
+                }
+                return render(request, 'importacion/importacion_form.html',context)
             else:
                 context={
                     'form':form,
@@ -40,13 +49,15 @@ def importar_archivo(request):
         form = UploadFileForm()
     return render(request, 'importacion/importacion_form.html', {'form': form})
 def guardar_archivo(request):
-    guardar_datos()
+    sobreescribir=request.GET.get('sobreescribir',None)
+    with transaction.atomic():
+        guardar_datos(sobreescribir)
     return redirect('/importacion/')
 
 #lista de formatos por estacion y datalogger
 def lista_formatos(request):
-    dat_id=request.GET.get('datalogger',None)
-    datos=consultar_formatos(dat_id)
+    mar_id=request.GET.get('datalogger',None)
+    datos=consultar_formatos(mar_id)
     data={
         'datos':datos,
     }

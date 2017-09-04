@@ -17,13 +17,17 @@
         <th>Rango de Datos</th>
         <td>{{fechas}}</td>
       </tr>
+      <tr>
+        <th>Mensaje</th>
+        <td>{{message}}</td>
+      </tr>
     </table>
   </div>
 </div>
 <div class="row">
   <div class="col-lg-8">
     <a class="btn btn-primary"
-    href="{% url 'importacion:guardar' %}">Confirmar</a>
+    href="{% url 'importacion:guardar' %}?sobreescribir={{sobreescribir}}">Confirmar</a>
     <a class="btn btn-default"
     href="{% url 'importacion:importacion_index' %}">Cancelar</a>
   </div>

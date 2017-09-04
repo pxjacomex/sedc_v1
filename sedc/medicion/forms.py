@@ -35,7 +35,6 @@ class MedicionSearchForm(forms.Form):
     estacion=forms.ChoiceField(choices=lista_estaciones())
     variable=forms.ChoiceField(choices=lista_variables())
     #periodo=forms.ChoiceField(choices=lista_year())
-    frecuencia=forms.ChoiceField(choices=FRECUENCIA)
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
     def filtrar(self,form):
@@ -45,18 +44,4 @@ class MedicionSearchForm(forms.Form):
         #.filter(med_fecha__year=form.cleaned_data['periodo']))
         .filter(med_fecha__range=[form.cleaned_data['inicio'],form.cleaned_data['fin']]))
         #.filter(med_fecha__month=2))
-        if(form.cleaned_data['frecuencia']==str(1)):
-            consulta=consulta.annotate(time=ExtractHour('med_hora')).values('time')
-        elif(form.cleaned_data['frecuencia']==str(2)):
-            consulta=consulta.annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha')).values('month','day')
-            if(form.cleaned_data['variable']==str(1)):
-                consulta=consulta.annotate(valor=Sum('med_valor')).values('valor','month','day').order_by('month','day')
-            else:
-                consulta=consulta.annotate(valor=Avg('med_valor')).values('valor','month','day').order_by('month','day')
-        else:
-            consulta=consulta.annotate(time=ExtractMonth('med_fecha')).values('time')
-            if(form.cleaned_data['variable']==str(1)):
-                consulta=consulta.annotate(valor=Sum('med_valor')).values('valor','time').order_by('time')
-            else:
-                consulta=consulta.annotate(valor=Avg('med_valor')).values('valor','time').order_by('time')
         return consulta

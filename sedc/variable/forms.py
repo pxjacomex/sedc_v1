@@ -37,6 +37,7 @@ class ControlSearchForm(forms.Form):
     Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
     Sensor = forms.ChoiceField(required=False,choices=lista_sensores())
 
+
     def filtrar(self,form):
         if form.cleaned_data['Variable'] and form.cleaned_data['Estacion'] and form.cleaned_data['Sensor']:
             lista=Control.objects.filter(
@@ -51,6 +52,7 @@ class ControlSearchForm(forms.Form):
                 sen_id=form.cleaned_data['Sensor']
             )
         elif form.cleaned_data['Variable'] == "" and form.cleaned_data['Sensor'] == "":
+            print form.cleaned_data['Estacion']
             lista=Control.objects.filter(
                 est_id=form.cleaned_data['Estacion']
             )

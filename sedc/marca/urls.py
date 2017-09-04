@@ -9,7 +9,7 @@ urlpatterns=[
     url(r'marca/(?P<page>[0-9]+)/$',views.MarcaList.as_view(),name='marca_index'),
     url(r'marca/create/$', views.MarcaCreate.as_view(), name='marca_create'),
     url(r'marca/detail/(?P<pk>[0-9]+)/$', views.MarcaDetail.as_view(), name='marca_detail'),
-    url(r'marca/(?P<pk>[0-9]+)/$', views.MarcaUpdate.as_view(), name='marca_update'),
+    url(r'marca/update/(?P<pk>[0-9]+)/$', views.MarcaUpdate.as_view(), name='marca_update'),
     url(r'marca/(?P<pk>[0-9]+)/delete/$', views.MarcaDelete.as_view(), name='marca_delete'),
 
 ]

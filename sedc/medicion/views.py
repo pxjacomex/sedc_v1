@@ -53,17 +53,14 @@ class MedicionList(FormView):
     form_class=MedicionSearchForm
     success_url='/medicion/'
     lista=[]
-    frecuencia=str("")
     def post(self, request, *args, **kwargs):
         form=MedicionSearchForm(self.request.POST or None)
         if form.is_valid():
             self.lista=form.filtrar(form)
-            self.frecuencia=form.cleaned_data["frecuencia"]
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(MedicionList, self).get_context_data(**kwargs)
         context['lista']=self.lista
-        context['frecuencia']=self.frecuencia
         return context
 
 class MedicionDetail(DetailView):

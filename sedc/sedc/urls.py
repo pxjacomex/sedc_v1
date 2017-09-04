@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^',include('frecuencia.urls',namespace='frecuencia')),
     url(r'^',include('importacion.urls',namespace='importacion')),
     url(r'^',include('marca.urls',namespace='marca')),
+    url(r'^',include('validacion.urls',namespace='validacion')),
 
 ]
 

@@ -13,7 +13,7 @@ from .forms import FormatoSearchForm, ClasificacionSearchForm
 #Formato views
 class FormatoCreate(CreateView):
     model = Formato
-    fields = ['ext_id','del_id','for_nombre','for_descripcion','for_ubicacion',
+    fields = ['ext_id','del_id','mar_id','for_nombre','for_descripcion','for_ubicacion',
               'for_archivo','for_num_col','for_fil_ini','for_fecha','for_col_fecha','for_hora',
               'for_col_hora']
     def form_valid(self, form):
@@ -45,16 +45,25 @@ class FormatoList(ListView,FormView):
     def get_context_data(self, **kwargs):
         context = super(FormatoList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
+        print page
         context.update(pagination(self.object_list,page,10))
         context["cadena"]=self.cadena
         return context
 
 class FormatoDetail(DetailView):
     model=Formato
+    def get_context_data(self, **kwargs):
+        context = super(FormatoDetail, self).get_context_data(**kwargs)
+        print self.object.for_id
+        #variables por formato
+        variables=Clasificacion.objects.filter(for_id=self.object.for_id)
+        context['variables']=variables
+        return context
+
 
 class FormatoUpdate(UpdateView):
     model=Formato
-    fields = ['ext_id','del_id','for_nombre','for_descripcion','for_ubicacion',
+    fields = ['ext_id','del_id','mar_id','for_nombre','for_descripcion','for_ubicacion',
               'for_archivo','for_num_col','for_fil_ini','for_fecha','for_col_fecha','for_hora',
               'for_col_hora']
     def get_context_data(self, **kwargs):
@@ -201,7 +210,7 @@ class ClasificacionDelete(DeleteView):
 #Asociacion
 class AsociacionCreate(CreateView):
     model=Asociacion
-    fields = ['for_id','dat_id']
+    fields = ['for_id','est_id']
     def form_valid(self, form):
         return super(AsociacionCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -226,7 +235,7 @@ class AsociacionDetail(DetailView):
 
 class AsociacionUpdate(UpdateView):
     model=Asociacion
-    fields = ['for_id','dat_id']
+    fields = ['for_id','est_id']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(AsociacionUpdate, self).get_context_data(**kwargs)

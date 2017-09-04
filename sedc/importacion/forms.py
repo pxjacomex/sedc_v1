@@ -4,7 +4,7 @@ from estacion.models import Estacion
 from medicion.models import Medicion
 from variable.models import Variable
 from datalogger.models import Datalogger
-from validacion.models import Validacion
+from marca.models import Marca
 from datetime import datetime,timedelta
 from formato.models import Formato,Asociacion,Clasificacion
 from importacion.functions import construir_matriz
@@ -25,9 +25,9 @@ class UploadFileForm(forms.Form):
         return lista
     def lista_datalogger():
         lista = ()
-        formatos = Datalogger.objects.all().distinct('dat_marca')
-        for item in formatos:
-            fila = ((str(item.dat_id),item.dat_marca),)
+        marcas = Marca.objects.all()
+        for item in marcas:
+            fila = ((str(item.mar_id),item.mar_nombre),)
             lista = lista + fila
         return lista
     estacion=forms.ChoiceField(choices=lista_estaciones())
@@ -45,12 +45,19 @@ def procesar_archivo(archivo,form):
         message=str("")
         if not valid and not sobreescribir:
             message="Datos existentes, por favor seleccione la opcion sobreescribir"
+        elif not valid and sobreescribir:
+            message="Se va a sobreescribir la informacion"
+        elif valid and sobreescribir:
+            message="Los datos no existen, no hay que sobreescribir la información"
+        else:
+            message="Ninguno"
         context={
             'variables':informacion_archivo(formato),
             'fechas':rango_fecha(datos),
             'message':message,
             'valid':valid,
-            'datos':datos
+            'datos':datos,
+            'sobreescribir':sobreescribir
         }
     except ValueError:
         context={
@@ -63,7 +70,7 @@ def informacion_archivo(formato):
     clasificacion=list(Clasificacion.objects.filter(
         for_id=formato.for_id).values())
     i=1
-    cadena="Variables: "
+    cadena=""
     for fila in clasificacion:
         variable=Variable.objects.get(var_id=fila['var_id_id'])
         if i<len(clasificacion):
@@ -73,22 +80,22 @@ def informacion_archivo(formato):
         i+=1
     return cadena
 def rango_fecha(datos):
-    fecha_ini=datos[0].val_fecha
-    hora_ini=datos[0].val_hora
-    fecha_fin=datos[-1].val_fecha
-    hora_fin=datos[-1].val_hora
-    cadena="Rango: "+fecha_ini+str(" ")+hora_ini+" al "+ \
+    fecha_ini=datos[0].med_fecha
+    hora_ini=datos[0].med_hora
+    fecha_fin=datos[-1].med_fecha
+    hora_fin=datos[-1].med_hora
+    cadena=fecha_ini+str(" ")+hora_ini+" al "+ \
         fecha_fin+str(" ")+hora_fin
     return cadena
 #verificar los datos del archivo
 def validar_fechas(datos):
-    fecha_ini=datos[0].val_fecha
-    hora_ini=datos[0].val_hora
-    fecha_fin=datos[-1].val_fecha
-    hora_fin=datos[-1].val_hora
+    fecha_ini=datos[0].med_fecha
+    hora_ini=datos[0].med_hora
+    fecha_fin=datos[-1].med_fecha
+    hora_fin=datos[-1].med_hora
     consulta=(Medicion.objects
-    .filter(est_id=datos[0].est_id_id)
-    .filter(var_id=datos[0].var_id_id)
+    .filter(est_id=datos[0].est_id)
+    .filter(var_id=datos[0].var_id)
     .filter(med_fecha__range=[fecha_ini,fecha_fin])
     .filter(med_hora__range=[hora_ini,hora_fin]))
     if consulta:

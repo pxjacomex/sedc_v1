@@ -56,17 +56,15 @@
 		<li class="dropdown">
 		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Datos<span class="caret"></span></a>
 		  <ul class="dropdown-menu">
-		    <li><a href="{% url 'formato:formato_index' %}">Formato</a></li>
-		    <li role="separator" class="divider"></li>
-		    <li><a href="{% url 'importacion:importar'%}">Importación</a></li>
-		    <li role="separator" class="divider"></li>
-		    <li><a href="{% url 'formato:asociacion_index' %}">Asociación</a></li>
+
+        <li><a href="{% url 'formato:formato_index' %}">Formato</a></li>
+        <li><a href="{% url 'formato:clasificacion_index' %}">Variables por Formato</a></li>
+        <li><a href="{% url 'formato:asociacion_index' %}">Formatos por Estación</a></li>
+		    <li><a href="{% url 'importacion:importar'%}">Importar Archivo</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="{% url 'vacios:vacios_index' %}">Vacios</a></li>
+        <li><a href="{% url 'vacios:vacios_index' %}">Vacios de Información</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="{% url 'frecuencia:frecuencia_index' %}">Frecuencia</a></li>
-        <li role="separator" class="divider"></li>
-        <li><a href="{% url 'formato:clasificacion_index' %}">Clasificación</a></li>
+        <li><a href="{% url 'frecuencia:frecuencia_index' %}">Frecuencia de Registro</a></li>
 		  </ul>
 		</li>
     <li class="dropdown">

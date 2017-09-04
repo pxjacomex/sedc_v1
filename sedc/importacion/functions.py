@@ -2,24 +2,27 @@
 import json
 from datetime import datetime,timedelta
 from formato.models import Formato,Asociacion
-from validacion.models import Validacion
+from medicion.models import Medicion
 from variable.models import Variable
+from temporal.models import Datos
 from datalogger.models import Datalogger
 from formato.models import Clasificacion,Delimitador
+from marca.models import Marca
 datos=[]
+mediciones=[]
 #consultar formatos por datalogger y estacion
-def consultar_formatos(datalogger):
-    asociacion=Asociacion.objects.filter(dat_id=datalogger).values()
-    lista=[item['for_id_id'] for item in asociacion]
-    formatos=list(Formato.objects.filter(for_id__in=lista).
+def consultar_formatos(marca):
+    #asociacion=Asociacion.objects.filter(dat_id=datalogger).values()
+    #lista=[item['for_id_id'] for item in asociacion]
+    formatos=list(Formato.objects.filter(mar_id=marca).
         values('for_id','for_descripcion'))
-    datos={}
+    lista={}
     i=0
     for item in formatos:
-        datos[item['for_id']]=item['for_descripcion']
-    return datos
+        lista[item['for_id']]=item['for_descripcion']
+    return lista
 def construir_matriz(archivo,formato,estacion):
-    cambiar_fecha=validar_datalogger(formato.for_id)
+    cambiar_fecha=validar_datalogger(formato.mar_id_id)
     clasificacion=list(Clasificacion.objects.filter(
         for_id=formato.for_id).values())
     delimitador=Delimitador.objects.get(del_id=formato.del_id_id)
@@ -50,25 +53,46 @@ def construir_matriz(archivo,formato,estacion):
                     minimo=float(valores[fila['cla_minimo']])
                 else:
                     minimo=None
-                print estacion.est_id,variable,fecha,hora,valor,maximo,minimo
-                dato=Validacion(var_id=variables[j],est_id=estacion,
+
+                '''dato=Validacion(var_id=variables[j],est_id=estacion,
                     val_fecha=fecha,val_hora=hora,
                     val_valor=valor,val_maximo=maximo,val_minimo=minimo,
-                    val_estado=True)
-                #med.save()
+                    val_estado=True)'''
+                dato=Datos(var_id=variables[j].var_id,est_id=estacion.est_id,
+                    med_fecha=fecha,med_hora=hora,
+                    med_valor=valor,med_maximo=maximo,med_minimo=minimo,
+                    med_estado=True)
                 #Validacion.objects.all().delete()
                 datos.append(dato)
                 j+=1
     return datos
-def guardar_datos():
-    for valor in datos:
-        valor.save()
-    Validacion.objects.all().delete()
+#guardar la informacion
+def guardar_datos(sobreescribir):
+    print 'llego2'+str(sobreescribir)
+    if sobreescribir:
+        eliminar_datos()
+    #for valor in datos:
+    #    valor.save()
+    Datos.objects.bulk_create(datos)
+    Datos.objects.all().delete()
+    del datos[:]
+#eliminar informacion en caso de sobreescribir
+def eliminar_datos():
+    print 'llego'
+    fecha_ini=datos[0].med_fecha
+    hora_ini=datos[0].med_hora
+    fecha_fin=datos[-1].med_fecha
+    hora_fin=datos[-1].med_hora
+    Medicion.objects.filter(est_id=datos[0].est_id)\
+    .filter(var_id=datos[0].var_id)\
+    .filter(med_fecha__range=[fecha_ini,fecha_fin])\
+    .filter(med_hora__range=[hora_ini,hora_fin]).delete()
 #validar si son datalogger VAISALA para restar 5 horas
-def validar_datalogger(for_id):
-    asociacion=Asociacion.objects.filter(for_id=for_id).values()[0]
-    datalogger=Datalogger.objects.get(dat_id=asociacion['dat_id_id'])
-    if datalogger.dat_marca=='VAISALA':
+def validar_datalogger(marca):
+    marca=Marca.objects.get(mar_id=marca)
+    #asociacion=Asociacion.objects.filter(for_id=for_id).values()[0]
+    #datalogger=Datalogger.objects.get(dat_id=asociacion['dat_id_id'])
+    if marca.mar_nombre=='VAISALA':
         return True
     return False
 #convertir fecha y hora al formato adecuado
