@@ -27,21 +27,65 @@ class MedicionSearchForm(forms.Form):
             fila=((item.get('year'),item.get('year')),)
             lista=lista+fila
         return lista
-    FRECUENCIA=(
-        ('1','Horario'),
-        ('2','Diario'),
-        ('3','Mensual'),
+    TIPO_VARIABLE=(
+        ('valor','valor'),
+        ('maximo','maximo'),
+        ('minimo','minimo'),
     )
     estacion=forms.ChoiceField(choices=lista_estaciones())
     variable=forms.ChoiceField(choices=lista_variables())
     #periodo=forms.ChoiceField(choices=lista_year())
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
+    #valor=forms.ChoiceField(choices=TIPO_VARIABLE)
     def filtrar(self,form):
         consulta=(Medicion.objects
         .filter(est_id=form.cleaned_data['estacion'])
         .filter(var_id=form.cleaned_data['variable'])
-        #.filter(med_fecha__year=form.cleaned_data['periodo']))
         .filter(med_fecha__range=[form.cleaned_data['inicio'],form.cleaned_data['fin']]))
-        #.filter(med_fecha__month=2))
-        return consulta
+        variable=Variable.objects.get(var_id=form.cleaned_data['variable'])
+        i=0
+        ans=0
+        datos=[]
+        for item in consulta:
+            obj_analisis =Analisis()
+            valor=item.med_valor
+            valor_error=False
+            resta=0
+            resta_error=False
+            if valor<variable.var_minimo or valor>variable.var_maximo:
+                valor_error=True
+            if i==0:
+                resta=0
+                ans=valor
+            else:
+                resta=valor-ans
+                ans=valor
+            i+=1
+            if resta<variable.var_sos:
+                resta_error="normal"
+            elif resta>=variable.var_sos and resta<variable.var_err:
+                resta_error="sospechoso"
+            else:
+                resta_error="error"
+            obj_analisis.iden=item.med_id
+            obj_analisis.fecha=item.med_fecha
+            obj_analisis.hora=item.med_hora
+            obj_analisis.valor=item.med_valor
+            obj_analisis.valor_error=valor_error
+            obj_analisis.resta=abs(resta)
+            obj_analisis.resta_error=resta_error
+            datos.append(obj_analisis)
+
+        return datos
+    def datos_variable(self,form):
+        variable=Variable.objects.get(var_id=form.cleaned_data['variable'])
+        return variable
+class Analisis(object):
+    iden=0
+    fecha=""
+    hora=""
+    valor=0
+    valor_error=False
+    resta=0
+    resta_error="Normal"

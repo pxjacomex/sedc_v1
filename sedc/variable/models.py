@@ -29,7 +29,7 @@ class Variable(models.Model):
     var_nombre=models.CharField("Nombre",max_length=50)
     var_maximo=models.DecimalField("Máximo",max_digits=7,decimal_places=2)
     var_minimo=models.DecimalField("Mínimo",max_digits=7,decimal_places=2)
-    var_sos=models.DecimalField("Sos",max_digits=7,decimal_places=2,null=True,blank=True)
+    var_sos=models.DecimalField("Sospechoso",max_digits=7,decimal_places=2,null=True,blank=True)
     var_err=models.DecimalField("Error",max_digits=7,decimal_places=2,null=True,blank=True)
     var_min=models.DecimalField("Error mínimo",max_digits=7,decimal_places=2,null=True,blank=True)
     var_estado=models.BooleanField("Estado",default=True)
@@ -64,4 +64,4 @@ class Control(models.Model):
     def get_absolute_url(self):
         return reverse('variable:control_detail', kwargs={'pk': self.pk})
     class Meta:
-        ordering=('est_id','var_id',)        
+        ordering=('est_id','var_id',)

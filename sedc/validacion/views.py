@@ -56,8 +56,10 @@ def procesar_validacion(request):
 #lista de validaciones por estacion y fechas
 def lista_validacion(request):
     if request.method=='POST':
-        form=ValidacionProcess(request.POST)
-        datos=consultar_informacion(form)
+        form=ValidacionProcess(request.POST or None)
+        estacion=request.POST['estacion']
+        
+        datos=functions.generar_validacion(estacion)
     else:
         datos=[]
     return render(request,'validacion/validacion_filtro.html',{'datos':datos})

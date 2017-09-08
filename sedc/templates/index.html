@@ -33,11 +33,13 @@
 	      <ul class="nav navbar-nav">
 
 		<li class="dropdown">
-		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administración <span class="caret"></span></a>
+		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+      aria-haspopup="true" aria-expanded="false">Administración
+      <span class="caret"></span></a>
 		  <ul class="dropdown-menu">
 		    <li><a href="{% url 'datalogger:datalogger_index' %}">Datalogger</a></li>
 		    <li><a href="{% url 'datalogger:sensor_index' %}">Sensor</a></li>
-		    <li><a href="{% url 'marca:marca_index' %}">Marcas Sensores y Datalogger</a></li>
+		    <li><a href="{% url 'marca:marca_index' %}">Marcas: Sensores y Datalogger</a></li>
         <li role="separator" class="divider"></li>
 		    <li><a href="{% url 'estacion:estacion_index' %}">Estación</a></li>
 		    <li><a href="{% url 'variable:variable_index' %}">Variable</a></li>
@@ -48,13 +50,17 @@
 		  </ul>
 		</li>
     <li class="dropdown">
-		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Mantenimiento<span class="caret"></span></a>
+		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+      aria-haspopup="true" aria-expanded="false">Mantenimiento
+      <span class="caret"></span></a>
 		  <ul class="dropdown-menu">
         <li><a href="{% url 'variable:control_index' %}">Instalaciones Sensores</a></li>
 		  </ul>
 		</li>
 		<li class="dropdown">
-		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Datos<span class="caret"></span></a>
+		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+      aria-haspopup="true" aria-expanded="false">Datos
+      <span class="caret"></span></a>
 		  <ul class="dropdown-menu">
 
         <li><a href="{% url 'formato:formato_index' %}">Formato</a></li>
@@ -67,11 +73,14 @@
         <li><a href="{% url 'frecuencia:frecuencia_index' %}">Frecuencia de Registro</a></li>
 		  </ul>
 		</li>
-    <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Validación<span class="caret"></span></a>
-      <ul class="dropdown-menu">
-        <li><a href="{% url 'medicion:medicion_index' %}">Medición</a></li>
 
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+      role="button" aria-haspopup="true" aria-expanded="false">Validación
+      <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li><a href="{% url 'medicion:medicion_index' %}">Datos Crudos</a></li>
+        <li><a href="{% url 'validacion:procesar_validacion' %}">Frecuencia de Registro</a></li>
       </ul>
     </li>
     <li class="dropdown">

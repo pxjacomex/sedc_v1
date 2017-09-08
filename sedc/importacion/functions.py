@@ -97,7 +97,7 @@ def validar_datalogger(marca):
     return False
 #convertir fecha y hora al formato adecuado
 def formato_fecha(formato,valores,cambiar_fecha):
-    if formato.for_col_hora==formato.for_col_hora:
+    if formato.for_col_fecha==formato.for_col_hora:
         fecha_hora=datetime.strptime(valores[formato.for_col_hora],
             formato.for_fecha+str(" ")+formato.for_hora)
     else:

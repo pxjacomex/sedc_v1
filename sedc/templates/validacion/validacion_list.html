@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
+{% load humanize %}
 <div class="row">
   <div class="col-lg-10">
     <h3>Validacion de Datos</h3>
@@ -31,7 +32,7 @@
       <td>{{ item.val_fecha|date:"d/m/Y"}}</td>
       <td>{{ item.val_num_dat}}</td>
       <td>{{ item.val_fre_reg}}</td>
-      <td>{{ item.val_porcentaje}}</td>
+      <td>{{ item.val_porcentaje|floatformat:2}}</td>
       <td>
         <a href="{% url 'medicion:validacion_detail' item.val_id %}">
           <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>

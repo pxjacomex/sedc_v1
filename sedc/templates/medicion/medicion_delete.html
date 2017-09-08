@@ -1,0 +1,38 @@
+
+{% load bootstrap3 %}
+<script>
+  // JQuery code to be added in here.
+  $( function() {
+    $("#btn_delete").click(function(){
+      $.ajax({
+        url: $("#link_delete").attr('href'),
+        type:'POST',
+        data: $("#form_delete").serialize(),
+        success: function (data) {
+
+          $( "#div_delete" ).dialog( "close" );
+          $( "#div_delete" ).html('');
+          actualizar_lista();
+        }
+      });
+    });
+    $("#btn_cancelar_delete").click(function(){
+      $( "#div_delete" ).dialog( "close" );
+    });
+  });
+</script>
+<a id="link_delete" href="{{ url }}" ></a>
+<div class="col-lg-12 col-md-12 col-sm-12">
+  <form id="form_delete" method="post" class="form">
+    {% csrf_token %}
+    {% for field in form%}
+    {% bootstrap_field field set_disabled='False' %}
+    {% endfor %}
+    <button id="btn_delete" type="button" class="btn btn-default btn-primary">
+      Guardar
+    </button>
+    <button id="btn_cancelar_delete" type="button" class="btn btn-default btn-default">
+      Cancelar
+    </button>
+  </form>
+</div>

@@ -34,3 +34,5 @@ class Medicion(models.Model):
         return str(self.med_valor)
     def get_absolute_url(self):
         return reverse('medicion:medicion_index')
+    class Meta:
+        ordering=('med_fecha','med_hora',)

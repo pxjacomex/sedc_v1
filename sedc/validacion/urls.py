@@ -11,4 +11,5 @@ urlpatterns=[
     url(r'validacion/edit/(?P<pk>[0-9]+)/$', views.ValidacionUpdate.as_view(), name='validacion_update'),
     url(r'validacion/(?P<pk>[0-9]+)/delete/$', views.ValidacionDelete.as_view(), name='validacion_delete'),
     url(r'validacion/procesar/$', views.procesar_validacion, name='procesar_validacion'),
+    url(r'^validacion/lista/$', views.lista_validacion, name='lista_validacion'),
 ]
