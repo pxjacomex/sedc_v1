@@ -24,31 +24,7 @@ class MedicionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-"""class MedicionList(ListView):
-    model=Medicion
-    paginate_by = 10
-    def get_context_data(self, **kwargs):
-        context = super(MedicionList, self).get_context_data(**kwargs)
-    	lista=Medicion.objects.all()
-        page=self.request.GET.get('page')
-    	paginator = Paginator(lista, 10)
-    	if page is None:
-    	    page=1
-    	else:
-    	    page=int(self.request.GET.get('page'))
-    	if page == 1:
-    	    start=1
-            last=start+1
-    	elif page == paginator.num_pages:
-            last=paginator.num_pages
-            start=last-1
-        else:
-    	    start=page-1
-            last=page+1
-        context['first'] = 1
-        context['last'] = paginator.num_pages
-        context['range'] = range(start,last+1)
-        return context"""
+
 class MedicionList(FormView):
     template_name='medicion/medicion_list.html'
     form_class=MedicionSearchForm

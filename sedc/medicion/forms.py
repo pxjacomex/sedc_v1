@@ -5,6 +5,7 @@ from medicion.models import Medicion
 from django.db.models import Max, Min, Avg, Count,Sum
 from django.db.models.functions import (
     ExtractYear,ExtractMonth,ExtractDay,ExtractHour)
+from datetime import datetime,timedelta,date
 class MedicionSearchForm(forms.Form):
     def lista_estaciones():
         lista = ()
@@ -42,22 +43,33 @@ class MedicionSearchForm(forms.Form):
         consulta=(Medicion.objects
         .filter(est_id=form.cleaned_data['estacion'])
         .filter(var_id=form.cleaned_data['variable'])
-        .filter(med_fecha__range=[form.cleaned_data['inicio'],form.cleaned_data['fin']]))
+        .filter(med_fecha__range=[form.cleaned_data['inicio'],form.cleaned_data['fin']])
+        )
         variable=Variable.objects.get(var_id=form.cleaned_data['variable'])
+        #parametros para la resta consecutiva
         i=0
         ans=0
         datos=[]
+        #parametros para la variabilidad
+        valor_acumulado=0
+        xi_acumulado=0
+        hora0=datetime.strptime("00:00:00","%H:%M:%S")
+        dat_var=[] #almacena las mediciones de una hora
+        variabilidad=0
         for item in consulta:
             obj_analisis =Analisis()
             valor=item.med_valor
             valor_error=False
             resta=0
             resta_error=False
+            var_error=False
             if valor<variable.var_minimo or valor>variable.var_maximo:
                 valor_error=True
+            #calculo de la resta consecutiva
             if i==0:
                 resta=0
                 ans=valor
+                hora0=item.med_hora
             else:
                 resta=valor-ans
                 ans=valor
@@ -68,6 +80,26 @@ class MedicionSearchForm(forms.Form):
                 resta_error="sospechoso"
             else:
                 resta_error="error"
+            #variabilidad
+            dif_minutos=int(item.med_hora.minute)-int(hora0.minute)
+            dif_hora=int(item.med_hora.hour)-int(hora0.hour)
+            valor_acumulado+=valor
+            dat_var.append(item.med_valor)
+            if dif_minutos>=58 and dif_hora<1 :
+                promedio=sum(dat_var)/len(dat_var)
+                for val in dat_var:
+                    xi_acumulado+=(val-promedio)**2
+                variabilidad=float(xi_acumulado/len(dat_var)) ** 0.5
+                dat_var=[]
+                valor_acumulado=0
+                xi_acumulado=0
+            elif dif_hora>=1:
+                hora0=item.med_hora
+                variabilidad=0
+            if variabilidad<variable.var_min:
+                var_error=True
+
+            #asignar al objeto analisis
             obj_analisis.iden=item.med_id
             obj_analisis.fecha=item.med_fecha
             obj_analisis.hora=item.med_hora
@@ -75,6 +107,8 @@ class MedicionSearchForm(forms.Form):
             obj_analisis.valor_error=valor_error
             obj_analisis.resta=abs(resta)
             obj_analisis.resta_error=resta_error
+            obj_analisis.variabilidad=variabilidad
+            obj_analisis.var_error=var_error
             datos.append(obj_analisis)
 
         return datos
@@ -89,3 +123,5 @@ class Analisis(object):
     valor_error=False
     resta=0
     resta_error="Normal"
+    variabilidad=0
+    var_error=False

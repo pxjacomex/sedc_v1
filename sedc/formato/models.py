@@ -32,7 +32,7 @@ class Formato(models.Model):
     ('%y-%m-%d','YYYY-MM-DD'),
     )
     TIPO_HORA=(
-    ('%I:%M:%S %p','HH:MM:SS'),
+    ('%I:%M:%S %p','HH:MM:SS AM/PM'),
     )
     for_id=models.AutoField(primary_key=True)
     ext_id=models.ForeignKey(

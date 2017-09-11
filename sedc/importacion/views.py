@@ -52,7 +52,7 @@ def guardar_archivo(request):
     sobreescribir=request.GET.get('sobreescribir',None)
     with transaction.atomic():
         guardar_datos(sobreescribir)
-    return redirect('/importacion/')
+    return redirect('/home/')
 
 #lista de formatos por estacion y datalogger
 def lista_formatos(request):
