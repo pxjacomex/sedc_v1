@@ -44,7 +44,7 @@ class AnuarioForm(forms.Form):
         typeV = [4,5]
         typeVI = [7]
 
-        variables = list(Medicion.objects.filter(est_id=form.cleaned_data['estacion']).filter(med_fecha__year=form.cleaned_data['anio']).values('var_id_id').distinct('var_id_id'))
+        variables = list(Medicion.objects.filter(est_id=form.cleaned_data['estacion']).filter(med_fecha__year=form.cleaned_data['anio']).values('var_id_id').distinct('var_id_id').order_by('var_id_id'))
 
         obj_typeI=TypeI()
         obj_typeII=TypeII()
@@ -88,5 +88,5 @@ class AnuarioForm(forms.Form):
                 #grafico = obj_typeVI.grafico(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id_id')) + '_matriz': matriz})
                 #context.update({str(item.get('var_id_id')) + '_grafico': grafico})
-                
+
         return context

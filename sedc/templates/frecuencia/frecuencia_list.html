@@ -62,6 +62,7 @@ $(document).ready(function() {
     <tr>
       <th>Estación</th>
       <th>Variable</th>
+      <th>Valor</th>
       <th>Fecha inicio</th>
       <th>Fecha fin</th>
       <th></th>
@@ -72,6 +73,7 @@ $(document).ready(function() {
     <tr>
       <td>{{ item.est_id }}</td>
       <td>{{ item.var_id }}</td>
+      <td>{{ item.fre_valor }}</td>
       <td>{{ item.fre_fecha_ini|date:"d/m/Y" }}</td>
     <td>{{ item.fre_fecha_fin|date:"d/m/Y" }}</td>
       <td>

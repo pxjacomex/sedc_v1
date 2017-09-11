@@ -32,7 +32,7 @@ def generar_validacion(estacion):
         val_frecuencia=5
         rango=(fecha_fin-fecha_ini).days
 
-        for item in range(10):
+        for item in range(1):
             print item
             val_fecha=fecha_ini+timedelta(days=item)
             if len(fechas)>1:

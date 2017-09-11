@@ -25,12 +25,20 @@
   </div>
 </div>
 <div class="row">
+  <form action="{% url 'importacion:guardar' %}?sobreescribir={{sobreescribir}}" method="post" enctype="multipart/form-data">
+    <div style="display:none">
+      {% csrf_token %}
+    {% bootstrap_form form %}
+  </div>
   <div class="col-lg-8">
+
     <a class="btn btn-primary"
     href="{% url 'importacion:guardar' %}?sobreescribir={{sobreescribir}}">Confirmar</a>
     <a class="btn btn-default"
     href="{% url 'importacion:importacion_index' %}">Cancelar</a>
   </div>
+
+</form>
 </div>
 
 {% endblock %}
