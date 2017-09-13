@@ -28,7 +28,7 @@ def importar_archivo(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            informacion=procesar_archivo(request.FILES['archivo'],form)
+            informacion=procesar_archivo(request.FILES['archivo'],form,request)
             informacion['form']=form
             if informacion['valid'] and not form.cleaned_data['sobreescribir']:
                 return render(request, 'importacion/confirmacion.html',informacion)
@@ -57,7 +57,7 @@ def guardar_archivo(request):
             sobreescribir=form.cleaned_data['sobreescribir']'''
     sobreescribir=request.GET.get('sobreescribir',None)
     with transaction.atomic():
-        guardar_datos(sobreescribir)
+        guardar_datos(sobreescribir,request)
     return render(request, 'importacion/mensaje.html',{'mensaje':'Informacion Cargada'})
 
 #lista de formatos por estacion y datalogger

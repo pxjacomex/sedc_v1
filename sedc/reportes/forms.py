@@ -54,7 +54,7 @@ class AnuarioForm(forms.Form):
         obj_typeVI=TypeVI()
 
         for item in variables:
-            if item.get('var_id_id') in typeI:
+            '''if item.get('var_id_id') in typeI:
                 matriz = obj_typeI.matriz(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 grafico = obj_typeI.grafico(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id_id')) + '_matriz': matriz})
@@ -64,15 +64,15 @@ class AnuarioForm(forms.Form):
                 matriz = obj_typeII.matriz(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 grafico = obj_typeII.grafico(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id_id')) + '_matriz': matriz})
-                context.update({str(item.get('var_id_id')) + '_grafico': grafico})
+                context.update({str(item.get('var_id_id')) + '_grafico': grafico})'''
 
-            elif item.get('var_id_id') in typeIII:
+            if item.get('var_id_id') in typeIII:
                 matriz = obj_typeIII.matriz(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
-                grafico = obj_typeIII.grafico(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
+                #grafico = obj_typeIII.grafico(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id_id')) + '_matriz': matriz})
-                context.update({str(item.get('var_id_id')) + '_grafico': grafico})
+                #context.update({str(item.get('var_id_id')) + '_grafico': grafico})
 
-            elif item.get('var_id_id') in typeIV:
+            '''elif item.get('var_id_id') in typeIV:
                 matriz = obj_typeIV.matriz(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 grafico = obj_typeIV.grafico(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id_id')) + '_matriz': matriz})
@@ -87,6 +87,6 @@ class AnuarioForm(forms.Form):
                 matriz = obj_typeVI.matriz(form.cleaned_data['estacion'],str(item.get('var_id_id')),form.cleaned_data['anio'])
                 #grafico = obj_typeVI.grafico(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id_id')) + '_matriz': matriz})
-                #context.update({str(item.get('var_id_id')) + '_grafico': grafico})
+                #context.update({str(item.get('var_id_id')) + '_grafico': grafico})'''
 
         return context

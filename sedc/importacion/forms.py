@@ -35,12 +35,12 @@ class UploadFileForm(forms.Form):
     formato=forms.ChoiceField(choices=lista_formatos())
     sobreescribir=forms.BooleanField(required=False)
     archivo = forms.FileField()
-def procesar_archivo(archivo,form):
+def procesar_archivo(archivo,form,request):
     try:
         formato=Formato.objects.get(for_id=form.cleaned_data['formato'])
         estacion=Estacion.objects.get(est_id=form.cleaned_data['estacion'])
         sobreescribir=form.cleaned_data['sobreescribir']
-        datos=construir_matriz(archivo,formato,estacion)
+        datos=construir_matriz(archivo,formato,estacion,request)
         valid=validar_fechas(datos)
         message=str("")
         if not valid and not sobreescribir:

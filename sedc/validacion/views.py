@@ -58,7 +58,6 @@ def lista_validacion(request):
     if request.method=='POST':
         form=ValidacionProcess(request.POST or None)
         estacion=request.POST['estacion']
-        
         datos=functions.generar_validacion(estacion)
     else:
         datos=[]

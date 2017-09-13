@@ -9,7 +9,7 @@ from datalogger.models import Datalogger
 from formato.models import Clasificacion,Delimitador
 from marca.models import Marca
 datos=[]
-mediciones=[]
+
 #consultar formatos por datalogger y estacion
 def consultar_formatos(marca):
     #asociacion=Asociacion.objects.filter(dat_id=datalogger).values()
@@ -21,14 +21,17 @@ def consultar_formatos(marca):
     for item in formatos:
         lista[item['for_id']]=item['for_descripcion']
     return lista
-def construir_matriz(archivo,formato,estacion):
+def construir_matriz(archivo,formato,estacion,request):
     cambiar_fecha=validar_datalogger(formato.mar_id_id)
     clasificacion=list(Clasificacion.objects.filter(
         for_id=formato.for_id).values())
+
     delimitador=Delimitador.objects.get(del_id=formato.del_id_id)
 
     i=0
     variables=[]
+    request.session['for_id']=formato.for_id
+
     for fila in clasificacion:
         variable=Variable.objects.get(var_id=fila['var_id_id'])
         variables.append(variable)
@@ -67,8 +70,8 @@ def construir_matriz(archivo,formato,estacion):
                 j+=1
     return datos
 #guardar la informacion
-def guardar_datos(sobreescribir):
-    print 'llego2'+str(sobreescribir)
+def guardar_datos(sobreescribir,request):
+    print type(request.session['for_id'])
     if sobreescribir:
         eliminar_datos()
     #for valor in datos:
@@ -78,7 +81,6 @@ def guardar_datos(sobreescribir):
     del datos[:]
 #eliminar informacion en caso de sobreescribir
 def eliminar_datos():
-    print 'llego'
     fecha_ini=datos[0].med_fecha
     hora_ini=datos[0].med_hora
     fecha_fin=datos[-1].med_fecha
