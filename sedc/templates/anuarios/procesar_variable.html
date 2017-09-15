@@ -13,7 +13,7 @@ $(document).ready(function() {
     $("#div_informacion").hide();
     $("#div_loading").show();
     $.ajax({
-      url: '/validacion/procesar/',
+      url: '/anuarios/procesar/',
       data: $("#form_validacion").serialize(),
       type:'POST',
       success: function (data) {
@@ -29,7 +29,7 @@ $(document).ready(function() {
 </script>
 <div class="row">
   <div class="col-lg-10 col-sm-10">
-    <h3>Procesar Validacion</h3>
+    <h3>Procesar Variables</h3>
   </div>
 </div>
 
@@ -55,7 +55,7 @@ $(document).ready(function() {
   </form>
 </div>
 <br>
-<div id="div_informacion" class="row" style="height:400px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
+<div id="div_informacion" class="row">
 
 </div>
 <div id="div_loading" class="row" style="display:none;">

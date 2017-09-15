@@ -19,6 +19,6 @@ class ValidacionProcess(forms.Form):
             lista = lista + fila
         return lista
     estacion=forms.ChoiceField(choices=lista_estaciones())
-    #variable=forms.ChoiceField(choices=lista_variables)
+    variable=forms.ChoiceField(choices=lista_variables)
     #inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     #fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")

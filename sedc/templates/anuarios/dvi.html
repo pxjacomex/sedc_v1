@@ -1,0 +1,92 @@
+{% if 5_matriz %}
+<div class="col-md-5" >
+  <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
+
+    <thead>
+      <tr>
+        <th align="center" colspan='22'>Viento - Valores medios diarios de velocidad y direccion de viento</th>
+      </tr>
+      <tr>
+        <th rowspan='2'>Mes</th>
+        <th colspan='2'>N</th>
+        <th colspan='2'>NE</th>
+        <th colspan='2'>E</th>
+        <th colspan='2'>SE</th>
+        <th colspan='2'>S</th>
+        <th colspan='2'>SO</th>
+        <th colspan='2'>O</th>
+        <th colspan='2'>NO</th>
+        <th>Calma</th>
+        <th>N^o</th>
+        <th colspan='2'>Velocidad Mayor</th>
+        <th colspan='2'>Velocidad Media</th>
+      </tr>
+      <tr>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>%</th>
+        <th>Obs</th>
+        <th>m/s</th>
+        <th>DIR</th>
+        <th>km/h</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for item in 5_matriz %}
+
+      <tr>
+        <td>{{ item.mes }}</td>
+        <td>{{ item.N_vel|floatformat:2 }}</td>
+        <td>{{ item.N_p|floatformat:2 }}</td>
+        <td>{{ item.NE_vel|floatformat:2 }}</td>
+        <td>{{ item.NE_p|floatformat:2 }}</td>
+        <td>{{ item.E_vel|floatformat:2 }}</td>
+        <td>{{ item.E_p|floatformat:2 }}</td>
+        <td>{{ item.SE_vel|floatformat:2 }}</td>
+        <td>{{ item.SE_p|floatformat:2 }}</td>
+        <td>{{ item.S_vel|floatformat:2 }}</td>
+        <td>{{ item.S_p|floatformat:2 }}</td>
+        <td>{{ item.SO_vel|floatformat:2 }}</td>
+        <td>{{ item.SO_p|floatformat:2}}</td>
+        <td>{{ item.O_vel|floatformat:2 }}</td>
+        <td>{{ item.O_p|floatformat:2 }}</td>
+        <td>{{ item.NO_vel|floatformat:2 }}</td>
+        <td>{{ item.NO_p|floatformat:2 }}</td>
+        <td>{{ item.calma|floatformat:2 }}</td>
+        <td>{{ item.obs }}</td>
+        <td>{{ item.vel_mayor|floatformat:2 }}</td>
+        <td>{{ item.vel_mayor_dir }}</td>
+        <td>{{ item.vel_media_kmh|floatformat:2 }}</td>
+
+      </tr>
+
+      {% endfor%}
+
+    </tbody>
+  </table>
+</div>
+{% endif %}
+<!--
+<div class="col-md-6">
+  {% if 5_grafico %}
+  <div style="width:600;height:400">
+    {{ 5_grafico|safe }}
+  </div>
+  {% endif %}
+</div>
+-->

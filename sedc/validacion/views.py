@@ -41,7 +41,6 @@ class ValidacionUpdate(UpdateView):
         context = super(ValidacionUpdate, self).get_context_data(**kwargs)
         context['title'] = "Modificar"
         return context
-
 class ValidacionDelete(DeleteView):
     model=Validacion
     success_url = reverse_lazy('medicion:validacion_index')
@@ -49,19 +48,27 @@ def procesar_validacion(request):
     if request.method=='POST':
         form=ValidacionProcess(request.POST)
         #if form.is_valid():
-
     else:
         form=ValidacionProcess()
     return render(request,'validacion/validacion_procesar.html',{'form':form})
-#lista de validaciones por estacion y fechas
-def lista_validacion(request):
-    if request.method=='POST':
-        form=ValidacionProcess(request.POST or None)
-        estacion=request.POST['estacion']
-        datos=functions.generar_validacion(estacion)
-    else:
-        datos=[]
-    return render(request,'validacion/validacion_filtro.html',{'datos':datos})
+#lista de validaciones por estacion y variable
+class ProcesarValidacion(FormView):
+    template_name='validacion/validacion_procesar.html'
+    form_class=ValidacionProcess
+    success_url='/validacion/'
+    def post(self, request, *args, **kwargs):
+        form=ValidacionProcess(self.request.POST or None)
+        if form.is_valid():
+            #functions.guardar_validacion(form)
+            datos=functions.generar_validacion(form)
+            if self.request.is_ajax():
+                return render(request,'validacion/validacion_filtro.html',{'datos':datos})
+            else:
+                functions.guardar_validacion(form)
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        context = super(ProcesarValidacion, self).get_context_data(**kwargs)
+        return context
 
 def pagination(lista,page,num_reg):
     #lista=model.objects.all()

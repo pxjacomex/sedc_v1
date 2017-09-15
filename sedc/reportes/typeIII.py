@@ -46,7 +46,7 @@ class TypeIII(Titulos):
                     day=ExtractDay('med_fecha'))
                 .values('month','day').annotate(valor=Max('med_valor'))
                 .values('valor','month','day').order_by('month','day'))
-        max_abs_simple,maxdia_simple,max_simple = self.maximostai(datos_diarios_max)
+
         consulta_min=(Medicion.objects.filter(est_id=estacion)
             .filter(var_id=variable).filter(med_fecha__year=periodo)
             .exclude(med_minimo=None))
@@ -63,7 +63,7 @@ class TypeIII(Titulos):
                     day=ExtractDay('med_fecha'))
                 .values('month','day').annotate(valor=Min('med_valor'))
                 .values('valor','month','day').order_by('month','day'))
-
+        max_abs_simple,maxdia_simple,max_simple = self.maximostai(datos_diarios_max)
         min_abs_simple,mindia_simple,min_simple = self.minimostai(datos_diarios_min)
         avg_simple = [d.get('c') for d in med_avg]
         meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -121,8 +121,8 @@ class TypeIII(Titulos):
                     val_maxdia.append(fila.get('day'))
             max_abs.append(max(val_max_abs))
             maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
-            #avgmax.append(sum(val_max_abs) / (len(val_max_abs)))
-            avgmax.append((len(val_max_abs)))
+            avgmax.append(sum(val_max_abs) / (len(val_max_abs)))
+            #avgmax.append((len(val_max_abs)))
         return max_abs,maxdia, avgmax
 
     def minimostai(self, datos_diarios_min):
@@ -140,6 +140,6 @@ class TypeIII(Titulos):
                     val_mindia.append(fila.get('day'))
             min_abs.append(min(val_min_abs))
             mindia.append(val_mindia[val_min_abs.index(min(val_min_abs))])
-            #avgmin.append(sum(val_min_abs) / (len(val_min_abs)))
-            avgmin.append((len(val_min_abs)))
+            avgmin.append(sum(val_min_abs) / (len(val_min_abs)))
+            #avgmin.append((len(val_min_abs)))
         return min_abs,mindia,avgmin

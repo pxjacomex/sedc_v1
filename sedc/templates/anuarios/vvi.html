@@ -1,0 +1,93 @@
+
+{% if 4_matriz %}
+<div class="col-md-5" >
+  <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
+
+    <thead>
+      <tr>
+        <th align="center" colspan='22'>Viento - Valores medios diarios de velocidad y direccion de viento</th>
+      </tr>
+      <tr>
+        <th rowspan='2'>Mes</th>
+        <th colspan='2'>N</th>
+        <th colspan='2'>NE</th>
+        <th colspan='2'>E</th>
+        <th colspan='2'>SE</th>
+        <th colspan='2'>S</th>
+        <th colspan='2'>SO</th>
+        <th colspan='2'>O</th>
+        <th colspan='2'>NO</th>
+        <th>Calma</th>
+        <th>N^o</th>
+        <th colspan='2'>Velocidad Mayor</th>
+        <th colspan='2'>Velocidad Media</th>
+      </tr>
+      <tr>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>m/s</th>
+        <th>%</th>
+        <th>%</th>
+        <th>Obs</th>
+        <th>m/s</th>
+        <th>DIR</th>
+        <th>km/h</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for item in 4_matriz %}
+
+      <tr>
+        <td>{{ item.mes }}</td>
+        <td>{{ item.N_vel }}</td>
+        <td>{{ item.N_% }}</td>
+        <td>{{ item.NE_vel }}</td>
+        <td>{{ item.NE_% }}</td>
+        <td>{{ item.E_vel }}</td>
+        <td>{{ item.E_% }}</td>
+        <td>{{ item.SE_vel }}</td>
+        <td>{{ item.SE_% }}</td>
+        <td>{{ item.S_vel }}</td>
+        <td>{{ item.S_% }}</td>
+        <td>{{ item.SO_vel }}</td>
+        <td>{{ item.SO_% }}</td>
+        <td>{{ item.O_vel }}</td>
+        <td>{{ item.O_% }}</td>
+        <td>{{ item.NO_vel }}</td>
+        <td>{{ item.NO_% }}</td>
+        <td>{{ item.calma }}</td>
+        <td>{{ item.obs }}</td>
+        <td>{{ item.vel_mayor }}</td>
+        <td>{{ item.vel_mayor_dir }}</td>
+        <td>{{ item.vel_media }}</td>
+
+      </tr>
+
+      {% endfor%}
+
+    </tbody>
+  </table>
+</div>
+{% endif %}
+<!--
+<div class="col-md-6">
+  {% if 4_grafico %}
+  <div style="width:600;height:400">
+    {{ 4_grafico|safe }}
+  </div>
+  {% endif %}
+</div>
+-->

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'validacion.apps.ValidacionConfig',
     'marca.apps.MarcaConfig',
     'temporal.apps.TemporalConfig',
+    'anuarios.apps.AnuariosConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
