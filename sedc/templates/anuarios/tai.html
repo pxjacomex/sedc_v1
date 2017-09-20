@@ -1,4 +1,4 @@
-
+{% if datos %}
 <div class="col-md-5" >
   <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
 
@@ -44,6 +44,13 @@
     </tbody>
   </table>
 </div>
+{%else%}
+<div class="col-lg-5 col-md-5">
+  <div class="alert alert-primary" role="alert">
+    Información no Disponible
+  </div>
+</div>
+{%endif%}
 
 
 <div class="col-md-6">

@@ -64,10 +64,12 @@ class TypeVI(Titulos):
             .filter(med_fecha__year=periodo)
             .filter(med_hora__range=(datetime.datetime.strptime('05:00:00', '%H:%M:%S').time()\
                                      ,datetime.datetime.strptime('18:00:00', '%H:%M:%S').time()))
+            .filter(med_valor__lt=1400)
             .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'),hour=ExtractHour('med_hora'))
             .values('month','day','hour')
             .annotate(valor=Max('med_valor'))
             .values('valor','month','day','hour').order_by('month'))
+
         datos_diarios_min=list(Medicion.objects
             .filter(est_id=estacion)
             .filter(var_id=variable)

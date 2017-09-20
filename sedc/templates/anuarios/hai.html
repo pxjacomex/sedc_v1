@@ -1,4 +1,4 @@
-{% if 3_matriz %}
+{% if datos %}
 <div class="col-md-5" >
   <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
 
@@ -20,21 +20,27 @@
     </thead>
     <tbody>
 
-      {% for item in 3_matriz %}
+      {% for item in datos %}
 
       <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.maximo|floatformat:2 }}</td>
-        <td>{{ item.maxdia }}</td>
-        <td>{{ item.minimo|floatformat:2 }}</td>
-        <td>{{ item.mindia }}</td>
-        <td>{{ item.medio|floatformat:2 }}</td>
+        <td>{{ item.hai_mes }}</td>
+        <td>{{ item.hai_maximo|floatformat:2 }}</td>
+        <td>{{ item.hai_maximo_dia }}</td>
+        <td>{{ item.hai_minimo|floatformat:2 }}</td>
+        <td>{{ item.hai_minimo_dia }}</td>
+        <td>{{ item.hai_promedio|floatformat:2 }}</td>
       </tr>
 
       {% endfor%}
 
     </tbody>
   </table>
+</div>
+{%else%}
+<div class="col-lg-5 col-md-5">
+  <div class="alert alert-primary" role="alert">
+    Información no Disponible
+  </div>
 </div>
 {% endif %}
 
