@@ -141,13 +141,14 @@ class TypeV(Titulos):
             val_vel_mayor=[]
             val_mayor_dir = []
             for val_dvi,val_vvi in zip(dat_dvi,dat_vvi):
-                item=Viento(val_dvi.get('med_valor'),val_vvi.get('med_maximo'))
+                item=Viento(val_dvi.get('med_valor'),val_vvi.get('med_valor'))
                 if val_dvi.get('month') == i:
-                    val_vel_mayor.append(val_vvi.get('med_maximo'))
+                    val_vel_mayor.append(val_vvi.get('med_valor'))
                     val_mayor_dir.append(val_dvi.get('med_valor'))
             vel_mayor.append(max(val_vel_mayor))
             vel_mayor_dir.append(val_mayor_dir[val_vel_mayor.index(max(val_vel_mayor))])
-        vel_mayor_dir=self.direccion(vel_mayor_dir) #turns angle to N,NE,E,S,SE,S,SO,O,NO
+        #turns angle to N,NE,E,S,SE,S,SO,O,NO
+        vel_mayor_dir=self.direccion(vel_mayor_dir)
         return vel_mayor,vel_mayor_dir
 
     def direccion(self,angles):

@@ -75,6 +75,20 @@ class HumedadSuelo(models.Model):
     hsu_promedio=models.DecimalField("Promedio",max_digits=7,decimal_places=2)
     class Meta:
         ordering=('hsu_mes',)
+class RadiacionSolar(models.Model):
+    rad_id=models.AutoField(primary_key=True)
+    est_id=models.ForeignKey(
+        Estacion,
+        models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Estación"
+    )
+    rad_periodo=models.IntegerField("Año",default=2000)
+    rad_mes=models.IntegerField("Mes")
+    rad_hora=models.IntegerField("Hora")
+    rad_maximo=models.DecimalField("Máximo",max_digits=7,decimal_places=2)
+    rad_minimo=models.DecimalField("Mínimo",max_digits=7,decimal_places=2)
 class PresionAtmosferica(models.Model):
     pat_id=models.AutoField(primary_key=True)
     est_id=models.ForeignKey(

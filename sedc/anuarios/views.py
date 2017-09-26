@@ -21,7 +21,7 @@ class ProcesarVariables(FormView):
             if self.request.is_ajax():
                 return render(request,template,{'datos':datos})
             else:
-                functions.guardar_variable(datos)
+                functions.guardar_variable(datos,form)
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(ProcesarVariables, self).get_context_data(**kwargs)

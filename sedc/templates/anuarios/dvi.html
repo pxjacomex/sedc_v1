@@ -46,31 +46,12 @@
     </thead>
     <tbody>
 
-      {% for item in 5_matriz %}
+      {% for item in datos %}
 
       <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.N_vel|floatformat:2 }}</td>
-        <td>{{ item.N_p|floatformat:2 }}</td>
-        <td>{{ item.NE_vel|floatformat:2 }}</td>
-        <td>{{ item.NE_p|floatformat:2 }}</td>
-        <td>{{ item.E_vel|floatformat:2 }}</td>
-        <td>{{ item.E_p|floatformat:2 }}</td>
-        <td>{{ item.SE_vel|floatformat:2 }}</td>
-        <td>{{ item.SE_p|floatformat:2 }}</td>
-        <td>{{ item.S_vel|floatformat:2 }}</td>
-        <td>{{ item.S_p|floatformat:2 }}</td>
-        <td>{{ item.SO_vel|floatformat:2 }}</td>
-        <td>{{ item.SO_p|floatformat:2}}</td>
-        <td>{{ item.O_vel|floatformat:2 }}</td>
-        <td>{{ item.O_p|floatformat:2 }}</td>
-        <td>{{ item.NO_vel|floatformat:2 }}</td>
-        <td>{{ item.NO_p|floatformat:2 }}</td>
-        <td>{{ item.calma|floatformat:2 }}</td>
-        <td>{{ item.obs }}</td>
-        <td>{{ item.vel_mayor|floatformat:2 }}</td>
-        <td>{{ item.vel_mayor_dir }}</td>
-        <td>{{ item.vel_media_kmh|floatformat:2 }}</td>
+        {% for mes in item %}
+          <td>{{ mes }}</td>
+        {% endfor%}
 
       </tr>
 
