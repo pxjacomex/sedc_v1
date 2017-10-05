@@ -51,8 +51,10 @@ def generar_validacion(form):
 
     return validaciones
 
-def guardar_validacion(form):
-    estacion=form.cleaned_data['estacion']
+def guardar_validacion(datos):
+    for item in datos:
+        item.save()
+    '''estacion=form.cleaned_data['estacion']
     variable=form.cleaned_data['variable']
     obj_estacion=Estacion.objects.get(est_id=estacion)
     obj_variable=Variable.objects.get(var_id=variable)
@@ -91,4 +93,4 @@ def guardar_validacion(form):
         obj_validacion=Validacion(var_id=obj_variable,est_id=obj_estacion,
         val_fecha=val_fecha,val_num_dat=val_num_dat,val_fre_reg=val_fre_reg,
         val_porcentaje=val_porcentaje)
-        obj_validacion.save()
+        obj_validacion.save()'''

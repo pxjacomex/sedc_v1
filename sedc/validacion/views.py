@@ -64,7 +64,7 @@ class ProcesarValidacion(FormView):
             if self.request.is_ajax():
                 return render(request,'validacion/validacion_filtro.html',{'datos':datos})
             else:
-                functions.guardar_validacion(form)
+                functions.guardar_validacion(datos)
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(ProcesarValidacion, self).get_context_data(**kwargs)

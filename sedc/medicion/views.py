@@ -6,8 +6,9 @@ from django.views.generic import ListView,FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator
-from medicion.forms import MedicionSearchForm
+
+from medicion.forms import MedicionSearchForm,FilterDeleteForm
+from medicion.functions import filtrar,datos_variable,consultar,eliminar
 from django.db import connection
 
 #Medicion views
@@ -24,7 +25,7 @@ class MedicionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-
+#Lista de datos crudos
 class MedicionList(FormView):
     template_name='medicion/medicion_list.html'
     form_class=MedicionSearchForm
@@ -34,18 +35,55 @@ class MedicionList(FormView):
     def post(self, request, *args, **kwargs):
         form=MedicionSearchForm(self.request.POST or None)
         if form.is_valid():
-            self.lista=form.filtrar(form)
-            self.variable=form.datos_variable(form)
+            self.lista=filtrar(form)
+            self.variable=datos_variable(form)
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(MedicionList, self).get_context_data(**kwargs)
         context['lista']=self.lista
         context['variable']=self.variable
         return context
+#Clase para filtrar datos para la vista delete
+class ListDelete(FormView):
+    template_name='medicion/list_delete.html'
+    form_class=FilterDeleteForm
+    success_url='/medicion/listdelete/'
+    lista=[]
+    variable=""
+    def post(self, request, *args, **kwargs):
+        form=FilterDeleteForm(self.request.POST or None)
+        if form.is_valid():
+            self.lista=consultar(form)
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        context = super(ListDelete, self).get_context_data(**kwargs)
+        context['lista']=self.lista
+        return context
+#filtro de Datos Crudos
 class MedicionFilter(FormView):
     template_name='medicion/medicion_filter.html'
     form_class=MedicionSearchForm
-    success_url='/medicion/'
+    success_url='/medicion/filter/'
+
+
+#filtro para eliminar los datos
+class FilterDelete(FormView):
+    template_name='medicion/filter_delete.html'
+    form_class=FilterDeleteForm
+    success_url='/medicion/filterdelete/'
+    #mensaje de confirmación
+    mensaje=""
+    def post(self,request,*args,**kwargs):
+        form=FilterDeleteForm(self.request.POST or None)
+        if form.is_valid():
+            eliminar(form)
+            self.mensaje="Datos Eliminados"
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        context = super(FilterDelete, self).get_context_data(**kwargs)
+        context['mensaje']=self.mensaje
+        return context
+
 
 class MedicionDetail(DetailView):
     model=Medicion
@@ -111,7 +149,6 @@ class MedicionDelete(UpdateView):
             cursor.execute("UPDATE medicion_medicion SET med_estado = false \
             WHERE med_fecha = %s \
             and med_hora=%s and med_id=%s",[med_fecha,med_hora,med_id])
-
         self.object=obj_medicion
         return self.render_to_response(self.get_context_data(**kwargs))
     def get_context_data(self, **kwargs):
@@ -120,26 +157,3 @@ class MedicionDelete(UpdateView):
         context['title'] = "Modificar"
         context['url']=self.url
         return context
-
-def pagination(lista,page,num_reg):
-    #lista=model.objects.all()
-    paginator = Paginator(lista, num_reg)
-    if page is None:
-        page=1
-    else:
-        page=int(page)
-    if page == 1:
-        start=1
-        last=start+1
-    elif page == paginator.num_pages:
-        last=paginator.num_pages
-        start=last-1
-    else:
-        start=page-1
-        last=page+1
-    context={
-        'first':'1',
-        'last':paginator.num_pages,
-        'range':range(start,last+1),
-    }
-    return context
