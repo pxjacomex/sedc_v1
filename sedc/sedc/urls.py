@@ -36,7 +36,9 @@ urlpatterns = [
     url(r'^',include('marca.urls',namespace='marca')),
     url(r'^',include('validacion.urls',namespace='validacion')),
     url(r'^',include('anuarios.urls',namespace='anuarios')),
-
+    url(r'^',include('sensor.urls',namespace='sensor')),
+    url(r'^',include('instalacion.urls',namespace='instalacion')),
+    url(r'^',include('bitacora.urls',namespace='bitacora')),
 ]
 
 if settings.DEBUG is True:

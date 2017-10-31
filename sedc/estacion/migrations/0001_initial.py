@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('est_latitud', models.CharField(max_length=12, null=True, verbose_name='Latitud')),
                 ('est_longitud', models.CharField(max_length=12, null=True, verbose_name='Longitud')),
                 ('est_altura', models.IntegerField(null=True, verbose_name='Altura')),
-                ('est_ficha', models.FileField(upload_to='fichas/')),
+                ('est_ficha', models.FileField(upload_to='fichas/',blank=True,null=True)),
             ],
         ),
         migrations.CreateModel(

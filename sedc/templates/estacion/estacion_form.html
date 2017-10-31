@@ -6,13 +6,13 @@
   <div class="panel panel-default">
     <div class="panel-heading">{{title}} Estación</div>
       <div class="panel-body">
-        <form method="post" class="form">
+        <form method="post" class="form" enctype="multipart/form-data">
           {% csrf_token %}
           <div class = "row">
-          <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="col-lg-6 col-md-6 col-sm-12">
               {% bootstrap_form form exclude='est_ficha,est_altura,est_longitud,est_latitud' %}
           </div>
-          <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="col-lg-6 col-md-6 col-sm-12">
               {% bootstrap_form form exclude='est_provincia,est_estado,est_tipo,est_nombre,est_codigo'%}
           </div>
           </div>

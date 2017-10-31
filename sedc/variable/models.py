@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from datalogger.models import Sensor
+from sensor.models import Sensor
 from estacion.models import Estacion
 from django.urls import reverse
 
