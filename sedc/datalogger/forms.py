@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from datalogger.models import Datalogger, Sensor
+from datalogger.models import Datalogger#, Sensor
 from marca.models import Marca
 
 class DataloggerSearchForm(forms.Form):
@@ -50,7 +50,7 @@ class DataloggerSearchForm(forms.Form):
             i+=1
         return string
 
-class SensorSearchForm(forms.Form):
+"""class SensorSearchForm(forms.Form):
     def lista_marcas():
         lista=()
         lista = lista + (('','----'),)
@@ -107,4 +107,4 @@ class SensorSearchForm(forms.Form):
             else:
                 string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))
             i+=1
-        return string
+        return string"""

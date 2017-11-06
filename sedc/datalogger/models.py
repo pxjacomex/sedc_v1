@@ -28,13 +28,13 @@ class Datalogger(models.Model):
     dat_serial=models.CharField("Serial",max_length=25,null=True)
     dat_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
-        return str(self.est_id)
+        return self.dat_codigo
     def get_absolute_url(self):
         return reverse('datalogger:datalogger_detail', kwargs={'pk': self.pk})
     class Meta:
         ordering=('dat_codigo',)
 
-class Sensor(models.Model):
+"""class Sensor(models.Model):
     TIPO_NOMBRE=(
         ('Termómetro','Termómetro'),
         ('Higrómetro','Higrómetro'),
@@ -65,4 +65,4 @@ class Sensor(models.Model):
     def get_absolute_url(self):
         return reverse('datalogger:sensor_detail', kwargs={'pk': self.pk})
     class Meta:
-        ordering=('sen_nombre','sen_modelo','sen_serial',)
+        ordering=('sen_nombre','sen_modelo','sen_serial',)"""

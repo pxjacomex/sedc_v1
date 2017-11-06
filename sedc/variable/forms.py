@@ -4,7 +4,7 @@ from django import forms
 from variable.models import Control
 from estacion.models import Estacion
 from formato.models import Variable
-from datalogger.models import Sensor
+from sensor.models import Sensor
 
 class ControlSearchForm(forms.Form):
     def lista_estaciones():

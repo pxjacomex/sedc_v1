@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 from django.shortcuts import render, get_object_or_404
-from .models import Datalogger, Sensor
+from datalogger.models import Datalogger#, Sensor
 from django.views.generic import ListView,FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-from .forms import DataloggerSearchForm, SensorSearchForm
+from datalogger.forms import DataloggerSearchForm#, SensorSearchForm
 
 #Datalogger views
 class DataloggerCreate(CreateView):
@@ -63,7 +64,7 @@ class DataloggerDelete(DeleteView):
     success_url = reverse_lazy('datalogger:datalogger_index')
 
 #Sensor
-class SensorCreate(CreateView):
+"""class SensorCreate(CreateView):
     model = Sensor
     fields = ['sen_nombre','mar_id','sen_modelo','sen_serial']
     def form_valid(self, form):
@@ -114,7 +115,7 @@ class SensorUpdate(UpdateView):
 
 class SensorDelete(DeleteView):
     model=Sensor
-    success_url = reverse_lazy('datalogger:sensor_index')
+    success_url = reverse_lazy('datalogger:sensor_index')"""
 
 def pagination(lista,page,num_reg):
     #lista=model.objects.all()

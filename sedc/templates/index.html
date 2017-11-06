@@ -38,7 +38,7 @@
       <span class="caret"></span></a>
 		  <ul class="dropdown-menu">
 		    <li><a href="{% url 'datalogger:datalogger_index' %}">Datalogger</a></li>
-		    <li><a href="{% url 'datalogger:sensor_index' %}">Sensor</a></li>
+		    <li><a href="{% url 'sensor:sensor_index' %}">Sensor</a></li>
 		    <li><a href="{% url 'marca:marca_index' %}">Marcas: Sensores y Datalogger</a></li>
         <li role="separator" class="divider"></li>
 		    <li><a href="{% url 'estacion:estacion_index' %}">Estación</a></li>
@@ -55,6 +55,7 @@
       <span class="caret"></span></a>
 		  <ul class="dropdown-menu">
         <li><a href="{% url 'variable:control_index' %}">Instalaciones Sensores</a></li>
+        <li><a href="{% url 'instalacion:instalacion_index' %}">Instalaciones Dataloggers</a></li>
 		  </ul>
 		</li>
 		<li class="dropdown">
@@ -71,6 +72,8 @@
         <li><a href="{% url 'vacios:vacios_index' %}">Vacios de Información</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="{% url 'frecuencia:frecuencia_index' %}">Frecuencia de Registro</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="{% url 'bitacora:bitacora_index' %}">Bitacora</a></li>
 		  </ul>
 		</li>
 
