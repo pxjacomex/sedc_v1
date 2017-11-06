@@ -1,6 +1,7 @@
 {% extends "index.html" %}
-
 {% block content %}
+
+
 
 {% load bootstrap3 %}
 
@@ -25,15 +26,45 @@
   </div>
 </div>
 <div class="row">
+{% if form %}
+  <div class="col-lg-6 col-md-6 col-sm-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">Registro de Vacios de Información</div>
+        <div class="panel-body">
+          <form method="post" class="form" action="{% url 'importacion:guardar' %}">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-default btn-primary">
+              Confirmar
+            </button>
+            <a class="btn btn-default"
+            href="{% url 'importacion:importacion_index' %}">
+            Cancelar</a>
+          </form>
+        </div>
+    </div>
+  </div>
+  {% else %}
 
-  <div class="col-lg-8">
-    <a class="btn btn-primary"
-    href="{% url 'importacion:guardar' %}?sobreescribir={{sobreescribir}}">Confirmar</a>
-    <a class="btn btn-default"
-    href="{% url 'importacion:importacion_index' %}">Cancelar</a>
+  <div class="col-lg-6 col-md-6 col-sm-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">Confirmar Importación de datos</div>
+        <div class="panel-body">
+          <form method="post" class="form" action="{% url 'importacion:guardar' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-default btn-primary">
+              Confirmar
+            </button>
+            <a class="btn btn-default"
+            href="{% url 'importacion:importacion_index' %}">
+            Cancelar</a>
+          </form>
+        </div>
+    </div>
   </div>
 
-
+  {% endif %}
 </div>
+
 
 {% endblock %}

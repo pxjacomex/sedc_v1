@@ -28,7 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+DATETIME_FORMAT= None
+DATE_FORMAT= None
+TIME_FORMAT= None
 # Application definition
 
 INSTALLED_APPS = [
