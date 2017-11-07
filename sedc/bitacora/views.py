@@ -40,6 +40,14 @@ class BitacoraList(ListView,FormView):
             self.cadena=form.cadena(form)
         return self.render_to_response(self.get_context_data(form=form))
 
+    def get_context_data(self, **kwargs):
+        context = super(BitacoraList, self).get_context_data(**kwargs)
+        page=self.request.GET.get('page')
+        print kwargs
+        context.update(pagination(self.object_list,page,10))
+        context["cadena"]=self.cadena
+        return context
+
 class BitacoraDetail(DetailView):
     model=Bitacora
 
@@ -55,3 +63,25 @@ class BitacoraUpdate(UpdateView):
 class BitacoraDelete(DeleteView):
     model=Bitacora
     success_url = reverse_lazy('bitacora:bitacora_index')
+def pagination(lista,page,num_reg):
+    #lista=model.objects.all()
+    paginator = Paginator(lista, num_reg)
+    if page is None:
+        page=1
+    else:
+        page=int(page)
+    if page == 1:
+        start=1
+        last=start+1
+    elif page == paginator.num_pages:
+        last=paginator.num_pages
+        start=last-1
+    else:
+        start=page-1
+        last=page+1
+    context={
+        'first':'1',
+        'last':paginator.num_pages,
+        'range':range(start,last+1),
+    }
+    return context

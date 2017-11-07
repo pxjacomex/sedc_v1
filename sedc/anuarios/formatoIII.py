@@ -52,7 +52,7 @@ def matrizIII(estacion,variable,periodo):
     for i in range(12):
         obj_tai=TemperaturaAire()
         obj_tai.est_id=obj_estacion
-        obj_tai.periodo=periodo
+        obj_tai.tai_periodo=periodo
         obj_tai.tai_maximo_abs=max_abs[i]
         obj_tai.tai_maximo_dia=max_dia[i]
         obj_tai.tai_maximo=maximo[i]

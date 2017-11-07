@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^',include('sensor.urls',namespace='sensor')),
     url(r'^',include('instalacion.urls',namespace='instalacion')),
     url(r'^',include('bitacora.urls',namespace='bitacora')),
+    url(r'^',include('cruce.urls',namespace='cruce')),
 ]
 
 if settings.DEBUG is True:

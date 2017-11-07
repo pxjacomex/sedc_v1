@@ -29,14 +29,14 @@
       {% for item in 2_matriz %}
 
       <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.maximo_abs|floatformat:2 }}</td>
-        <td>{{ item.maxdia }}</td>
-        <td>{{ item.minimo_abs|floatformat:2 }}</td>
-        <td>{{ item.mindia }}</td>
-        <td>{{ item.maximo|floatformat:2 }}</td>
-        <td>{{ item.minimo|floatformat:2 }}</td>
-        <td>{{ item.medio|floatformat:2 }}</td>
+        <td>{{ item.tai_mes }}</td>
+        <td>{{ item.tai_maximo_abs|floatformat:2 }}</td>
+        <td>{{ item.tai_maximo_dia }}</td>
+        <td>{{ item.tai_minimo_abs|floatformat:2 }}</td>
+        <td>{{ item.tai_minimo_dia }}</td>
+        <td>{{ item.tai_maximo|floatformat:2 }}</td>
+        <td>{{ item.tai_minimo|floatformat:2 }}</td>
+        <td>{{ item.tai_promedio|floatformat:2 }}</td>
       </tr>
 
       {% endfor%}

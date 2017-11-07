@@ -1,7 +1,7 @@
 from django.views.generic.base import TemplateView
 from django.views.generic import FormView
 from reportes.forms import AnuarioForm
-from reportes.consultas.forms import MedicionSearchForm
+from cruce.forms import CruceSearchForm
 
 import csv
 from django.http import HttpResponse
@@ -31,7 +31,7 @@ class ReportesAnuario(FormView):
 #consultas por periodo y frecuencia horaria, diaria y mensual
 class ConsultasPeriodo(FormView):
     template_name='reportes/consultas_periodo.html'
-    form_class=MedicionSearchForm
+    form_class=CruceSearchForm
     success_url='/reportes/consultas'
     lista=[]
     frecuencia=str("")
@@ -40,9 +40,9 @@ class ConsultasPeriodo(FormView):
     #def get(self, request, *args, **kwargs):
 
     def post(self, request, *args, **kwargs):
-        form=MedicionSearchForm(self.request.POST or None)
+        form=CruceSearchForm(self.request.POST or None)
         if form.is_valid():
-            self.lista=form.filtrar(form)
+            self.list=form.filtrar(form)
             self.frecuencia=form.cleaned_data["frecuencia"]
             self.grafico=form.grafico(form)
             if 'visualizar'in request.POST:

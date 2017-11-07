@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'sensor.apps.SensorConfig',
     'instalacion.apps.InstalacionConfig',
     'bitacora.apps.BitacoraConfig',
+    'cruce.apps.CruceConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
