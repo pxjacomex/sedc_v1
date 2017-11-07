@@ -16,14 +16,17 @@ class EstacionCreate(CreateView):
     model = Estacion
     fields = ['est_id', 'est_codigo','est_nombre','est_tipo','est_provincia','est_estado','est_latitud','est_longitud','est_altura','est_ficha']
     def form_valid(self, form):
+        print "form"
         return super(EstacionCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(EstacionCreate, self).get_context_data(**kwargs)
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
+        print "context"
         return context
     def model_form_upload(request):
+        print "llego"
         if request.method == 'POST':
             form = DocumentForm(request.POST, request.FILES)
             if form.is_valid():
