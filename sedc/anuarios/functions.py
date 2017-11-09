@@ -53,7 +53,7 @@ def verficar_anuario(estacion,variable,periodo):
     result=True
     if variable=="1":
         consulta=models.Precipitacion.objects.filter(est_id=estacion)\
-        .filter(per_periodo=periodo)
+        .filter(pre_periodo=periodo)
     elif variable=="2":
         consulta=models.TemperaturaAire.objects.filter(est_id=estacion)\
         .filter(tai_periodo=periodo)

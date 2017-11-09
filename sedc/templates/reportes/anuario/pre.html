@@ -26,11 +26,11 @@
       {% for item in 1_matriz %}
 
       <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.mensual|floatformat:2 }}</td>
-        <td>{{ item.max24H|floatformat:2 }}</td>
-        <td>{{ item.maxdia }}</td>
-        <td>{{ item.totdias }}</td>
+        <td>{{ item.pre_mes }}</td>
+        <td>{{ item.pre_suma|floatformat:2 }}</td>
+        <td>{{ item.pre_maximo|floatformat:2 }}</td>
+        <td>{{ item.pre_maximo_dia }}</td>
+        <td>{{ item.pre_dias }}</td>
       </tr>
 
       {% endfor%}

@@ -79,11 +79,11 @@
     <li class="disabled"><span>&lt;&lt;</span></li>
     {% endif %}
 
-    {% for i in range %}
+    {% for i in paginator.page_range %}
     {% if page_obj.number == i %}
     <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
     {% else %}
-    <li><a href="?page={{ i }}">{{ i }}</a></li>
+    <li><a href="{% url 'bitacora:bitacora_index' i%}">{{ i }}</a></li>
     {% endif %}
     {% endfor %}
 

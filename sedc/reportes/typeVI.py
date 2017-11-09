@@ -8,9 +8,7 @@ from django.db.models import Max, Min, Avg, Count
 import plotly.offline as opy
 import plotly.graph_objs as go
 from reportes.titulos import Titulos
-from django.db.models.functions import (
-    ExtractYear,ExtractMonth,ExtractDay,ExtractHour)
-import datetime
+
 
 class Resumen(object):
     def __init__(self,mes,max_5,max_6,max_7,max_8,max_9,max_10,max_11,max_12,\

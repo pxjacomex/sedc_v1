@@ -4,8 +4,7 @@ from estacion.models import Estacion
 from anuarios.models import RadiacionSolar
 from django.db.models.functions import TruncMonth
 from django.db.models import Max, Min, Avg, Count
-from django.db.models.functions import (
-    ExtractYear,ExtractMonth,ExtractDay,ExtractHour)
+
 from datetime import datetime
 
 def matrizV(estacion,variable,periodo):
