@@ -71,7 +71,7 @@
 <nav aria-label="Page navigation" style="float:right">
   <ul class="pagination justify-content-center">
     {% if page_obj.has_previous %}
-    <li><a href="{% url 'sensor:sensor_index' first %}{{cadena}}">&lt;&lt;</a></li>
+    <li><a href="{% url 'sensor:sensor_index' 1 %}{{cadena}}">&lt;&lt;</a></li>
     <li><a href="{% url 'sensor:sensor_index' page_obj.previous_page_number %}{{cadena}}">&lt;</a></li>
     {% else %}
     <li class="disabled"><span>&lt;</span></li>
@@ -88,7 +88,7 @@
 
     {% if page_obj.has_next %}
     <li><a href="{% url 'sensor:sensor_index' page_obj.next_page_number %}{{cadena}}">&gt;</a></li>
-    <li><a href="{% url 'sensor:sensor_index' last %}{{cadena}}">&gt;&gt;</a></li>
+    <li><a href="{% url 'sensor:sensor_index' paginator.num_pages %}{{cadena}}">&gt;&gt;</a></li>
     {% else %}
     <li class="disabled"><span>&gt;</span></li>
     <li class="disabled"><span>&gt;&gt;</span></li>
