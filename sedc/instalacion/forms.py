@@ -34,11 +34,11 @@ class InstalacionSearchForm(forms.Form):
             ).filter(
                 est_id=form.cleaned_data['Estacion']
             )
-        elif form.cleaned_data['Datalogger']  == "":
+        elif form.cleaned_data['Datalogger']  == "" and form.cleaned_data['Estacion']!="":
             lista=Instalacion.objects.filter(
                 est_id=form.cleaned_data['Estacion']
             )
-        elif form.cleaned_data['Estacion'] == "":
+        elif form.cleaned_data['Estacion'] == "" and form.cleaned_data['Datalogger']!="":
             lista=Instalacion.objects.filter(
                 dat_id=form.cleaned_data['Datalogger']
             )

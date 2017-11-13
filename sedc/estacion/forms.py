@@ -28,11 +28,11 @@ class EstacionSearchForm(forms.Form):
             ).filter(
                 est_codigo=form.cleaned_data['Codigo']
             )
-        elif form.cleaned_data['Tipo'] == "":
+        elif form.cleaned_data['Tipo'] == "" and form.cleaned_data['Codigo']!="":
             lista=Estacion.objects.filter(
-                est_codigo=form.cleaned_data['Codigo']
+                est_codigo__icontains=form.cleaned_data['Codigo']
             )
-        elif form.cleaned_data['Codigo'] == "":
+        elif form.cleaned_data['Codigo'] == "" and form.cleaned_data['Tipo']!="":
             lista=Estacion.objects.filter(
                 est_tipo=form.cleaned_data['Tipo']
             )

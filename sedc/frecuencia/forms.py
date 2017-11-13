@@ -35,11 +35,11 @@ class FrecuenciaSearchForm(forms.Form):
             ).filter(
                 est_id=form.cleaned_data['Estacion']
             )
-        elif form.cleaned_data['Variable']  == "":
+        elif form.cleaned_data['Variable']  == "" and form.cleaned_data['Estacion']!="":
             lista=Frecuencia.objects.filter(
                 est_id=form.cleaned_data['Estacion']
             )
-        elif form.cleaned_data['Estacion'] == "":
+        elif form.cleaned_data['Estacion'] == "" and form.cleaned_data['Variable']!="":
             lista=Frecuencia.objects.filter(
                 var_id=form.cleaned_data['Variable']
             )
