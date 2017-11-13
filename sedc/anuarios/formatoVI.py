@@ -103,3 +103,6 @@ def datos_guardar(estacion,variable,periodo):
         datos.append(obj_rad)
         print fila.get('maximo')
     return datos
+def verificarVI(estacion,periodo):
+    return RadiacionSolar.objects.filter(est_id=estacion)\
+        .filter(rad_periodo=periodo).exists()

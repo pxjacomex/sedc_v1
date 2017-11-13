@@ -77,3 +77,6 @@ def minimoshai(datos_diarios_min):
         min_abs.append(min(val_min_abs))
         mindia.append(val_mindia[val_min_abs.index(min(val_min_abs))])
     return min_abs,mindia
+def verificarIV(estacion,periodo):
+    return HumedadAire.objects.filter(est_id=estacion)\
+        .filter(hai_periodo=periodo).exists()

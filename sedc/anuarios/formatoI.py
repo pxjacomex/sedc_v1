@@ -73,3 +73,21 @@ def matrizI(estacion,variable,periodo):
             obj_nag.nag_promedio=promedios[i]
             datos.append(obj_nag)
     return datos
+def verificarI(estacion,variable,periodo):
+    result=False
+    if variable=="6":
+        result=HumedadSuelo.objects.filter(est_id=estacion)\
+            .filter(hsu_periodo=periodo).exists()
+    elif variable=="8":
+        result=PresionAtmosferica.objects.filter(est_id=estacion)\
+            .filter(pat_periodo=periodo).exists()
+    elif variable=="9":
+        result=TemperaturaAgua.objects.filter(est_id=estacion)\
+            .filter(pat_periodo=periodo).exists()
+    elif variable=="10":
+        result=Caudal.objects.filter(est_id=estacion)\
+            .filter(cau_periodo=periodo).exists()
+    elif variable=="11":
+        result=NivelAgua.objects.filter(est_id=estacion)\
+            .filter(nag_periodo=periodo).exists()
+    return result

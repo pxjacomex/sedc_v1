@@ -99,3 +99,6 @@ def minimostai(datos_diarios_min):
         avgmin.append(sum(val_min_abs) / (len(val_min_abs)))
         #avgmin.append((len(val_min_abs)))
     return min_abs,mindia,avgmin
+def verificarIII(estacion,periodo):
+    return TemperaturaAire.objects.filter(est_id=estacion)\
+        .filter(tai_periodo=periodo).exists()
