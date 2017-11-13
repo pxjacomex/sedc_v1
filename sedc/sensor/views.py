@@ -34,6 +34,7 @@ class SensorList(ListView,FormView):
     #parametros propios
     cadena=str("")
     def get(self, request, *args, **kwargs):
+
         form=SensorSearchForm(self.request.GET or None)
         self.object_list=Sensor.objects.all()
         if form.is_valid():
@@ -43,8 +44,8 @@ class SensorList(ListView,FormView):
 
     def get_context_data(self, **kwargs):
         context = super(SensorList, self).get_context_data(**kwargs)
-        page=self.request.GET.get('page')
-        context.update(pagination(self.object_list,page,10))
+        #page=kwargs.get('page')
+        #context.update(pagination(self.object_list,page,10))
         context["cadena"]=self.cadena
         return context
 

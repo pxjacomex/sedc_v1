@@ -38,11 +38,12 @@ class SensorSearchForm(forms.Form):
             ).filter(
                 mar_id=form.cleaned_data['Marca']
             )
-        elif form.cleaned_data['Nombre'] == ""and form.cleaned_data['Marca']!="":
+
+        elif form.cleaned_data['Nombre'] == "" and form.cleaned_data['Marca']!="":
             lista=Sensor.objects.filter(
                 mar_id=form.cleaned_data['Marca']
             )
-        elif form.cleaned_data['Marca'] == ""and form.cleaned_data['Nombre']!="":
+        elif form.cleaned_data['Marca'] == "" and form.cleaned_data['Nombre']!="":
             lista=Sensor.objects.filter(
                 sen_nombre=form.cleaned_data['Nombre']
             )
