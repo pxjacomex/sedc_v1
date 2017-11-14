@@ -91,8 +91,8 @@ def verficar_anuario(estacion,variable,periodo):
         result=models.HumedadAire.objects.filter(est_id=estacion)\
         .filter(hai_periodo=periodo).exists()
     elif variable=="6":
-        result=models.HumedadSuelo.objects.filter(est_id=estacion)\
-        .filter(hai_periodo=periodo).exists()
+        consulta=models.HumedadSuelo.objects.filter(est_id=estacion)\
+        .filter(hsu_periodo=periodo)
     elif variable=="7":
         result=models.RadiacionSolar.objects.filter(est_id=estacion)\
         .filter(rad_periodo=periodo).exists()

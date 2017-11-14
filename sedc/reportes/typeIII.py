@@ -24,6 +24,7 @@ class TypeIII(Titulos):
             max_simple.append(item.tai_maximo)
             min_simple.append(item.tai_minimo)
             avg_simple.append(item.tai_promedio)
+            
         trace0 = go.Scatter(
             x = meses,
             y = max_simple,

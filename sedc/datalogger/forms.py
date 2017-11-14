@@ -27,7 +27,7 @@ class DataloggerSearchForm(forms.Form):
             )
         elif form.cleaned_data['Marca'] == "" and form.cleaned_data['Modelo']!="":
             lista=Datalogger.objects.filter(
-                dat_modelo=form.cleaned_data['Modelo']
+                dat_modelo__icontains=form.cleaned_data['Modelo']
             )
         elif form.cleaned_data['Modelo'] == "" and form.cleaned_data['Marca']!="":
             lista=Datalogger.objects.filter(

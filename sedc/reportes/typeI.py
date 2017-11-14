@@ -1,45 +1,64 @@
 # -*- coding: utf-8 -*-
-
-from django import forms
-from medicion.models import Medicion
-from variable.models import Variable,Unidad
-from django.db.models.functions import TruncMonth
-from django.db.models import Max, Min, Avg, Count
+from anuarios.models import HumedadSuelo
+from anuarios.models import PresionAtmosferica
+from anuarios.models import TemperaturaAgua
+from anuarios.models import Caudal
+from anuarios.models import NivelAgua
 import plotly.offline as opy
 import plotly.graph_objs as go
 from reportes.titulos import Titulos
 
-class Resumen(object):
-    def __init__(self, mes, maximo, minimo, medio):
-        self.mes = mes
-        self.maximo= maximo
-        self.minimo = minimo
-        self.medio = medio
 #clase para anuario de las las variables HSU, PAT, TAG, CAU, NAG
 class TypeI(Titulos):
-    '''consulta y crea la matriz de datos y el grafico para variables: 6,8,9,10,11'''
     def consulta(self,estacion,variable,periodo):
-        #annotate agrupa los valores en base a un campo y a una operacion
-        consulta=Medicion.objects.filter(est_id=estacion).filter(var_id=variable).filter(med_fecha__year=periodo)
-        if variable == 8:
-            consulta = consulta.exclude(med_valor = 0, med_maximo = 0, med_minimo = 0)
-        consulta=consulta.annotate(month=TruncMonth('med_fecha')).values('month')
-        med_max=list(consulta.annotate(c=Max('med_valor')).values('c').order_by('month'))
-        med_min=list(consulta.annotate(c=Min('med_valor')).values('c').order_by('month'))
-        med_avg=list(consulta.annotate(c=Avg('med_valor')).values('c').order_by('month'))
-        max_simple = [d.get('c') for d in med_max]
-        min_simple = [d.get('c') for d in med_min]
-        avg_simple = [d.get('c') for d in med_avg]
-        meses=['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-        return max_simple,min_simple,avg_simple,meses
+        if variable == 6:
+            informacion=list (HumedadSuelo.objects.filter(est_id=estacion).filter(hsu_periodo=periodo))
+        elif variable == 8:
+            informacion=list (PresionAtmosferica.objects.filter(est_id=estacion).filter(pat_periodo=periodo))
+        elif variable == 9:
+            informacion=list (TemperaturaAgua.objects.filter(est_id=estacion).filter(tag_periodo=periodo))
+        elif variable == 10:
+            informacion=list (Caudal.objects.filter(est_id=estacion).filter(cau_periodo=periodo))
+        elif variable == 11:
+            informacion=list (NivelAgua.objects.filter(est_id=estacion).filter(nag_periodo=periodo))
+        return informacion
+
     def matriz(self,estacion, variable, periodo):
-        max_simple,min_simple,avg_simple,meses=self.consulta(estacion, variable, periodo)
-        matrix = []
-        for i in range(len(max_simple)):
-            matrix.append(Resumen(meses[i],max_simple[i],min_simple[i],avg_simple[i]))
-        return matrix
+        datos=self.consulta(estacion,variable,periodo)
+        return datos
     def grafico(self,estacion, variable, periodo):
-        max_simple,min_simple,avg_simple,meses=self.consulta(estacion, variable, periodo)
+        datos=self.consulta(estacion,variable,periodo)
+        meses=[]
+        max_simple=[]
+        min_simple=[]
+        avg_simple=[]
+        for item in datos:
+            if variable == 6:
+                meses.append(item.hsu_mes)
+                max_simple.append(item.hsu_maximo)
+                min_simple.append(item.hsu_minimo)
+                avg_simple.append(item.hsu_promedio)
+            elif variable == 8:
+                meses.append(item.pat_mes)
+                max_simple.append(item.pat_maximo)
+                min_simple.append(item.pat_minimo)
+                avg_simple.append(item.pat_promedio)
+            elif variable == 9:
+                meses.append(item.tag_mes)
+                max_simple.append(item.tag_maximo)
+                min_simple.append(item.tag_minimo)
+                avg_simple.append(item.tag_promedio)
+            elif variable == 10:
+                meses.append(item.cau_mes)
+                max_simple.append(item.cau_maximo)
+                min_simple.append(item.cau_minimo)
+                avg_simple.append(item.cau_promedio)
+            elif variable == 11:
+                meses.append(item.nag_mes)
+                max_simple.append(item.nag_maximo)
+                min_simple.append(item.nag_minimo)
+                avg_simple.append(item.nag_promedio)
+
         trace0 = go.Scatter(
             x = meses,
             y = max_simple,

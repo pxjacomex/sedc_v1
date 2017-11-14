@@ -34,13 +34,13 @@ class CruceSearchForm(forms.Form):
             ).filter(
                 est_id=form.cleaned_data['Estacion']
             )
-        elif form.cleaned_data['Variable']  == "":
+        elif form.cleaned_data['Variable']  == "" and form.cleaned_data['Estacion']!="":
             lista=Cruce.objects.filter(
                 est_id=form.cleaned_data['Estacion']
             )
-        elif form.cleaned_data['Estacion'] == "":
+        elif form.cleaned_data['Estacion'] == "" and form.cleaned_data['Variable']!="":
             lista=Cruce.objects.filter(
-                var_id=form.cleaned_data['Varible']
+                var_id=form.cleaned_data['Variable']
             )
         else:
             lista=Cruce.objects.all()

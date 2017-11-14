@@ -63,7 +63,7 @@ class ClasificacionSearchForm(forms.Form):
             )
         elif form.cleaned_data['Variable'] == "":
             lista=Clasificacion.objects.filter(
-                for_id=form.cleaned_data['Formato']
+                for_id__icontains=form.cleaned_data['Formato']
             )
         elif form.cleaned_data['Formato'] == "":
             lista=Clasificacion.objects.filter(

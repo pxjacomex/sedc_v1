@@ -21,10 +21,10 @@
       {% for item in 8_matriz %}
 
       <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.maximo|floatformat:2 }}</td>
-        <td>{{ item.minimo|floatformat:2 }}</td>
-        <td>{{ item.medio|floatformat:2 }}</td>
+        <td>{{ item.pat_mes }}</td>
+        <td>{{ item.pat_maximo|floatformat:2 }}</td>
+        <td>{{ item.pat_minimo|floatformat:2 }}</td>
+        <td>{{ item.pat_promedio|floatformat:2 }}</td>
       </tr>
 
       {% endfor%}
