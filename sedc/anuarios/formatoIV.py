@@ -12,6 +12,9 @@ def matrizIV(estacion,variable,periodo):
     consulta=Medicion.objects.filter(est_id=estacion)\
     .filter(var_id=variable).filter(med_fecha__year=periodo)\
     .annotate(month=TruncMonth('med_fecha')).values('month')
+    print (Medicion.objects.filter(est_id=estacion)
+    .filter(var_id=variable)
+    .filter(med_fecha__year=periodo).values('med_maximo').exists())
 
     datos_diarios_max=list(Medicion.objects
         .filter(est_id=estacion)
@@ -20,8 +23,8 @@ def matrizIV(estacion,variable,periodo):
         .exclude(med_valor=0)
         .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
         .values('month','day')
-        .annotate(valor=Max('med_maximo'))
-        .values('valor','month','day').order_by('month','day'))
+        .annotate(maximo=Max('med_maximo'),valor=Max('med_valor'))
+        .values('maximo','valor','month','day').order_by('month','day'))
     datos_diarios_min=list(Medicion.objects
         .filter(est_id=estacion)
         .filter(var_id=variable)
@@ -29,8 +32,9 @@ def matrizIV(estacion,variable,periodo):
         .exclude(med_valor=0)
         .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
         .values('month','day')
-        .annotate(valor=Min('med_minimo'))
+        .annotate(minimo=Min('med_minimo'),valor=Min('med_valor'))
         .values('valor','month','day').order_by('month','day'))
+
 
     med_avg=list(consulta.exclude(med_valor=0).annotate(c=Avg('med_valor')).values('c').order_by('month'))
     promedio = [d.get('c') for d in med_avg]
@@ -57,7 +61,10 @@ def maximoshai(datos_diarios_max):
         val_maxdia = []
         for fila in datos_diarios_max:
             if fila.get('month') == i:
-                val_max_abs.append(fila.get('valor'))
+                if fila.get('maximo') is not None:
+                    val_max_abs.append(fila.get('maximo'))
+                else:
+                    val_max_abs.append(fila.get('valor'))
                 val_maxdia.append(fila.get('day'))
         max_abs.append(max(val_max_abs))
         maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
@@ -72,7 +79,10 @@ def minimoshai(datos_diarios_min):
         val_mindia = []
         for fila in datos_diarios_min:
             if fila.get('month') == i:
-                val_min_abs.append(fila.get('valor'))
+                if fila.get('minimo') is not None:
+                    val_min_abs.append(fila.get('minimo'))
+                else:
+                    val_min_abs.append(fila.get('valor'))
                 val_mindia.append(fila.get('day'))
         min_abs.append(min(val_min_abs))
         mindia.append(val_mindia[val_min_abs.index(min(val_min_abs))])

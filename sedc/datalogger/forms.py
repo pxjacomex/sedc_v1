@@ -25,11 +25,11 @@ class DataloggerSearchForm(forms.Form):
             ).filter(
                 dat_modelo=form.cleaned_data['Modelo']
             )
-        elif form.cleaned_data['Marca'] == "":
+        elif form.cleaned_data['Marca'] == "" and form.cleaned_data['Modelo']!="":
             lista=Datalogger.objects.filter(
                 dat_modelo=form.cleaned_data['Modelo']
             )
-        elif form.cleaned_data['Modelo'] == "":
+        elif form.cleaned_data['Modelo'] == "" and form.cleaned_data['Marca']!="":
             lista=Datalogger.objects.filter(
                 mar_id=form.cleaned_data['Marca']
             )

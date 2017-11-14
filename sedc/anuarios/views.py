@@ -17,10 +17,10 @@ class ProcesarVariables(FormView):
         save=False
         if form.is_valid():
             #functions.guardar_validacion(form)
-            datos,exists=functions.calcular(form)
+            datos=functions.calcular(form)
             template=functions.template(form.cleaned_data['variable'])
             if self.request.is_ajax():
-                return render(request,template,{'datos':datos,'exists':exists})
+                return render(request,template,{'datos':datos})
             else:
                 functions.guardar_variable(datos,form)
                 save=True

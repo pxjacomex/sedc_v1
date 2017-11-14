@@ -37,21 +37,48 @@ def calcular(form):
         datos=matrizV(estacion,variable,periodo)
     elif int(variable) in typeVI:
         datos=matrizVI(estacion,variable,periodo)
-    valid=verficar_anuario(estacion,variable,periodo)
-    return datos,valid
+    return datos
 def guardar_variable(datos,form):
     estacion=form.cleaned_data['estacion']
     variable=form.cleaned_data['variable']
     periodo=form.cleaned_data['periodo']
     if verficar_anuario(estacion,variable,periodo):
-        if variable=="7":
-            radiacion=datos_guardar(estacion,variable,periodo)
-            for rad in radiacion:
-                rad.save()
-        else:
-            for obj_variable in datos:
-                obj_variable.save()
-
+        borrar_datos(estacion,variable,periodo)
+    if variable=="7":
+        radiacion=datos_guardar(estacion,variable,periodo)
+        for rad in radiacion:
+            rad.save()
+    else:
+        for obj_variable in datos:
+            obj_variable.save()
+def borrar_datos(estacion,variable,periodo):
+    if variable=="1":
+        result=models.Precipitacion.objects.filter(est_id=estacion)\
+        .filter(pre_periodo=periodo).delete()
+    elif variable=="2":
+        result=models.TemperaturaAire.objects.filter(est_id=estacion)\
+        .filter(tai_periodo=periodo).delete()
+    elif variable=="3":
+        result=models.HumedadAire.objects.filter(est_id=estacion)\
+        .filter(hai_periodo=periodo).delete()
+    elif variable=="6":
+        result=models.HumedadSuelo.objects.filter(est_id=estacion)\
+        .filter(hai_periodo=periodo).delete()
+    elif variable=="7":
+        result=models.RadiacionSolar.objects.filter(est_id=estacion)\
+        .filter(rad_periodo=periodo).delete()
+    elif variable=="8":
+        result=models.PresionAtmosferica.objects.filter(est_id=estacion)\
+        .filter(pat_periodo=periodo).delete()
+    elif variable=="9":
+        result=models.TemperaturaAgua.objects.filter(est_id=estacion)\
+        .filter(tag_periodo=periodo).delete()
+    elif variable=="10":
+        result=models.Caudal.objects.filter(est_id=estacion)\
+        .filter(cau_periodo=periodo).delete()
+    elif variable=="11":
+        result=models.NivelAgua.objects.filter(est_id=estacion)\
+        .filter(nag_periodo=periodo).delete()
 def verficar_anuario(estacion,variable,periodo):
     result=False
     if variable=="1":

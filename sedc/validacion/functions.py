@@ -22,8 +22,8 @@ def generar_validacion(form):
         fecha_ini=frecuencia[0].fre_fecha_ini
     #fecha_ini=date(2017,1,1)
     mediciones=Medicion.objects.filter(est_id=estacion)\
-    .filter(var_id=variable).order_by('-med_fecha')[:1]
-    fecha_fin=mediciones[0].med_fecha
+    .filter(var_id=variable).values('med_fecha').reverse()[:1]
+    fecha_fin=mediciones[0].get('med_fecha')
     fechas=list(Frecuencia.objects.filter(est_id=estacion)\
     .filter(var_id=variable).order_by('fre_fecha_ini'))
     i=0
