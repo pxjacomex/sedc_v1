@@ -26,44 +26,44 @@ def consultar_formatos(marca):
     return lista
 #leer el archivo
 def procesar_archivo(archivo,form,request):
-    try:
-        formato=Formato.objects.get(for_id=form.cleaned_data['formato'])
-        estacion=Estacion.objects.get(est_id=form.cleaned_data['estacion'])
-        sobreescribir=form.cleaned_data['sobreescribir']
-        datos,variables=construir_matriz(archivo,formato,estacion)
-        valid=validar_fechas(datos)
-        vacio=verificar_vacios(datos)
-        message=str("")
-        datos_json=serialize('json', datos)
-        request.session['datos']=datos_json
-        request.session['sobreescribir']=sobreescribir
-        request.session['variables']=serialize('json',variables)
+    #try:
+    formato=Formato.objects.get(for_id=form.cleaned_data['formato'])
+    estacion=Estacion.objects.get(est_id=form.cleaned_data['estacion'])
+    sobreescribir=form.cleaned_data['sobreescribir']
+    datos,variables=construir_matriz(archivo,formato,estacion)
+    valid=validar_fechas(datos)
+    vacio=verificar_vacios(datos)
+    message=str("")
+    datos_json=serialize('json', datos)
+    request.session['datos']=datos_json
+    request.session['sobreescribir']=sobreescribir
+    request.session['variables']=serialize('json',variables)
 
-        if vacio:
-            print "llego"
-            request.session['vacios']=serialize('json',objetos_vacios(datos,variables))
-            #lista_vacios=objetos_vacios(datos,variables)
-        if not valid and not sobreescribir:
-            message="Datos existentes, por favor seleccione la opcion sobreescribir"
-        elif not valid and sobreescribir:
-            message="Se va a sobreescribir la informacion"
-        elif valid and sobreescribir:
-            message="Los datos no existen, no hay que sobreescribir la información"
-        else:
-            message="Ninguno"
-        context={
-            'variables':informacion_archivo(formato),
-            'fechas':rango_fecha(datos),
-            'message':message,
-            'valid':valid,
-            'vacio':vacio,
-        }
-    except ValueError:
+    if vacio:
+        print "llego"
+        request.session['vacios']=serialize('json',objetos_vacios(datos,variables))
+        #lista_vacios=objetos_vacios(datos,variables)
+    if not valid and not sobreescribir:
+        message="Datos existentes, por favor seleccione la opcion sobreescribir"
+    elif not valid and sobreescribir:
+        message="Se va a sobreescribir la informacion"
+    elif valid and sobreescribir:
+        message="Los datos no existen, no hay que sobreescribir la información"
+    else:
+        message="Ninguno"
+    context={
+        'variables':informacion_archivo(formato),
+        'fechas':rango_fecha(datos),
+        'message':message,
+        'valid':valid,
+        'vacio':vacio,
+    }
+    '''except ValueError:
         context={
             'message':"El formato del datalogger no coincide con el archivo",
             'valid':False
         }
-
+        '''
 
     return context
 
@@ -84,6 +84,7 @@ def construir_matriz(archivo,formato,estacion):
         #controlar la fila de inicio
         if i>=formato.for_fil_ini:
             valores=linea.split(delimitador.del_caracter)
+
             fecha,hora=formato_fecha(formato,valores,cambiar_fecha)
             j=0
             for fila in clasificacion:
@@ -115,15 +116,19 @@ def verificar_vacios(datos):
     hora_fin=datos[0].med_hora
     medicion=Medicion.objects.filter(est_id=datos[0].est_id)\
     .filter(var_id=datos[0].var_id).values('med_fecha','med_hora').reverse()[:1]
-
-    fecha_datos=list(medicion)[0].get('med_fecha')
-    intervalo=timedelta(days=1)
-    fecha_comparacion=fecha_datos+intervalo
-    #print fecha_archivo,fecha_datos
-    if fecha_comparacion==fecha_archivo:
-        estado=False
+    if len(medicion)>0:
+        fecha_datos=list(medicion)[0].get('med_fecha')
+        intervalo=timedelta(days=1)
+        fecha_comparacion=fecha_datos+intervalo
+        #print fecha_archivo,fecha_datos
+        if fecha_comparacion==fecha_archivo:
+            estado=False
+        else:
+            estado=True
     else:
-        estado=True
+        estado=False
+
+
     return estado
 def objetos_vacios(datos,variables):
     lista_vacios=[]

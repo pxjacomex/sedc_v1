@@ -57,3 +57,6 @@ def maximospre(datos_diarios):
         maxdia.append(val_maxdia[val_max24h.index(max(val_max24h))])
         totdias.append(count)
     return max24H,maxdia,totdias
+def verificarII(estacion,periodo):
+    return Precipitacion.objects.filter(est_id=estacion)\
+        .filter(pre_periodo=periodo).exists()

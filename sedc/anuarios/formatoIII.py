@@ -74,11 +74,16 @@ def maximostai(datos_diarios_max):
         val_maxdia = []
         for fila in datos_diarios_max:
             if fila.get('month') == i:
-                val_max_abs.append(fila.get('valor'))
-                val_maxdia.append(fila.get('day'))
+                if fila.get('valor') is not None:
+                    val_max_abs.append(fila.get('valor'))
+                    val_maxdia.append(fila.get('day'))
+                else:
+                    val_max_abs.append(0)
+                    val_maxdia.append(0)
         max_abs.append(max(val_max_abs))
         maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
-        avgmax.append(sum(val_max_abs) / (len(val_max_abs)))
+        print val_max_abs
+        avgmax.append(sum(val_max_abs) / len(val_max_abs))
         #avgmax.append((len(val_max_abs)))
     return max_abs,maxdia, avgmax
 
@@ -99,3 +104,6 @@ def minimostai(datos_diarios_min):
         avgmin.append(sum(val_min_abs) / (len(val_min_abs)))
         #avgmin.append((len(val_min_abs)))
     return min_abs,mindia,avgmin
+def verificarIII(estacion,periodo):
+    return TemperaturaAire.objects.filter(est_id=estacion)\
+        .filter(tai_periodo=periodo).exists()

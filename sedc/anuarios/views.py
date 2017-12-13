@@ -14,6 +14,7 @@ class ProcesarVariables(FormView):
     success_url='/anuarios/procesar'
     def post(self, request, *args, **kwargs):
         form=AnuarioForm(self.request.POST or None)
+        save=False
         if form.is_valid():
             #functions.guardar_validacion(form)
             datos=functions.calcular(form)
@@ -22,7 +23,8 @@ class ProcesarVariables(FormView):
                 return render(request,template,{'datos':datos})
             else:
                 functions.guardar_variable(datos,form)
-        return self.render_to_response(self.get_context_data(form=form))
+                save=True
+        return self.render_to_response(self.get_context_data(form=form,save=True))
     def get_context_data(self, **kwargs):
         context = super(ProcesarVariables, self).get_context_data(**kwargs)
         return context

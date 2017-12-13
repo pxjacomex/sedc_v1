@@ -15,6 +15,7 @@ from anuarios.formatoVI import matrizVI,datos_guardar
 from anuarios.formatoV import matrizV
 def calcular(form):
     datos=[]
+    valid=False
     typeI = [6,8,9,10,11]
     typeII = [1]
     typeIII = [2]
@@ -42,44 +43,71 @@ def guardar_variable(datos,form):
     variable=form.cleaned_data['variable']
     periodo=form.cleaned_data['periodo']
     if verficar_anuario(estacion,variable,periodo):
-        if variable=="7":
-            radiacion=datos_guardar(estacion,variable,periodo)
-            for rad in radiacion:
-                rad.save()
-        else:
-            for obj_variable in datos:
-                obj_variable.save()
-def verficar_anuario(estacion,variable,periodo):
-    result=True
+        borrar_datos(estacion,variable,periodo)
+    if variable=="7":
+        radiacion=datos_guardar(estacion,variable,periodo)
+        for rad in radiacion:
+            rad.save()
+    else:
+        for obj_variable in datos:
+            obj_variable.save()
+def borrar_datos(estacion,variable,periodo):
     if variable=="1":
-        consulta=models.Precipitacion.objects.filter(est_id=estacion)\
-        .filter(pre_periodo=periodo)
+        result=models.Precipitacion.objects.filter(est_id=estacion)\
+        .filter(pre_periodo=periodo).delete()
     elif variable=="2":
-        consulta=models.TemperaturaAire.objects.filter(est_id=estacion)\
-        .filter(tai_periodo=periodo)
+        result=models.TemperaturaAire.objects.filter(est_id=estacion)\
+        .filter(tai_periodo=periodo).delete()
     elif variable=="3":
-        consulta=models.HumedadAire.objects.filter(est_id=estacion)\
-        .filter(hai_periodo=periodo)
+        result=models.HumedadAire.objects.filter(est_id=estacion)\
+        .filter(hai_periodo=periodo).delete()
+    elif variable=="6":
+        result=models.HumedadSuelo.objects.filter(est_id=estacion)\
+        .filter(hai_periodo=periodo).delete()
+    elif variable=="7":
+        result=models.RadiacionSolar.objects.filter(est_id=estacion)\
+        .filter(rad_periodo=periodo).delete()
+    elif variable=="8":
+        result=models.PresionAtmosferica.objects.filter(est_id=estacion)\
+        .filter(pat_periodo=periodo).delete()
+    elif variable=="9":
+        result=models.TemperaturaAgua.objects.filter(est_id=estacion)\
+        .filter(tag_periodo=periodo).delete()
+    elif variable=="10":
+        result=models.Caudal.objects.filter(est_id=estacion)\
+        .filter(cau_periodo=periodo).delete()
+    elif variable=="11":
+        result=models.NivelAgua.objects.filter(est_id=estacion)\
+        .filter(nag_periodo=periodo).delete()
+def verficar_anuario(estacion,variable,periodo):
+    result=False
+    if variable=="1":
+        result=models.Precipitacion.objects.filter(est_id=estacion)\
+        .filter(pre_periodo=periodo).exists()
+    elif variable=="2":
+        result=models.TemperaturaAire.objects.filter(est_id=estacion)\
+        .filter(tai_periodo=periodo).exists()
+    elif variable=="3":
+        result=models.HumedadAire.objects.filter(est_id=estacion)\
+        .filter(hai_periodo=periodo).exists()
     elif variable=="6":
         consulta=models.HumedadSuelo.objects.filter(est_id=estacion)\
         .filter(hsu_periodo=periodo)
     elif variable=="7":
-        consulta=models.RadiacionSolar.objects.filter(est_id=estacion)\
-        .filter(rad_periodo=periodo)
+        result=models.RadiacionSolar.objects.filter(est_id=estacion)\
+        .filter(rad_periodo=periodo).exists()
     elif variable=="8":
-        consulta=models.PresionAtmosferica.objects.filter(est_id=estacion)\
-        .filter(pat_periodo=periodo)
+        result=models.PresionAtmosferica.objects.filter(est_id=estacion)\
+        .filter(pat_periodo=periodo).exists()
     elif variable=="9":
-        consulta=models.TemperaturaAgua.objects.filter(est_id=estacion)\
-        .filter(tag_periodo=periodo)
+        result=models.TemperaturaAgua.objects.filter(est_id=estacion)\
+        .filter(tag_periodo=periodo).exists()
     elif variable=="10":
-        consulta=models.Caudal.objects.filter(est_id=estacion)\
-        .filter(cau_periodo=periodo)
+        result=models.Caudal.objects.filter(est_id=estacion)\
+        .filter(cau_periodo=periodo).exists()
     elif variable=="11":
-        consulta=models.NivelAgua.objects.filter(est_id=estacion)\
-        .filter(nag_periodo=periodo)
-    if consulta.count()>0:
-        result=False
+        result=models.NivelAgua.objects.filter(est_id=estacion)\
+        .filter(nag_periodo=periodo).exists()
     return result
 def template(variable):
     template='anuarios/tai.html'

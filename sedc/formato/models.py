@@ -28,11 +28,15 @@ class Delimitador(models.Model):
 
 class Formato(models.Model):
     TIPO_FECHA=(
-    ('%m/%d/%y','MM/DD/YYYY'),
-    ('%y-%m-%d','YYYY-MM-DD'),
+    ('%m/%d/%Y','MM/DD/YY'),
+    ('%Y-%m-%d','YYYY-MM-DD'),
+    ('%d/%m/%Y','DD/MM/YYYY'),
+    ('%m/%d/%Y','MM/DD/YYYY'),
     )
     TIPO_HORA=(
     ('%I:%M:%S %p','HH:MM:SS AM/PM'),
+    ('%H:%M:%S','HH:MM:SS 24H'),
+    ('%H:%M','HH:MM 24H'),
     )
     for_id=models.AutoField(primary_key=True)
     ext_id=models.ForeignKey(
