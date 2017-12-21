@@ -32,6 +32,7 @@ class Formato(models.Model):
     ('%Y-%m-%d','YYYY-MM-DD'),
     ('%d/%m/%Y','DD/MM/YYYY'),
     ('%m/%d/%Y','MM/DD/YYYY'),
+    ('%d-%b-%y','DD-BB-YY'),
     )
     TIPO_HORA=(
     ('%I:%M:%S %p','HH:MM:SS AM/PM'),
