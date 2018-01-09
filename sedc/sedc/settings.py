@@ -34,7 +34,6 @@ TIME_FORMAT= None
 # Application definition
 
 INSTALLED_APPS = [
-    #'bootstrapform',
     'bootstrap3',
     'variable.apps.VariableConfig',
     'formato.apps.FormatoConfig',
