@@ -12,16 +12,15 @@ def matrizI(estacion,variable,periodo):
     obj_estacion=Estacion.objects.get(est_id=estacion)
     consulta=Medicion.objects.filter(est_id=estacion)\
     .filter(var_id=variable).filter(med_fecha__year=periodo)
-    if variable == 8:
+    if variable == "8":
         consulta = consulta.exclude(med_valor = 0, med_maximo = 0, med_minimo = 0)
     consulta=consulta.annotate(month=TruncMonth('med_fecha')).values('month')
     med_max=list(consulta.annotate(c=Max('med_valor')).values('c').order_by('month'))
-    med_min=list(consulta.annotate(c=Min('med_valor')).values('c').order_by('month'))
+    med_min=list(consulta.annotate(c=Min('med_minimo')).values('c').order_by('month'))
     med_avg=list(consulta.annotate(c=Avg('med_valor')).values('c').order_by('month'))
     maximos = [d.get('c') for d in med_max]
     minimos = [d.get('c') for d in med_min]
     promedios = [d.get('c') for d in med_avg]
-    print len(maximos)
     if variable=="6":
         for i in range(len(promedios)):
             obj_hsu=HumedadSuelo()
@@ -73,21 +72,3 @@ def matrizI(estacion,variable,periodo):
             obj_nag.nag_promedio=promedios[i]
             datos.append(obj_nag)
     return datos
-def verificarI(estacion,variable,periodo):
-    result=False
-    if variable=="6":
-        result=HumedadSuelo.objects.filter(est_id=estacion)\
-            .filter(hsu_periodo=periodo).exists()
-    elif variable=="8":
-        result=PresionAtmosferica.objects.filter(est_id=estacion)\
-            .filter(pat_periodo=periodo).exists()
-    elif variable=="9":
-        result=TemperaturaAgua.objects.filter(est_id=estacion)\
-            .filter(pat_periodo=periodo).exists()
-    elif variable=="10":
-        result=Caudal.objects.filter(est_id=estacion)\
-            .filter(cau_periodo=periodo).exists()
-    elif variable=="11":
-        result=NivelAgua.objects.filter(est_id=estacion)\
-            .filter(nag_periodo=periodo).exists()
-    return result

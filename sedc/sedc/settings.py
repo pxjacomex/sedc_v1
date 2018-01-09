@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'a^gr0b4)=81coo9(&*qwllg3cijlx-$8xlyvddi)omrzt4&kc('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
+DEBUG = True
 ALLOWED_HOSTS = ['192.168.19.2','infoagua-guayllabamba.ec']
+
 
 DATETIME_FORMAT= None
 DATE_FORMAT= None
@@ -34,7 +34,6 @@ TIME_FORMAT= None
 # Application definition
 
 INSTALLED_APPS = [
-    #'bootstrapform',
     'bootstrap3',
     'variable.apps.VariableConfig',
     'formato.apps.FormatoConfig',
@@ -147,7 +146,6 @@ USE_TZ = False
 STATICFILES_DIRS=[
     os.path.join(BASE_DIR,'static')
 ]
-STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static01/")
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
