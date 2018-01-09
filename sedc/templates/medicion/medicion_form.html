@@ -1,0 +1,36 @@
+
+{% load bootstrap3 %}
+<script>
+  // JQuery code to be added in here.
+  $( function() {
+    $("#btn_guardar").click(function(){
+      $.ajax({
+        url: $("#link_save").attr('href'),
+        type:'POST',
+        data: $("#form_update").serialize(),
+        success: function (data) {
+
+          $("#div_edit" ).dialog( "close" );
+          $("#div_edit").html('')
+          actualizar_lista();
+        }
+      });
+    });
+    $("#btn_cancelar_delete").click(function(){
+      $( "#div_edit" ).dialog( "close" );
+    });
+  });
+</script>
+<a id="link_save" href="{{ url }}" ></a>
+<div class="col-lg-12 col-md-12 col-sm-12">
+  <form id="form_update" method="post" class="form">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button id="btn_guardar" type="button" class="btn btn-default btn-primary">
+      Guardar
+    </button>
+    <button id="btn_cancelar_update" type="button" class="btn btn-default btn-default">
+      Cancelar
+    </button>
+  </form>
+</div>
