@@ -64,10 +64,8 @@ class AnuarioForm(forms.Form):
 
         for item in variables:
             if item.get('var_id') in typeI:
-                print item.get('var_id')
                 matriz = obj_typeI.matriz(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
                 grafico = obj_typeI.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                print matriz
                 context.update({str(item.get('var_id')) + '_matriz': matriz})
                 context.update({str(item.get('var_id')) + '_grafico': grafico})
 

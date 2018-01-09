@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from anuarios.models import TemperaturaAire
-from django.views.generic import FormView
+from django.views.generic import ListView,FormView
 from anuarios.forms import AnuarioForm
 from anuarios import functions
 
@@ -20,7 +20,9 @@ class ProcesarVariables(FormView):
             datos=functions.calcular(form)
             template=functions.template(form.cleaned_data['variable'])
             if self.request.is_ajax():
-                return render(request,template,{'datos':datos})
+                exists=functions.verficar_anuario(form.cleaned_data['estacion']
+                ,form.cleaned_data['variable'],form.cleaned_data['periodo'])
+                return render(request,template,{'datos':datos,'exists':exists})
             else:
                 functions.guardar_variable(datos,form)
                 save=True

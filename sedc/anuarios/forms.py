@@ -8,7 +8,7 @@ class AnuarioForm(forms.Form):
         lista = ()
         estaciones = Estacion.objects.all()
         for item in estaciones:
-            fila = ((str(item.est_id),item.est_nombre),)
+            fila = ((str(item.est_id),item.est_codigo + str(" ") + item.est_nombre),)
             lista = lista + fila
         return lista
     def lista_variables():
