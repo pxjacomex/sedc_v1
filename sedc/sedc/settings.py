@@ -25,7 +25,7 @@ SECRET_KEY = 'a^gr0b4)=81coo9(&*qwllg3cijlx-$8xlyvddi)omrzt4&kc('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['192.168.19.2','infoagua-guayllabamba.ec']
+ALLOWED_HOSTS = ['192.168.19.2','infoagua-guayllabamba.ec','localhost']
 
 
 DATETIME_FORMAT= None
@@ -146,6 +146,7 @@ USE_TZ = False
 STATICFILES_DIRS=[
     os.path.join(BASE_DIR,'static')
 ]
+STATIC_URL='static01/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static01/")
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

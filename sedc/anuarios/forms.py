@@ -13,7 +13,7 @@ class AnuarioForm(forms.Form):
         return lista
     def lista_variables():
         lista = ()
-        variables = Variable.objects.all()
+        variables = Variable.objects.order_by('var_id').all()
         for item in variables:
             fila = ((str(item.var_id),item.var_nombre),)
             lista = lista + fila

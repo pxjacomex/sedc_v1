@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from medicion.models import Medicion
 from estacion.models import Estacion
-from anuarios.models import RadiacionSolar
+from anuarios.models import RadiacionSolar,RadiacionMaxima, RadiacionMinima
 from django.db.models.functions import TruncMonth
 from django.db.models import Max, Min, Avg, Count
 from django.db.models.functions import (
@@ -103,6 +103,56 @@ def datos_guardar(estacion,variable,periodo):
         datos.append(obj_rad)
         print fila.get('maximo')
     return datos
-def verificarVI(estacion,periodo):
+'''def verificarVI(estacion,periodo):
     return RadiacionSolar.objects.filter(est_id=estacion)\
-        .filter(rad_periodo=periodo).exists()
+        .filter(rad_periodo=periodo).exists()'''
+def datos_radiacion_maxima(datos,estacion,periodo):
+    lista=[]
+    obj_estacion=Estacion.objects.get(est_id=estacion)
+    for fila in datos.maximo:
+        obj_rad_max=RadiacionMaxima()
+        obj_rad_max.est_id=obj_estacion
+        obj_rad_max.rad_periodo=periodo
+        obj_rad_max.rad_mes=fila[0]
+        obj_rad_max.rad_5=fila[1]
+        obj_rad_max.rad_6=fila[2]
+        obj_rad_max.rad_7=fila[3]
+        obj_rad_max.rad_8=fila[4]
+        obj_rad_max.rad_9=fila[5]
+        obj_rad_max.rad_10=fila[6]
+        obj_rad_max.rad_11=fila[7]
+        obj_rad_max.rad_12=fila[8]
+        obj_rad_max.rad_13=fila[9]
+        obj_rad_max.rad_14=fila[10]
+        obj_rad_max.rad_15=fila[11]
+        obj_rad_max.rad_16=fila[12]
+        obj_rad_max.rad_17=fila[13]
+        obj_rad_max.rad_18=fila[14]
+        obj_rad_max.rad_max=fila[15]
+        obj_rad_max.rad_hora=fila[16]
+        obj_rad_max.save()
+def datos_radiacion_minimo(datos,estacion,periodo):
+    lista=[]
+    obj_estacion=Estacion.objects.get(est_id=estacion)
+    for fila in datos.minimo:
+        obj_rad_min=RadiacionMinima()
+        obj_rad_min.est_id=obj_estacion
+        obj_rad_min.rad_periodo=periodo
+        obj_rad_min.rad_mes=fila[0]
+        obj_rad_min.rad_5=fila[1]
+        obj_rad_min.rad_6=fila[2]
+        obj_rad_min.rad_7=fila[3]
+        obj_rad_min.rad_8=fila[4]
+        obj_rad_min.rad_9=fila[5]
+        obj_rad_min.rad_10=fila[6]
+        obj_rad_min.rad_11=fila[7]
+        obj_rad_min.rad_12=fila[8]
+        obj_rad_min.rad_13=fila[9]
+        obj_rad_min.rad_14=fila[10]
+        obj_rad_min.rad_15=fila[11]
+        obj_rad_min.rad_16=fila[12]
+        obj_rad_min.rad_17=fila[13]
+        obj_rad_min.rad_18=fila[14]
+        obj_rad_min.rad_max=fila[15]
+        obj_rad_min.rad_hora=fila[16]
+        obj_rad_min.save()

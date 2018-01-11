@@ -11,8 +11,8 @@ from anuarios.formatoI import matrizI
 from anuarios.formatoII import matrizII
 from anuarios.formatoIII import matrizIII
 from anuarios.formatoIV import matrizIV
-from anuarios.formatoVI import matrizVI,datos_guardar
-from anuarios.formatoV import matrizV
+from anuarios.formatoV import matrizV,datos_viento
+from anuarios.formatoVI import matrizVI,datos_guardar, datos_radiacion_maxima,datos_radiacion_minimo
 def calcular(form):
     datos=[]
     valid=False
@@ -45,9 +45,16 @@ def guardar_variable(datos,form):
     if verficar_anuario(estacion,variable,periodo):
         borrar_datos(estacion,variable,periodo)
     if variable=="7":
-        radiacion=datos_guardar(estacion,variable,periodo)
+        '''radiacion=datos_guardar(estacion,variable,periodo)
         for rad in radiacion:
-            rad.save()
+            rad.save()'''
+        datos_radiacion_maxima(datos,estacion,periodo)
+        datos_radiacion_minimo(datos,estacion,periodo)
+    elif variable=="4" or variable=="5":
+        viento=datos_viento(datos,estacion,periodo)
+        for obj_viento in viento:
+            obj_viento.save()
+            print obj_viento
     else:
         for obj_variable in datos:
             obj_variable.save()
@@ -90,6 +97,12 @@ def verficar_anuario(estacion,variable,periodo):
     elif variable=="3":
         result=models.HumedadAire.objects.filter(est_id=estacion)\
         .filter(hai_periodo=periodo).exists()
+    elif variable=="4":
+        result=models.Viento.objects.filter(est_id=estacion)\
+        .filter(vie_periodo=periodo).exists()
+    elif variable=="5":
+        result=models.Viento.objects.filter(est_id=estacion)\
+        .filter(vie_periodo=periodo).exists()
     elif variable=="6":
         consulta=models.HumedadSuelo.objects.filter(est_id=estacion)\
         .filter(hsu_periodo=periodo)

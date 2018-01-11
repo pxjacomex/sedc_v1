@@ -292,9 +292,8 @@ class MedicionSearchForm(forms.Form):
         return val_avg,val_max,val_min,freq
 
     def grafico(self,form):
-        if form.cleaned_data['variable']==str(2):
+        if form.cleaned_data['variable']==str(2) or form.cleaned_data['variable']==str(3):
             val_avg,val_max,val_min,freq = self.data_simple_temp(form)
-
             trace0 = go.Scatter(
                 x = freq,
                 y = val_max,

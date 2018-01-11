@@ -12,7 +12,7 @@ def matrizIV(estacion,variable,periodo):
     consulta=Medicion.objects.filter(est_id=estacion)\
     .filter(var_id=variable).filter(med_fecha__year=periodo)\
     .annotate(month=TruncMonth('med_fecha')).values('month')
-    print (Medicion.objects.filter(est_id=estacion)
+    consulta_max=(Medicion.objects.filter(est_id=estacion)
     .filter(var_id=variable)
     .filter(med_fecha__year=periodo).values('med_maximo').exists())
 
@@ -33,23 +33,24 @@ def matrizIV(estacion,variable,periodo):
         .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
         .values('month','day')
         .annotate(minimo=Min('med_minimo'),valor=Min('med_valor'))
-        .values('valor','month','day').order_by('month','day'))
+        .values('minimo','valor','month','day').order_by('month','day'))
 
 
-    med_avg=list(consulta.exclude(med_valor=0).annotate(c=Avg('med_valor')).values('c').order_by('month'))
-    promedio = [d.get('c') for d in med_avg]
+    med_avg=list(consulta.exclude(med_valor=0).
+        annotate(media=Avg('med_valor')).values('media','month').order_by('month'))
     maximo,maximo_dia = maximoshai(datos_diarios_max)
     minimo,minimo_dia = minimoshai(datos_diarios_min)
-    for i in range(12):
+    for item in med_avg:
+        mes=item.get('month').month
         obj_hai=HumedadAire()
         obj_hai.est_id=obj_estacion
         obj_hai.hai_periodo=periodo
-        obj_hai.hai_mes=i+1
-        obj_hai.hai_maximo=maximo[i]
-        obj_hai.hai_maximo_dia=maximo_dia[i]
-        obj_hai.hai_minimo=minimo[i]
-        obj_hai.hai_minimo_dia=minimo_dia[i]
-        obj_hai.hai_promedio=promedio[i]
+        obj_hai.hai_mes=mes
+        obj_hai.hai_maximo=maximo[mes-1]
+        obj_hai.hai_maximo_dia=maximo_dia[mes-1]
+        obj_hai.hai_minimo=minimo[mes-1]
+        obj_hai.hai_minimo_dia=minimo_dia[mes-1]
+        obj_hai.hai_promedio=item.get('media')
         datos.append(obj_hai)
     return datos
 def maximoshai(datos_diarios_max):
@@ -63,11 +64,15 @@ def maximoshai(datos_diarios_max):
             if fila.get('month') == i:
                 if fila.get('maximo') is not None:
                     val_max_abs.append(fila.get('maximo'))
-                else:
+                elif fila.get('valor') is not None:
                     val_max_abs.append(fila.get('valor'))
                 val_maxdia.append(fila.get('day'))
-        max_abs.append(max(val_max_abs))
-        maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
+        if len(val_max_abs)>0:
+            max_abs.append(max(val_max_abs))
+            maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
+        else:
+            max_abs.append(0)
+            maxdia.append(0)
     return max_abs,maxdia
 
 def minimoshai(datos_diarios_min):
@@ -81,12 +86,17 @@ def minimoshai(datos_diarios_min):
             if fila.get('month') == i:
                 if fila.get('minimo') is not None:
                     val_min_abs.append(fila.get('minimo'))
-                else:
+                elif fila.get('valor') is not None:
                     val_min_abs.append(fila.get('valor'))
                 val_mindia.append(fila.get('day'))
-        min_abs.append(min(val_min_abs))
-        mindia.append(val_mindia[val_min_abs.index(min(val_min_abs))])
+
+        if len(val_min_abs)>0:
+            min_abs.append(min(val_min_abs))
+            mindia.append(val_mindia[val_min_abs.index(min(val_min_abs))])
+            if i==9:
+                print val_min_abs
+                print min(val_min_abs)
+        else:
+            min_abs.append(0)
+            mindia.append(0)
     return min_abs,mindia
-def verificarIV(estacion,periodo):
-    return HumedadAire.objects.filter(est_id=estacion)\
-        .filter(hai_periodo=periodo).exists()

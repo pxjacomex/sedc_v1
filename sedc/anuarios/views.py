@@ -16,16 +16,13 @@ class ProcesarVariables(FormView):
         form=AnuarioForm(self.request.POST or None)
         save=False
         if form.is_valid():
-            #functions.guardar_validacion(form)
-            datos=functions.calcular(form)
-            template=functions.template(form.cleaned_data['variable'])
             if self.request.is_ajax():
+                datos=functions.calcular(form)
+                template=functions.template(form.cleaned_data['variable'])
                 exists=functions.verficar_anuario(form.cleaned_data['estacion']
                 ,form.cleaned_data['variable'],form.cleaned_data['periodo'])
+                #functions.guardar_variable(datos,form)
                 return render(request,template,{'datos':datos,'exists':exists})
-            else:
-                functions.guardar_variable(datos,form)
-                save=True
         return self.render_to_response(self.get_context_data(form=form,save=True))
     def get_context_data(self, **kwargs):
         context = super(ProcesarVariables, self).get_context_data(**kwargs)

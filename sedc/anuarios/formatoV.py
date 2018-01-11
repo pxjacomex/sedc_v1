@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from medicion.models import Medicion
 from estacion.models import Estacion
-from anuarios.models import RadiacionSolar
+from anuarios.models import Viento
 from django.db.models.functions import TruncMonth
 from django.db.models import Max, Min, Avg, Count
 
@@ -13,15 +13,17 @@ def matrizV(estacion,variable,periodo):
         .filter(med_fecha__year=periodo)
         .annotate(month=TruncMonth('med_fecha')).values('month')
         .annotate(c=Avg('med_valor')).values('c').order_by('month'))
-
+    #velocidad media en m/s
     vel_media_simple = [d.get('c') for d in vel_media]
+    #velocidad media en km/h
     vel_media_kmh = [x * int(3.6) for x in vel_media_simple]
-
+    #numero de registros por mes en velocidad
     num_obs=list(Medicion.objects.filter(est_id=estacion).filter(var_id=4)
         .filter(med_fecha__year=periodo)
         .annotate(month=TruncMonth('med_fecha')).values('month')
-        .annotate(obs=Count('med_valor')).values('obs')
+        .annotate(obs=Count('med_valor')).values('obs','month')
         .order_by('month'))
+    #numero de registros mayores a 0.5 en velocidad
     calma=list(Medicion.objects.filter(est_id=estacion).filter(var_id=4)
         .filter(med_fecha__year=periodo).filter(med_valor__lt=0.5)
         .annotate(month=TruncMonth('med_fecha')).values('month')
@@ -29,16 +31,19 @@ def matrizV(estacion,variable,periodo):
         .order_by('month'))
     datos_obs = [d.get('obs') for d in num_obs]
     datos_calma = [d.get('calma') for d in calma]
+    #lista de datos de la dirección de viento
     dat_dvi=list(Medicion.objects
         .filter(est_id=estacion).filter(var_id=5)
         .filter(med_fecha__year=periodo)
         .values('med_valor','med_fecha').order_by('med_fecha','med_hora')
     )
+    #lista de datos de velocidad del viento
     dat_vvi=list(Medicion.objects
         .filter(est_id=estacion).filter(var_id=4)
         .filter(med_fecha__year=periodo)
         .values('med_valor').order_by('med_fecha','med_hora')
     )
+    #lista de dato máximos de velocidad de viento
     dat_vvi_max=list(Medicion.objects
         .filter(est_id=estacion).filter(var_id=4)
         .filter(med_fecha__year=periodo)
@@ -46,7 +51,8 @@ def matrizV(estacion,variable,periodo):
     )
     valores=[[] for y in range(12)]
     direcciones=["N","NE","E","SE","S","SO","O","NO"]
-    for mes in range(1,13):
+    for item in num_obs:
+        mes=item.get('month').month
         #crea una matriz en blanco
         vvi=[[0 for x in range(0)] for y in range(8)]
         vvi_max=[[0 for x in range(0)] for y in range(8)]
@@ -84,22 +90,59 @@ def matrizV(estacion,variable,periodo):
                     dat_vvi_max.remove(val_vvi_max)
         maximos=[]
         valores[mes-1].append(mes)
+        #recorro la matriz de datos en base al número de direcciones
         for j in range(8):
-            #velocidades medias en esa direccion
-            vel_med=float(sum(vvi[j])/len(vvi[j]))
+
+            if len(vvi[j])>0:
+                vel_med=float(sum(vvi[j])/len(vvi[j]))
+                por_med=float(len(vvi[j]))/item.get('obs')*100
+            else:
+                vel_med=0
+                por_med=0
+            #promedio de velocidades medias por direccion
             valores[mes-1].append(round(vel_med,2))
-            #porcentaje en esa direccion
-            por_med=float(len(vvi[j]))/datos_obs[mes-1]*100
+            #porcentaje por direccion
             valores[mes-1].append(round(por_med,2))
             #maximos por direcciion
             if len(vvi_max[j])>0:
                 maximos.append(max(vvi_max[j]))
             else:
                 maximos.append(0)
-        calma=round(float(datos_calma[mes-1])/datos_obs[mes-1]*100,2)
+        calma=round(float(datos_calma[mes-1])/item.get('obs')*100,2)
         valores[mes-1].append(calma)
         valores[mes-1].append(datos_obs[mes-1])
         valores[mes-1].append(round(max(maximos),2))
         valores[mes-1].append(direcciones[maximos.index(max(maximos))])
         valores[mes-1].append(vel_media_kmh[mes-1])
     return valores
+def datos_viento(datos,estacion,periodo):
+    lista=[]
+    obj_estacion=Estacion.objects.get(est_id=estacion)
+    for fila in datos:
+        obj_viento=Viento()
+        obj_viento.est_id=obj_estacion
+        obj_viento.vie_periodo=periodo
+        obj_viento.vie_mes=fila[0]
+        obj_viento.vie_vel_N=fila[1]
+        obj_viento.vie_por_N=fila[2]
+        obj_viento.vie_vel_NE=fila[3]
+        obj_viento.vie_por_NE=fila[4]
+        obj_viento.vie_vel_E=fila[5]
+        obj_viento.vie_por_E=fila[6]
+        obj_viento.vie_vel_SE=fila[7]
+        obj_viento.vie_por_SE=fila[8]
+        obj_viento.vie_vel_S=fila[9]
+        obj_viento.vie_por_S=fila[10]
+        obj_viento.vie_vel_SO=fila[11]
+        obj_viento.vie_por_SO=fila[12]
+        obj_viento.vie_vel_O=fila[13]
+        obj_viento.vie_por_O=fila[14]
+        obj_viento.vie_vel_NO=fila[15]
+        obj_viento.vie_por_NO=fila[16]
+        obj_viento.vie_calma=fila[17]
+        obj_viento.vie_obs=fila[18]
+        obj_viento.vie_vel_max=fila[19]
+        obj_viento.vie_vel_dir=fila[20]
+        obj_viento.vie_vel_med=fila[21]
+        lista.append(obj_viento)
+    return lista

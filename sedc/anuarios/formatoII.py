@@ -13,8 +13,9 @@ def matrizII(estacion,variable,periodo):
     consulta=(Medicion.objects.filter(est_id=estacion)
         .filter(var_id=variable).filter(med_fecha__year=periodo)
         .annotate(month=TruncMonth('med_fecha')).values('month'))
-    med_mensual=list(consulta.annotate(c=Sum('med_valor')).
-        values('c').order_by('month'))
+    #valores de precipitación mensual
+    med_mensual=list(consulta.annotate(suma=Sum('med_valor')).
+        values('suma','month').order_by('month'))
     datos_diarios=list(Medicion.objects
         .filter(est_id=estacion)
         .filter(var_id=variable)
@@ -23,17 +24,16 @@ def matrizII(estacion,variable,periodo):
         .values('month','day')
         .annotate(valor=Sum('med_valor'))
         .values('valor','month','day').order_by('month','day'))
-    mensual_simple = [d.get('c') for d in med_mensual]
     max24H,maxdia,totdias = maximospre(datos_diarios)
-    for i in range(12):
+    for item in med_mensual:
         obj_precipitacion=Precipitacion()
         obj_precipitacion.est_id=obj_estacion
         obj_precipitacion.pre_periodo=periodo
-        obj_precipitacion.pre_mes=i+1
-        obj_precipitacion.pre_suma=mensual_simple[i]
-        obj_precipitacion.pre_maximo=max24H[i]
-        obj_precipitacion.pre_maximo_dia=maxdia[i]
-        obj_precipitacion.pre_dias=totdias[i]
+        obj_precipitacion.pre_mes=item.get('month').month
+        obj_precipitacion.pre_suma=item.get('suma')
+        obj_precipitacion.pre_maximo=max24H[item.get('month').month-1]
+        obj_precipitacion.pre_maximo_dia=maxdia[item.get('month').month-1]
+        obj_precipitacion.pre_dias=totdias[item.get('month').month-1]
         datos.append(obj_precipitacion)
     return datos
 def maximospre(datos_diarios):
@@ -41,6 +41,7 @@ def maximospre(datos_diarios):
     max24H = []
     maxdia = []
     totdias= []
+
     for i in range(1,13):
         val_max24h=[]
         val_maxdia = []
@@ -49,12 +50,17 @@ def maximospre(datos_diarios):
             if fila.get('month') == i:
                 val_max24h.append(fila.get('valor'))
                 val_maxdia.append(fila.get('day'))
+        #contar dias con lluvia en la variable count
         count = 0
         for j in val_max24h:
             if(j>0):
                 count+=1
-        max24H.append(max(val_max24h))
-        maxdia.append(val_maxdia[val_max24h.index(max(val_max24h))])
+        if len(val_max24h)>0:
+            max24H.append(max(val_max24h))
+            maxdia.append(val_maxdia[val_max24h.index(max(val_max24h))])
+        else:
+            max24H.append(0)
+            maxdia.append(0)
         totdias.append(count)
     return max24H,maxdia,totdias
 def verificarII(estacion,periodo):
