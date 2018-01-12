@@ -119,7 +119,7 @@ def verificar_vacios(datos):
         intervalo=timedelta(days=1)
         fecha_comparacion=fecha_datos+intervalo
         #print fecha_archivo,fecha_datos
-        if fecha_comparacion==fecha_archivo:
+        if fecha_comparacion>=fecha_archivo:
             estado=False
         else:
             estado=True
