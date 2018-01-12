@@ -1,0 +1,12 @@
+{% if frecuencia == "0" %}
+{% include "reportes/consultas/instantaneo.html" %}
+{% endif%}
+{% if frecuencia == "1" %}
+{% include "reportes/consultas/horario.html" %}
+{% endif%}
+{% if frecuencia == "2" %}
+{% include "reportes/consultas/diaria.html" %}
+{% endif%}
+{% if frecuencia == "3" %}
+{% include "reportes/consultas/mensual.html" %}
+{% endif%}

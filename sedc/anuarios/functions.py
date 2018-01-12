@@ -45,9 +45,6 @@ def guardar_variable(datos,form):
     if verficar_anuario(estacion,variable,periodo):
         borrar_datos(estacion,variable,periodo)
     if variable=="7":
-        '''radiacion=datos_guardar(estacion,variable,periodo)
-        for rad in radiacion:
-            rad.save()'''
         datos_radiacion_maxima(datos,estacion,periodo)
         datos_radiacion_minimo(datos,estacion,periodo)
     elif variable=="4" or variable=="5":

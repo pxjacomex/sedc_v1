@@ -6,35 +6,6 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 $(document).ready(function() {
-  BUTTON='<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
-  // esta función solo consulta los datos.
-  $("#btn_verificar").click(function(){
-    $(this).attr('disabled',true);
-    //$("#div_informacion").hide();
-    //$("#div_loading").show();
-    $.ajax({
-      url: '/anuarios/procesar/',
-      data: $("#form_validacion").serialize()+"&save=False",
-      type:'POST',
-      beforeSend: function () {
-        $("#div_informacion").hide();
-        $("#div_loading").show();
-        $("#div_error").hide();
-      },
-      success: function (data) {
-        $("#div_informacion").html(data)
-        $("#btn_verificar").removeAttr('disabled');
-        $("#div_informacion").show();
-        $("#div_loading").hide();
-        $("#div_error").hide();
-      },
-      error: function () {
-        $("#div_informacion").hide();
-        $("#div_loading").hide();
-        $("#div_error").show();
-      }
-    });
-  });
 //consulta y guarda la información
   $("#btn_procesar").click(function(){
     $(this).attr('disabled',true);

@@ -51,7 +51,7 @@ def matrizV(estacion,variable,periodo):
     )
     valores=[[] for y in range(12)]
     direcciones=["N","NE","E","SE","S","SO","O","NO"]
-    for item in num_obs:
+    for item,item_calma,item_velocidad in zip(num_obs,calma,vel_media):
         mes=item.get('month').month
         #crea una matriz en blanco
         vvi=[[0 for x in range(0)] for y in range(8)]
@@ -108,12 +108,12 @@ def matrizV(estacion,variable,periodo):
                 maximos.append(max(vvi_max[j]))
             else:
                 maximos.append(0)
-        calma=round(float(datos_calma[mes-1])/item.get('obs')*100,2)
-        valores[mes-1].append(calma)
-        valores[mes-1].append(datos_obs[mes-1])
+        valor_calma=round(item_calma.get('calma')/item.get('obs')*100,2)
+        valores[mes-1].append(valor_calma)
+        valores[mes-1].append(item.get('obs'))
         valores[mes-1].append(round(max(maximos),2))
         valores[mes-1].append(direcciones[maximos.index(max(maximos))])
-        valores[mes-1].append(vel_media_kmh[mes-1])
+        valores[mes-1].append(item_velocidad.get('c'))
     return valores
 def datos_viento(datos,estacion,periodo):
     lista=[]

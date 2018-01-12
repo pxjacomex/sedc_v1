@@ -1,11 +1,10 @@
-<div class="col-md-8">
-  {% if lista %}
+<div class="col-md-12">
+
     {% if grafico %}
-    <div style="width:800;height:400">
+    <div style="width:auto;height:400">
       {{ grafico|safe }}
     </div>
-    {% endif %}
-  {%else%}
+    {%else%}
     <label>No hay información para los parametros ingresados</label>
-  {% endif %}
+    {% endif %}
 </div>
