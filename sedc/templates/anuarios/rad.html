@@ -1,18 +1,15 @@
 {% if datos %}
-<div class="col-md-5" >
+<div>
   <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
     <thead>
       <tr>
-        <th align="center" colspan='17'>Radiacion Solar - Valores minimos, minimos medios horarios</th>
+        <th align="center" colspan='17' style="text-align: center">Radiacion Solar - Valores minimos, minimos medios horarios</th>
       </tr>
       <tr>
-        <th colspan='17'></th>
+        <th align="center" colspan='17' style="text-align: center">Radiacion Maxima Horaria W/m<sup>2</sup></th>
       </tr>
       <tr>
-        <th align="center" colspan='17'>Radiacion Maxima Horaria</th>
-      </tr>
-      <tr>
-        <th>Hora</th>
+        <th>Mes/Hora</th>
         <th>5</th>
         <th>6</th>
         <th>7</th>
@@ -27,46 +24,27 @@
         <th>16</th>
         <th>17</th>
         <th>18</th>
-        <th rowspan='2'>Max</th>
-        <th rowspan='2'>Hora</th>
-      </tr>
-      <tr>
-        <th>mes</th>
-        <th colspan='14'>W/m^2</th>
+        <th rowspan='2' style="text-align: center;vertical-align: middle;">Max</th>
+        <th rowspan='2' style="text-align: center;vertical-align: middle;">Hora</th>
       </tr>
     </thead>
     <tbody>
 
-      {% for item in datos.rad_max %}
+      {% for item in datos.maximo %}
       <tr>
-        <td>{{item.rad_mes}}</td>
-        <td>{{item.rad_5}}</td>
-        <td>{{item.rad_6}}</td>
-        <td>{{item.rad_7}}</td>
-        <td>{{item.rad_8}}</td>
-        <td>{{item.rad_9}}</td>
-        <td>{{item.rad_10}}</td>
-        <td>{{item.rad_11}}</td>
-        <td>{{item.rad_12}}</td>
-        <td>{{item.rad_13}}</td>
-        <td>{{item.rad_14}}</td>
-        <td>{{item.rad_15}}</td>
-        <td>{{item.rad_16}}</td>
-        <td>{{item.rad_17}}</td>
-        <td>{{item.rad_18}}</td>
+        {%for valor in item %}
+          <td>{{valor}}</td>
+        {% endfor %}
       </tr>
       {% endfor%}
 
     </tbody>
     <thead>
       <tr>
-        <th colspan='17'></th>
+        <th align="center" colspan='17' style="text-align: center">Radiacion Minima Horaria W/m<sup>2</sup></th>
       </tr>
       <tr>
-        <th align="center" colspan='17'>Radiacion Minima Horaria</th>
-      </tr>
-      <tr>
-        <th>Hora</th>
+        <th>Mes/Hora</th>
         <th>5</th>
         <th>6</th>
         <th>7</th>
@@ -81,33 +59,16 @@
         <th>16</th>
         <th>17</th>
         <th>18</th>
-        <th rowspan='2'>Min</th>
-        <th rowspan='2'>Hora</th>
-      </tr>
-      <tr>
-        <th>mes</th>
-        <th colspan='14'>W/m^2</th>
+        <th rowspan='2' style="text-align: center;vertical-align: middle;">Min</th>
+        <th rowspan='2' style="text-align: center;vertical-align: middle;">Hora</th>
       </tr>
     </thead>
     <tbody>
-      {% for item in datos.rad_min %}
+      {% for item in datos.minimo %}
       <tr>
-        <td>{{item.rad_mes}}</td>
-        <td>{{item.rad_5}}</td>
-        <td>{{item.rad_6}}</td>
-        <td>{{item.rad_7}}</td>
-        <td>{{item.rad_8}}</td>
-        <td>{{item.rad_9}}</td>
-        <td>{{item.rad_10}}</td>
-        <td>{{item.rad_11}}</td>
-        <td>{{item.rad_12}}</td>
-        <td>{{item.rad_13}}</td>
-        <td>{{item.rad_14}}</td>
-        <td>{{item.rad_15}}</td>
-        <td>{{item.rad_16}}</td>
-        <td>{{item.rad_17}}</td>
-        <td>{{item.rad_18}}</td>
-
+        {%for valor in item %}
+          <td>{{valor}}</td>
+        {% endfor %}
       </tr>
       {% endfor%}
 

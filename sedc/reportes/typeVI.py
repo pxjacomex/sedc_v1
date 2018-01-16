@@ -7,10 +7,13 @@ from reportes.titulos import Titulos
 class TypeVI(Titulos):
 
     def matriz(self,estacion, variable, periodo):
+        datos={}
         rad_min=list(RadiacionMinima.objects.filter(est_id=estacion)
             .filter(rad_periodo=periodo))
         rad_max=list(RadiacionMaxima.objects.filter(est_id=estacion)
             .filter(rad_periodo=periodo))
-        datos['rad_max']=rad_max
-        datos['rad_min']=rad_min
+        datos={
+            'rad_max':rad_max,
+            'rad_min':rad_min
+        }
         return datos

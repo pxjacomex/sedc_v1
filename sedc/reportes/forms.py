@@ -95,7 +95,7 @@ class AnuarioForm(forms.Form):
 
             elif item.get('var_id') in typeVI:
                 matriz = obj_typeVI.matriz(form.cleaned_data['estacion'],str(item.get('var_id')),form.cleaned_data['anio'])
-                grafico = obj_typeVI.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
+                #grafico = obj_typeVI.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id')) + '_matriz': matriz})
                 #context.update({str(item.get('var_id')) + '_grafico': grafico})
 

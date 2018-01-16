@@ -39,6 +39,7 @@ def rad_max(estacion,variable,periodo):
         .order_by('month','hour')
     )
     radiacion=[[0] for i in range(12)]
+    obj_rad_max=RadiacionMaxima()
     for fila in consulta:
         mes=int(fila.get('month'))-1
         radiacion[mes][0]=mes+1

@@ -7,115 +7,6 @@ from django.db.models import Max, Min, Avg, Count
 
 from datetime import datetime
 
-def matrizV(estacion,variable,periodo):
-    print "Inicio de la Función",datetime.now()
-    #velocidad media en m/s
-    vel_media=list(Medicion.objects.filter(est_id=estacion).filter(var_id=4)
-        .filter(med_fecha__year=periodo)
-        .annotate(month=TruncMonth('med_fecha')).values('month')
-        .annotate(valor=Avg('med_valor')).values('valor').order_by('month'))
-    #numero de registros por mes en velocidad
-    num_obs=list(Medicion.objects.filter(est_id=estacion).filter(var_id=4)
-        .filter(med_fecha__year=periodo)
-        .annotate(month=TruncMonth('med_fecha')).values('month')
-        .annotate(obs=Count('med_valor')).values('obs','month')
-        .order_by('month'))
-    #numero de registros mayores a 0.5 en velocidad
-    calma=list(Medicion.objects.filter(est_id=estacion).filter(var_id=4)
-        .filter(med_fecha__year=periodo).filter(med_valor__lt=0.5)
-        .annotate(month=TruncMonth('med_fecha')).values('month')
-        .annotate(calma=Count('med_valor')).values('calma')
-        .order_by('month'))
-    print "Consulta de toda la serie",datetime.now()
-    #lista de datos de la dirección de viento
-    dat_dvi=list(Medicion.objects
-        .filter(est_id=estacion).filter(var_id=5)
-        .filter(med_fecha__year=periodo)
-        .values('med_valor','med_fecha').order_by('med_fecha','med_hora')
-    )
-    #lista de datos de velocidad del viento
-    dat_vvi=list(Medicion.objects
-        .filter(est_id=estacion).filter(var_id=4)
-        .filter(med_fecha__year=periodo)
-        .values('med_valor').order_by('med_fecha','med_hora')
-    )
-    #lista de dato máximos de velocidad de viento
-    dat_vvi_max=list(Medicion.objects
-        .filter(est_id=estacion).filter(var_id=4)
-        .filter(med_fecha__year=periodo)
-        .values('med_maximo').order_by('med_fecha','med_hora')
-    )
-
-    #matriz de cero columnas por 12 meses
-    valores=[[] for y in range(12)]
-    direcciones=["N","NE","E","SE","S","SO","O","NO"]
-    print "Inicio del for para recorrer los meses de datos",datetime.now()
-    for item_obs,item_calma,item_velocidad in zip(num_obs,calma,vel_media):
-        mes=item_obs.get('month').month
-        #crea una matriz en blanco
-        vvi=[[0 for x in range(0)] for y in range(8)]
-        vvi_max=[[0 for x in range(0)] for y in range(8)]
-        print "Clasificar la serie por direccion",datetime.now()
-        for val_dvi,val_vvi,val_vvi_max in zip(dat_dvi,dat_vvi,dat_vvi_max):
-            fecha=val_dvi.get('med_fecha')
-            if fecha.month==mes:
-            #agrupa las velocidades por direccion
-                if val_vvi.get('med_valor') is not None:
-                    if val_dvi.get('med_valor') < 22.5 or val_dvi.get('med_valor')>337.5:
-                        vvi[0].append(val_vvi.get('med_valor'))
-                        vvi_max[0].append(val_vvi_max.get('med_maximo'))
-                    elif val_dvi.get('med_valor') < 67.5:
-                        vvi[1].append(val_vvi.get('med_valor'))
-                        vvi_max[1].append(val_vvi_max.get('med_maximo'))
-                    elif val_dvi.get('med_valor') < 112.5:
-                        vvi[2].append(val_vvi.get('med_valor'))
-                        vvi_max[2].append(val_vvi_max.get('med_maximo'))
-                    elif val_dvi.get('med_valor') < 157.5:
-                        vvi[3].append(val_vvi.get('med_valor'))
-                        vvi_max[3].append(val_vvi_max.get('med_maximo'))
-                    elif val_dvi.get('med_valor') < 202.5:
-                        vvi[4].append(val_vvi.get('med_valor'))
-                        vvi_max[4].append(val_vvi_max.get('med_maximo'))
-                    elif val_dvi.get('med_valor') < 247.5:
-                        vvi[5].append(val_vvi.get('med_valor'))
-                        vvi_max[5].append(val_vvi_max.get('med_maximo'))
-                    elif val_dvi.get('med_valor') < 292.5:
-                        vvi[6].append(val_vvi.get('med_valor'))
-                        vvi_max[6].append(val_vvi_max.get('med_maximo'))
-                    elif val_dvi.get('med_valor') < 337.5:
-                        vvi[7].append(val_vvi.get('med_valor'))
-                        vvi_max[7].append(val_vvi_max.get('med_maximo'))
-                    dat_dvi.remove(val_dvi)
-                    dat_vvi.remove(val_vvi)
-                    dat_vvi_max.remove(val_vvi_max)
-        print "fin de la clasificacion",datetime.now()
-        maximos=[]
-        valores[mes-1].append(mes)
-        #recorro la matriz de datos en base al número de direcciones
-        for j in range(8):
-            if len(vvi[j])>0:
-                vel_med=float(sum(vvi[j])/len(vvi[j]))
-                por_med=float(len(vvi[j]))/item_obs.get('obs')*100
-            else:
-                vel_med=0
-                por_med=0
-            #promedio de velocidades medias por direccion
-            valores[mes-1].append(round(vel_med,2))
-            #porcentaje por direccion
-            valores[mes-1].append(round(por_med,2))
-            #maximos por direcciion
-            if len(vvi_max[j])>0:
-                maximos.append(max(vvi_max[j]))
-            else:
-                maximos.append(0)
-        print item_calma.get('calma'),item_obs.get('obs')
-        valor_calma=round(float(item_calma.get('calma'))/item_obs.get('obs')*100,2)
-        valores[mes-1].append(valor_calma)
-        valores[mes-1].append(item_obs.get('obs'))
-        valores[mes-1].append(round(max(maximos),2))
-        valores[mes-1].append(direcciones[maximos.index(max(maximos))])
-        valores[mes-1].append(round(item_velocidad.get('valor'),2))
-    return valores
 def matrizV_mensual(estacion,variable,periodo):
     print "Inicio de la Función mensual ",datetime.now()
     #velocidad media en m/s
@@ -140,6 +31,7 @@ def matrizV_mensual(estacion,variable,periodo):
     valores=[[] for y in range(12)]
     for item_obs,item_calma,item_velocidad in zip(num_obs,calma,vel_media):
         mes=item_obs.get('month').month
+        print "Inicio de la consulta por mes",datetime.now()
         #lista de datos de la dirección de viento
         dat_dvi=list(Medicion.objects
             .filter(est_id=estacion).filter(var_id=5)
@@ -152,46 +44,55 @@ def matrizV_mensual(estacion,variable,periodo):
             .filter(est_id=estacion).filter(var_id=4)
             .filter(med_fecha__year=periodo)
             .filter(med_fecha__month=mes)
-            .values('med_valor').order_by('med_fecha','med_hora')
-        )
-        #lista de dato máximos de velocidad de viento
-        dat_vvi_max=list(Medicion.objects
-            .filter(est_id=estacion).filter(var_id=4)
-            .filter(med_fecha__year=periodo)
-            .filter(med_fecha__month=mes)
-            .values('med_maximo').order_by('med_fecha','med_hora')
+            .values('med_valor','med_maximo').order_by('med_fecha','med_hora')
         )
         print "Fin de la consulta por mes",datetime.now()
         vvi=[[0 for x in range(0)] for y in range(8)]
         vvi_max=[[0 for x in range(0)] for y in range(8)]
         print "Clasificar velocididades por direccion",datetime.now()
-        for val_dvi,val_vvi,val_vvi_max in zip(dat_dvi,dat_vvi,dat_vvi_max):
+        for val_dvi,val_vvi in zip(dat_dvi,dat_vvi):
             #agrupa las velocidades por direccion
             if val_vvi.get('med_valor') is not None:
                 if val_dvi.get('med_valor') < 22.5 or val_dvi.get('med_valor')>337.5:
                     vvi[0].append(val_vvi.get('med_valor'))
-                    vvi_max[0].append(val_vvi_max.get('med_maximo'))
+                    vvi_max[0].append(val_vvi.get('med_valor')
+                        if val_vvi.get('med_maximo') is None else
+                        val_vvi.get('med_maximo'))
                 elif val_dvi.get('med_valor') < 67.5:
                     vvi[1].append(val_vvi.get('med_valor'))
-                    vvi_max[1].append(val_vvi_max.get('med_maximo'))
+                    vvi_max[1].append(val_vvi.get('med_valor')
+                        if val_vvi.get('med_maximo') is None else
+                        val_vvi.get('med_maximo'))
                 elif val_dvi.get('med_valor') < 112.5:
                     vvi[2].append(val_vvi.get('med_valor'))
-                    vvi_max[2].append(val_vvi_max.get('med_maximo'))
+                    vvi_max[2].append(val_vvi.get('med_valor')
+                        if val_vvi.get('med_maximo') is None else
+                        val_vvi.get('med_maximo'))
                 elif val_dvi.get('med_valor') < 157.5:
                     vvi[3].append(val_vvi.get('med_valor'))
-                    vvi_max[3].append(val_vvi_max.get('med_maximo'))
+                    vvi_max[3].append(val_vvi.get('med_valor')
+                        if val_vvi.get('med_maximo') is None else
+                        val_vvi.get('med_maximo'))
                 elif val_dvi.get('med_valor') < 202.5:
                     vvi[4].append(val_vvi.get('med_valor'))
-                    vvi_max[4].append(val_vvi_max.get('med_maximo'))
+                    vvi_max[4].append(val_vvi.get('med_valor')
+                        if val_vvi.get('med_maximo') is None else
+                        val_vvi.get('med_maximo'))
                 elif val_dvi.get('med_valor') < 247.5:
                     vvi[5].append(val_vvi.get('med_valor'))
-                    vvi_max[5].append(val_vvi_max.get('med_maximo'))
+                    vvi_max[5].append(val_vvi.get('med_valor')
+                        if val_vvi.get('med_maximo') is None else
+                        val_vvi.get('med_maximo'))
                 elif val_dvi.get('med_valor') < 292.5:
                     vvi[6].append(val_vvi.get('med_valor'))
-                    vvi_max[6].append(val_vvi_max.get('med_maximo'))
+                    vvi_max[6].append(val_vvi.get('med_valor')
+                        if val_vvi.get('med_maximo') is None else
+                        val_vvi.get('med_maximo'))
                 elif val_dvi.get('med_valor') < 337.5:
                     vvi[7].append(val_vvi.get('med_valor'))
-                    vvi_max[7].append(val_vvi_max.get('med_maximo'))
+                    vvi_max[7].append(val_vvi.get('med_valor')
+                        if val_vvi.get('med_maximo') is None else
+                        val_vvi.get('med_maximo'))
         print "Fin de la clasificacion",datetime.now()
         maximos=[]
         valores[mes-1].append(mes)
@@ -201,8 +102,8 @@ def matrizV_mensual(estacion,variable,periodo):
                 vel_med=float(sum(vvi[j])/len(vvi[j]))
                 por_med=float(len(vvi[j]))/item_obs.get('obs')*100
             else:
-                vel_med=0
-                por_med=0
+                vel_med=0.0
+                por_med=0.0
             #promedio de velocidades medias por direccion
             valores[mes-1].append(round(vel_med,2))
             #porcentaje por direccion
@@ -211,8 +112,7 @@ def matrizV_mensual(estacion,variable,periodo):
             if len(vvi_max[j])>0:
                 maximos.append(max(vvi_max[j]))
             else:
-                maximos.append(0)
-
+                maximos.append(float(0))
         valor_calma=round(float(item_calma.get('calma'))/item_obs.get('obs')*100,2)
         valores[mes-1].append(valor_calma)
         valores[mes-1].append(item_obs.get('obs'))
@@ -225,7 +125,6 @@ def matrizV_mensual(estacion,variable,periodo):
 def datos_viento(datos,estacion,periodo):
     lista=[]
     obj_estacion=Estacion.objects.get(est_id=estacion)
-    print len(datos)
     for fila in datos:
         if len(fila)>0:
             obj_viento=Viento()

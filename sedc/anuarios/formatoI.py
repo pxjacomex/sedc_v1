@@ -15,60 +15,93 @@ def matrizI(estacion,variable,periodo):
     if variable == "8":
         consulta = consulta.exclude(med_valor = 0, med_maximo = 0, med_minimo = 0)
     consulta=consulta.annotate(month=TruncMonth('med_fecha')).values('month')
-    med_max=list(consulta.annotate(c=Max('med_valor')).values('c').order_by('month'))
-    med_min=list(consulta.annotate(c=Min('med_minimo')).values('c').order_by('month'))
-    med_avg=list(consulta.annotate(c=Avg('med_valor')).values('c').order_by('month'))
-    maximos = [d.get('c') for d in med_max]
-    minimos = [d.get('c') for d in med_min]
-    promedios = [d.get('c') for d in med_avg]
+    med_max=list(consulta.annotate(maximo=Max('med_maximo'),
+        valor=Max('med_valor')).values('maximo','valor').order_by('month'))
+    med_min=list(consulta.annotate(minimo=Min('med_minimo'),
+        valor=Min('med_valor')).values('minimo','valor').order_by('month'))
+    med_avg=list(consulta.annotate(valor=Avg('med_valor'))
+        .values('valor','month').order_by('month'))
+    maximos = []
+    minimos = []
+    promedios = []
     if variable=="6":
-        for i in range(len(promedios)):
+        for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_hsu=HumedadSuelo()
             obj_hsu.est_id=obj_estacion
             obj_hsu.hsu_periodo=periodo
-            obj_hsu.hsu_mes=i+1
-            obj_hsu.hsu_maximo=maximos[i]
-            obj_hsu.hsu_minimo=minimos[i]
-            obj_hsu.hsu_promedio=promedios[i]
+            obj_hsu.hsu_mes=item_avg.get('month').month
+            if item_max.get('maximo') is None:
+                obj_hsu.hsu_maximo=round(item_max.get('valor'),2)
+            else:
+                obj_hsu.hsu_maximo=round(item_max.get('maximo'),2)
+            if item_min.get('minimo') is None:
+                obj_hsu.hsu_minimo=round(item_min.get('valor'),2)
+            else:
+                obj_hsu.hsu_minimo=round(item_min.get('minimo'),2)
+            obj_hsu.hsu_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_hsu)
     elif variable=="8":
-        for i in range(len(promedios)):
+        for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_pat=PresionAtmosferica()
             obj_pat.est_id=obj_estacion
             obj_pat.pat_periodo=periodo
-            obj_pat.pat_mes=i+1
-            obj_pat.pat_maximo=maximos[i]
-            obj_pat.pat_minimo=minimos[i]
-            obj_pat.pat_promedio=promedios[i]
+            obj_pat.pat_mes=item_avg.get('month').month
+            if item_max.get('maximo') is None:
+                obj_pat.pat_maximo=round(item_max.get('valor'),2)
+            else:
+                obj_pat.pat_maximo=round(item_max.get('maximo'),2)
+            if item_min.get('minimo') is None:
+                obj_pat.pat_minimo=round(item_min.get('valor'),2)
+            else:
+                obj_pat.pat_minimo=round(item_min.get('minimo'),2)
+            obj_pat.pat_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_pat)
     elif variable=="9":
-        for i in range(len(promedios)):
+        for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_tag=TemperaturaAgua()
             obj_tag.est_id=obj_estacion
             obj_tag.tag_periodo=periodo
-            obj_tag.tag_mes=i+1
-            obj_tag.tag_maximo=maximos[i]
-            obj_tag.tag_minimo=minimos[i]
-            obj_tag.tag_promedio=promedios[i]
+            obj_tag.tag_mes=item_avg.get('month').month
+            if item_max.get('maximo') is None:
+                obj_tag.tag_maximo=round(item_max.get('valor'),2)
+            else:
+                obj_tag.tag_maximo=round(item_max.get('maximo'),2)
+            if item_min.get('minimo') is None:
+                obj_tag.tag_minimo=round(item_min.get('valor'),2)
+            else:
+                obj_tag.tag_minimo=round(item_min.get('minimo'),2)
+            obj_tag.tag_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_tag)
     elif variable=="10":
-        for i in range(len(promedios)):
+        for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_cau=Caudal()
             obj_cau.est_id=obj_estacion
             obj_cau.cau_periodo=periodo
-            obj_cau.cau_mes=i+1
-            obj_cau.cau_maximo=maximos[i]
-            obj_cau.cau_minimo=minimos[i]
-            obj_cau.cau_promedio=promedios[i]
+            obj_cau.cau_mes=item_avg.get('month').month
+            if item_max.get('maximo') is None:
+                obj_cau.cau_maximo=round(item_max.get('valor'),2)
+            else:
+                obj_cau.cau_maximo=round(item_max.get('maximo'),2)
+            if item_min.get('minimo') is None:
+                obj_cau.cau_minimo=round(item_min.get('valor'),2)
+            else:
+                obj_cau.cau_minimo=round(item_min.get('minimo'),2)
+            obj_cau.cau_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_cau)
     elif variable=="11":
-        for i in range(len(promedios)):
+        for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_nag=NivelAgua()
             obj_nag.est_id=obj_estacion
             obj_nag.nag_periodo=periodo
-            obj_nag.nag_mes=i+1
-            obj_nag.nag_maximo=maximos[i]
-            obj_nag.nag_minimo=minimos[i]
-            obj_nag.nag_promedio=promedios[i]
+            obj_nag.nag_mes=item_avg.get('month').month
+            if item_max.get('maximo') is None:
+                obj_nag.nag_maximo=round(item_max.get('valor'),2)
+            else:
+                obj_nag.nag_maximo=round(item_max.get('maximo'),2)
+            if item_min.get('minimo') is None:
+                obj_nag.nag_minimo=round(item_min.get('valor'),2)
+            else:
+                obj_nag.nag_minimo=round(item_min.get('minimo'),2)
+            obj_nag.nag_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_nag)
     return datos

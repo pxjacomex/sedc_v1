@@ -1,18 +1,23 @@
+<style type="text/css">
+table>thead>tr>th{
+  text-align: center;vertical-align: middle;
+}
+table>tbody>tr>td{
+  text-align: center;vertical-align: middle;
+}
+</style>
 {% if 7_matriz %}
-<div class="col-md-5" >
+<div>
   <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
     <thead>
       <tr>
-        <th align="center" colspan='17'>Radiacion Solar - Valores minimos, minimos medios horarios</th>
+        <th align="center" colspan='17' style="text-align: center">Radiacion Solar - Valores minimos, minimos medios horarios</th>
       </tr>
       <tr>
-        <th colspan='17'></th>
+        <th align="center" colspan='17' style="text-align: center">Radiacion Maxima Horaria W/m<sup>2</sup></th>
       </tr>
       <tr>
-        <th align="center" colspan='17'>Radiacion Maxima Horaria</th>
-      </tr>
-      <tr>
-        <th>Hora</th>
+        <th>Mes/Hora</th>
         <th>5</th>
         <th>6</th>
         <th>7</th>
@@ -27,49 +32,39 @@
         <th>16</th>
         <th>17</th>
         <th>18</th>
-        <th rowspan='2'>Max</th>
-        <th rowspan='2'>Hora</th>
-      </tr>
-      <tr>
-        <th>mes</th>
-        <th colspan='14'>W/m^2</th>
+        <th>Max</th>
+        <th>Hora</th>
       </tr>
     </thead>
     <tbody>
-      {% for item in 7_matriz %}
-
+      {% for item in 7_matriz.rad_max %}
       <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.max_5|floatformat:2 }}</td>
-        <td>{{ item.max_6|floatformat:2 }}</td>
-        <td>{{ item.max_7|floatformat:2 }}</td>
-        <td>{{ item.max_8|floatformat:2 }}</td>
-        <td>{{ item.max_9|floatformat:2 }}</td>
-        <td>{{ item.max_10|floatformat:2 }}</td>
-        <td>{{ item.max_11|floatformat:2 }}</td>
-        <td>{{ item.max_12|floatformat:2 }}</td>
-        <td>{{ item.max_13|floatformat:2 }}</td>
-        <td>{{ item.max_14|floatformat:2 }}</td>
-        <td>{{ item.max_15|floatformat:2 }}</td>
-        <td>{{ item.max_16|floatformat:2 }}</td>
-        <td>{{ item.max_17|floatformat:2 }}</td>
-        <td>{{ item.max_18|floatformat:2 }}</td>
-        <td>{{ item.max_abs|floatformat:2 }}</td>
-        <td>{{ item.max_hora }}</td>
-
+        <td>{{ item.rad_mes }}</td>
+        <td>{{ item.rad_5|floatformat:2 }}</td>
+        <td>{{ item.rad_6|floatformat:2 }}</td>
+        <td>{{ item.rad_7|floatformat:2 }}</td>
+        <td>{{ item.rad_8|floatformat:2 }}</td>
+        <td>{{ item.rad_9|floatformat:2 }}</td>
+        <td>{{ item.rad_10|floatformat:2 }}</td>
+        <td>{{ item.rad_11|floatformat:2 }}</td>
+        <td>{{ item.rad_12|floatformat:2 }}</td>
+        <td>{{ item.rad_13|floatformat:2 }}</td>
+        <td>{{ item.rad_14|floatformat:2 }}</td>
+        <td>{{ item.rad_15|floatformat:2 }}</td>
+        <td>{{ item.rad_16|floatformat:2 }}</td>
+        <td>{{ item.rad_17|floatformat:2 }}</td>
+        <td>{{ item.rad_18|floatformat:2 }}</td>
+        <td>{{ item.rad_max|floatformat:2 }}</td>
+        <td>{{ item.rad_hora }}</td>
       </tr>
-
       {% endfor%}
     </tbody>
     <thead>
       <tr>
-        <th colspan='17'></th>
+        <th colspan='17'>Radiacion Minima Horaria W/m<sup>2</sup></th>
       </tr>
       <tr>
-        <th align="center" colspan='17'>Radiacion Minima Horaria</th>
-      </tr>
-      <tr>
-        <th>Hora</th>
+        <th>Mes/Hora</th>
         <th>5</th>
         <th>6</th>
         <th>7</th>
@@ -84,35 +79,31 @@
         <th>16</th>
         <th>17</th>
         <th>18</th>
-        <th rowspan='2'>Min</th>
-        <th rowspan='2'>Hora</th>
-      </tr>
-      <tr>
-        <th>mes</th>
-        <th colspan='14'>W/m^2</th>
+        <th>Min</th>
+        <th>Hora</th>
       </tr>
     </thead>
     <tbody>
-      {% for item in 7_matriz %}
+      {% for item in 7_matriz.rad_min %}
 
       <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.min_5|floatformat:2 }}</td>
-        <td>{{ item.min_6|floatformat:2 }}</td>
-        <td>{{ item.min_7|floatformat:2 }}</td>
-        <td>{{ item.min_8|floatformat:2 }}</td>
-        <td>{{ item.min_9|floatformat:2 }}</td>
-        <td>{{ item.min_10|floatformat:2 }}</td>
-        <td>{{ item.min_11|floatformat:2 }}</td>
-        <td>{{ item.min_12|floatformat:2 }}</td>
-        <td>{{ item.min_13|floatformat:2 }}</td>
-        <td>{{ item.min_14|floatformat:2 }}</td>
-        <td>{{ item.min_15|floatformat:2 }}</td>
-        <td>{{ item.min_16|floatformat:2 }}</td>
-        <td>{{ item.min_17|floatformat:2 }}</td>
-        <td>{{ item.min_18|floatformat:2 }}</td>
-        <td>{{ item.min_abs|floatformat:2 }}</td>
-        <td>{{ item.min_hora }}</td>
+        <td>{{ item.rad_mes }}</td>
+        <td>{{ item.rad_5|floatformat:2 }}</td>
+        <td>{{ item.rad_6|floatformat:2 }}</td>
+        <td>{{ item.rad_7|floatformat:2 }}</td>
+        <td>{{ item.rad_8|floatformat:2 }}</td>
+        <td>{{ item.rad_9|floatformat:2 }}</td>
+        <td>{{ item.rad_10|floatformat:2 }}</td>
+        <td>{{ item.rad_11|floatformat:2 }}</td>
+        <td>{{ item.rad_12|floatformat:2 }}</td>
+        <td>{{ item.rad_13|floatformat:2 }}</td>
+        <td>{{ item.rad_14|floatformat:2 }}</td>
+        <td>{{ item.rad_15|floatformat:2 }}</td>
+        <td>{{ item.rad_16|floatformat:2 }}</td>
+        <td>{{ item.rad_17|floatformat:2 }}</td>
+        <td>{{ item.rad_18|floatformat:2 }}</td>
+        <td>{{ item.rad_max|floatformat:2 }}</td>
+        <td>{{ item.rad_hora }}</td>
 
       </tr>
 
