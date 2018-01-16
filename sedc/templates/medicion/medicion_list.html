@@ -9,9 +9,17 @@ $( function() {
     $.ajax({
       url: $(this).attr('href'),
       type:'GET',
+      beforeSend: function () {
+        $("#div_loading").show();
+        $("#div_list").hide();
+      },
       success: function (data) {
         $("#div_edit").html(data)
         $( "#div_edit" ).dialog( "open" );
+        beforeSend: function () {
+          $("#div_loading").hide();
+          $("#div_list").show();
+        },
       }
     });
     return false;
@@ -21,6 +29,10 @@ $( function() {
     $.ajax({
       url: $(this).attr('href'),
       type:'GET',
+      beforeSend: function(){
+        $("#div_loading").show();
+        $("#div_list").hide();
+      },
       success: function (data) {
         $("#div_delete").html(data)
         $( "#div_delete" ).dialog( "open" );

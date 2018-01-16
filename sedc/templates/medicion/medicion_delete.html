@@ -8,10 +8,15 @@
         url: $("#link_delete").attr('href'),
         type:'POST',
         data: $("#form_delete").serialize(),
+        beforeSend: function () {
+          $("#div_loading").show();
+          $("#div_list").hide();
+        },
         success: function (data) {
-
           $( "#div_delete" ).dialog( "close" );
           $( "#div_delete" ).html('');
+          $("#div_loading").hide();
+          $("#div_list").show();
           actualizar_lista();
         }
       });

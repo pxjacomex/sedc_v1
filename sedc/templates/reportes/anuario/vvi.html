@@ -1,5 +1,4 @@
-
-{% if 4_matriz %}
+{% if 5_matriz %}
 <div class="col-md-5" >
   <table style = "font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
 
@@ -48,31 +47,31 @@
     </thead>
     <tbody>
 
-      {% for item in 4_matriz %}
+      {% for item in 5_matriz %}
 
       <tr>
-        <td>{{ item.mes }}</td>
-        <td>{{ item.N_vel }}</td>
-        <td>{{ item.N_% }}</td>
-        <td>{{ item.NE_vel }}</td>
-        <td>{{ item.NE_% }}</td>
-        <td>{{ item.E_vel }}</td>
-        <td>{{ item.E_% }}</td>
-        <td>{{ item.SE_vel }}</td>
-        <td>{{ item.SE_% }}</td>
-        <td>{{ item.S_vel }}</td>
-        <td>{{ item.S_% }}</td>
-        <td>{{ item.SO_vel }}</td>
-        <td>{{ item.SO_% }}</td>
-        <td>{{ item.O_vel }}</td>
-        <td>{{ item.O_% }}</td>
-        <td>{{ item.NO_vel }}</td>
-        <td>{{ item.NO_% }}</td>
-        <td>{{ item.calma }}</td>
-        <td>{{ item.obs }}</td>
-        <td>{{ item.vel_mayor }}</td>
-        <td>{{ item.vel_mayor_dir }}</td>
-        <td>{{ item.vel_media }}</td>
+        <td>{{ item.vie_mes }}</td>
+        <td>{{ item.vie_vel_N|floatformat:2 }}</td>
+        <td>{{ item.vie_por_N|floatformat:2 }}</td>
+        <td>{{ item.vie_vel_NE|floatformat:2 }}</td>
+        <td>{{ item.vie_por_NE|floatformat:2 }}</td>
+        <td>{{ item.vie_vel_E|floatformat:2 }}</td>
+        <td>{{ item.vie_por_E|floatformat:2 }}</td>
+        <td>{{ item.vie_vel_SE|floatformat:2 }}</td>
+        <td>{{ item.vie_por_SE|floatformat:2 }}</td>
+        <td>{{ item.vie_vel_S|floatformat:2 }}</td>
+        <td>{{ item.vie_por_S|floatformat:2 }}</td>
+        <td>{{ item.vie_vel_SO|floatformat:2 }}</td>
+        <td>{{ item.vie_por_SO|floatformat:2}}</td>
+        <td>{{ item.vie_vel_O|floatformat:2 }}</td>
+        <td>{{ item.vie_por_O|floatformat:2 }}</td>
+        <td>{{ item.vie_vel_NO|floatformat:2 }}</td>
+        <td>{{ item.vie_por_NO|floatformat:2 }}</td>
+        <td>{{ item.vie_calma|floatformat:2 }}</td>
+        <td>{{ item.vie_obs }}</td>
+        <td>{{ item.vie_vel_max|floatformat:2 }}</td>
+        <td>{{ item.vie_vel_dir }}</td>
+        <td>{{ item.vie_vel_med|floatformat:2 }}</td>
 
       </tr>
 
@@ -82,12 +81,3 @@
   </table>
 </div>
 {% endif %}
-<!--
-<div class="col-md-6">
-  {% if 4_grafico %}
-  <div style="width:600;height:400">
-    {{ 4_grafico|safe }}
-  </div>
-  {% endif %}
-</div>
--->

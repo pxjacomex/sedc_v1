@@ -37,12 +37,23 @@
     </thead>
     <tbody>
 
-      {% for item in datos.maximo %}
+      {% for item in datos.rad_max %}
       <tr>
-        {% for mes in item %}
-            <td>{{mes}}</td>
-        {% endfor%}
-
+        <td>{{item.rad_mes}}</td>
+        <td>{{item.rad_5}}</td>
+        <td>{{item.rad_6}}</td>
+        <td>{{item.rad_7}}</td>
+        <td>{{item.rad_8}}</td>
+        <td>{{item.rad_9}}</td>
+        <td>{{item.rad_10}}</td>
+        <td>{{item.rad_11}}</td>
+        <td>{{item.rad_12}}</td>
+        <td>{{item.rad_13}}</td>
+        <td>{{item.rad_14}}</td>
+        <td>{{item.rad_15}}</td>
+        <td>{{item.rad_16}}</td>
+        <td>{{item.rad_17}}</td>
+        <td>{{item.rad_18}}</td>
       </tr>
       {% endfor%}
 
@@ -79,11 +90,23 @@
       </tr>
     </thead>
     <tbody>
-      {% for item in datos.minimo %}
+      {% for item in datos.rad_min %}
       <tr>
-        {% for mes in item %}
-            <td>{{mes}}</td>
-        {% endfor%}
+        <td>{{item.rad_mes}}</td>
+        <td>{{item.rad_5}}</td>
+        <td>{{item.rad_6}}</td>
+        <td>{{item.rad_7}}</td>
+        <td>{{item.rad_8}}</td>
+        <td>{{item.rad_9}}</td>
+        <td>{{item.rad_10}}</td>
+        <td>{{item.rad_11}}</td>
+        <td>{{item.rad_12}}</td>
+        <td>{{item.rad_13}}</td>
+        <td>{{item.rad_14}}</td>
+        <td>{{item.rad_15}}</td>
+        <td>{{item.rad_16}}</td>
+        <td>{{item.rad_17}}</td>
+        <td>{{item.rad_18}}</td>
 
       </tr>
       {% endfor%}

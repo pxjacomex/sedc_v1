@@ -9,13 +9,6 @@ from django.template import loader, Context
 from consultas.functions import grafico
 
 from django.shortcuts import render
-class Resumen(object):
-    def __init__(self, mes, maximo, minimo, medio):
-        self.mes = mes
-        self.maximo= maximo
-        self.minimo = minimo
-        self.medio = medio
-
 
 class ReportesAnuario(FormView):
     template_name='reportes/anuario_reporte.html'

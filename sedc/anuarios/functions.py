@@ -11,7 +11,7 @@ from anuarios.formatoI import matrizI
 from anuarios.formatoII import matrizII
 from anuarios.formatoIII import matrizIII
 from anuarios.formatoIV import matrizIV
-from anuarios.formatoV import matrizV,datos_viento
+from anuarios.formatoV import matrizV,datos_viento,matrizV_mensual
 from anuarios.formatoVI import matrizVI,datos_guardar, datos_radiacion_maxima,datos_radiacion_minimo
 def calcular(form):
     datos=[]
@@ -34,7 +34,7 @@ def calcular(form):
     elif int(variable) in typeIV:
         datos=matrizIV(estacion,variable,periodo)
     elif int(variable) in typeV:
-        datos=matrizV(estacion,variable,periodo)
+        datos=matrizV_mensual(estacion,variable,periodo)
     elif int(variable) in typeVI:
         datos=matrizVI(estacion,variable,periodo)
     return datos
@@ -51,7 +51,6 @@ def guardar_variable(datos,form):
         viento=datos_viento(datos,estacion,periodo)
         for obj_viento in viento:
             obj_viento.save()
-            print obj_viento
     else:
         for obj_variable in datos:
             obj_variable.save()
@@ -65,6 +64,9 @@ def borrar_datos(estacion,variable,periodo):
     elif variable=="3":
         result=models.HumedadAire.objects.filter(est_id=estacion)\
         .filter(hai_periodo=periodo).delete()
+    elif variable=="4" or variable=="5":
+        result=models.Viento.objects.filter(est_id=estacion)\
+        .filter(vie_periodo=periodo).delete()
     elif variable=="6":
         result=models.HumedadSuelo.objects.filter(est_id=estacion)\
         .filter(hai_periodo=periodo).delete()

@@ -30,7 +30,6 @@ class AnuarioForm(forms.Form):
         ('2012','2012'),
         ('2016','2016'),
     )
-
     lista=[]
     estacion = forms.ChoiceField(required=False,choices=ESTACION,label='Estación')
     anio = forms.ChoiceField(required=False,choices=YEAR,label='Año')
@@ -63,13 +62,14 @@ class AnuarioForm(forms.Form):
         obj_typeVI=TypeVI()
 
         for item in variables:
+            print item.get('var_id')
             if item.get('var_id') in typeI:
                 matriz = obj_typeI.matriz(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
                 grafico = obj_typeI.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id')) + '_matriz': matriz})
                 context.update({str(item.get('var_id')) + '_grafico': grafico})
 
-            if item.get('var_id') in typeII:
+            elif item.get('var_id') in typeII:
                 matriz = obj_typeII.matriz(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
                 grafico = obj_typeII.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id')) + '_matriz': matriz})
@@ -87,16 +87,16 @@ class AnuarioForm(forms.Form):
                 context.update({str(item.get('var_id')) + '_matriz': matriz})
                 context.update({str(item.get('var_id')) + '_grafico': grafico})
 
-            '''if item.get('var_id_id') in typeV:
+            elif item.get('var_id') in typeV:
                 matriz = obj_typeV.matriz(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
-                context.update({str(item.get('var_id_id')) + '_matriz': matriz})
+                context.update({str(item.get('var_id')) + '_matriz': matriz})
                 #context.update({str(item.get('var_id_id')) + '_grafico': grafico})
 
 
-            if item.get('var_id_id') in typeVI:
+            elif item.get('var_id') in typeVI:
                 matriz = obj_typeVI.matriz(form.cleaned_data['estacion'],str(item.get('var_id')),form.cleaned_data['anio'])
                 grafico = obj_typeVI.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
                 context.update({str(item.get('var_id')) + '_matriz': matriz})
-                context.update({str(item.get('var_id')) + '_grafico': grafico})'''
+                #context.update({str(item.get('var_id')) + '_grafico': grafico})
 
         return context
