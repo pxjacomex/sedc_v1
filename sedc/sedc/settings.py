@@ -25,7 +25,7 @@ SECRET_KEY = 'a^gr0b4)=81coo9(&*qwllg3cijlx-$8xlyvddi)omrzt4&kc('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['192.168.19.2','infoagua-guayllabamba.ec','localhost']
+ALLOWED_HOSTS = ['192.168.19.2','infoagua-guayllabamba.ec','www.infoagua-guayllabamba.ec','localhost']
 
 
 DATETIME_FORMAT= None

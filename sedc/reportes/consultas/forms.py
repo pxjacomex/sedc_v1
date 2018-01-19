@@ -36,7 +36,7 @@ class MedicionSearchForm(forms.Form):
             lista=lista+i
         return lista
     FRECUENCIA=(
-        ('0','Instantaneo'),
+        ('0','Crudo'),
         ('1','5 Minutos'),
         ('2','Horario'),
         ('3','Diario'),

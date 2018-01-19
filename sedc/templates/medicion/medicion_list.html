@@ -11,15 +11,13 @@ $( function() {
       type:'GET',
       beforeSend: function () {
         $("#div_loading").show();
-        $("#div_list").hide();
+        $("#div_informacion").hide();
       },
       success: function (data) {
-        $("#div_edit").html(data)
+        $("#div_edit").html(data);
         $( "#div_edit" ).dialog( "open" );
-        beforeSend: function () {
-          $("#div_loading").hide();
-          $("#div_list").show();
-        },
+        $("#div_loading").hide();
+        $("#div_informacion").show();
       }
     });
     return false;
@@ -30,12 +28,12 @@ $( function() {
       url: $(this).attr('href'),
       type:'GET',
       beforeSend: function(){
-        $("#div_loading").show();
-        $("#div_list").hide();
+        activar_espera();
       },
       success: function (data) {
         $("#div_delete").html(data)
-        $( "#div_delete" ).dialog( "open" );
+        $("#div_delete").dialog("open");
+        desactivar_espera();
       }
     });
     return false;

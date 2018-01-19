@@ -9,19 +9,16 @@
         type:'POST',
         data: $("#form_update").serialize(),
         beforeSend: function () {
-          $("#div_loading").show();
-          $("#div_list").hide();
+          $("#div_edit").dialog( "close" );
+          $("#div_edit").html('')
+          activar_espera();
         },
         success: function (data) {
-          $("#div_loading").hide();
-          $("#div_list").show();
-          $("#div_edit" ).dialog( "close" );
-          $("#div_edit").html('')
           actualizar_lista();
         }
       });
     });
-    $("#btn_cancelar_delete").click(function(){
+    $("#btn_cancelar_update").click(function(){
       $( "#div_edit" ).dialog( "close" );
     });
   });

@@ -25,13 +25,16 @@ $( function() {
 });
 
 function actualizar_lista(){
-  $("#div_loading").show();
-  $("#div_list").hide();
+
 
   $.ajax({
     url: '/medicion/listdelete/',
     type:'POST',
     data:$('#form_filter').serialize(),
+    beforeSend: function(){
+      $("#div_loading").show();
+      $("#div_list").hide();
+    },
     success: function (data) {
       $("#div_list").html(data)
       $("#div_list").show();

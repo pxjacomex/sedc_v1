@@ -1,13 +1,12 @@
 from django.views.generic.base import TemplateView
 from django.views.generic import FormView
-from reportes.forms import AnuarioForm
-from cruce.forms import CruceSearchForm
+from reportes.forms import AnuarioForm, ComparacionForm
 from consultas.forms import MedicionSearchForm
 import csv
 from django.http import HttpResponse
-from django.template import loader, Context
+#from django.template import loader, Context
 from consultas.functions import grafico
-
+from reportes.functions import filtrar,comparar
 from django.shortcuts import render
 
 class ReportesAnuario(FormView):
@@ -18,11 +17,25 @@ class ReportesAnuario(FormView):
     def post(self, request, *args, **kwargs):
         form=AnuarioForm(self.request.POST or None)
         if form.is_valid():
-            self.lista=form.filtrar(form)
+            self.lista=filtrar(form)
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(ReportesAnuario, self).get_context_data(**kwargs)
         context.update(self.lista)
+        return context
+class ComparacionValores(FormView):
+    template_name='reportes/comparacion_reporte.html'
+    form_class=ComparacionForm
+    success_url='/reportes/comparacion/'
+    grafico=[]
+    def post(self, request, *args, **kwargs):
+        form=ComparacionForm(self.request.POST or None)
+        if form.is_valid():
+            self.grafico=comparar(form)
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        context = super(ComparacionValores, self).get_context_data(**kwargs)
+        context.update({'grafico':self.grafico})
         return context
 #consultas por periodo y frecuencia horaria, diaria y mensual
 class ConsultasPeriodo(FormView):

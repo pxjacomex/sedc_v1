@@ -10,7 +10,7 @@ import plotly.graph_objs as go
 import datetime, calendar
 
 from django.db import connection
-cursor = connection.cursor()
+
 
 def grafico(form):
     estacion=form.cleaned_data['estacion']
@@ -91,6 +91,7 @@ def datos_instantaneos(consulta,variable):
         frecuencia.append(datetime.datetime.combine(fila['med_fecha'],fila['med_hora']))
     return valor,maximo,minimo,frecuencia
 def datos_5minutos(estacion,variable,fecha_inicio,fecha_fin):
+    cursor = connection.cursor()
     if variable==str(1):
         cursor.execute("SELECT sum(med_valor) as valor, \
             to_timestamp(floor((extract('epoch' \
@@ -125,6 +126,7 @@ def datos_5minutos(estacion,variable,fecha_inicio,fecha_fin):
         if fila.get('minimo') is not None:
             minimo.append(fila.get('minimo'))
         frecuencia.append(fila.get('interval_alias'))
+    cursor.close()
     return valor,maximo,minimo,frecuencia
 
 
@@ -206,6 +208,10 @@ def datos_mensuales(consulta,variable):
         maximo=Max('med_maximo'),minimo=Min('med_minimo')).
         values('valor','maximo','minimo','month','year').
         order_by('year','month'))
+    valor=[]
+    maximo=[]
+    minimo=[]
+    frecuencia=[]
     for fila in consulta:
         if fila.get('valor') is not None:
             valor.append(fila.get('valor'))
@@ -214,7 +220,6 @@ def datos_mensuales(consulta,variable):
         if fila.get('minimo') is not None:
             minimo.append(fila.get('minimo'))
         fecha_str = str(calendar.month_abbr[fila.get('month')])+" "+str(fila.get('year'))
-        freq.append(fecha_str)
         frecuencia.append(fecha_str)
     return valor,maximo,minimo,frecuencia
 
@@ -235,11 +240,13 @@ def titulo_frecuencia(frecuencia):
     nombre = []
     if frecuencia == '0':
         nombre = 'Instantanea'
-    elif frecuencia == '1':
-        nombre = 'Horaria'
+    if frecuencia == '1':
+        nombre = '5 Minutos'
     elif frecuencia == '2':
-        nombre = 'Diaria'
+        nombre = 'Horaria'
     elif frecuencia == '3':
+        nombre = 'Diaria'
+    elif frecuencia == '4':
         nombre = 'Mensual'
     return nombre
 

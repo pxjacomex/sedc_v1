@@ -3,12 +3,7 @@
 from django import forms
 from estacion.models import Estacion
 from medicion.models import Medicion
-from reportes.typeI import TypeI
-from reportes.typeII import TypeII
-from reportes.typeIII import TypeIII
-from reportes.typeIV import TypeIV
-from reportes.typeV import TypeV
-from reportes.typeVI import TypeVI
+from variable.models import Variable, Unidad
 from cruce.models import Cruce
 
 class AnuarioForm(forms.Form):
@@ -33,70 +28,46 @@ class AnuarioForm(forms.Form):
     lista=[]
     estacion = forms.ChoiceField(required=False,choices=ESTACION,label='Estación')
     anio = forms.ChoiceField(required=False,choices=YEAR,label='Año')
-
-    def filtrar(self,form):
-        context = {}
-        #humedadsuelo,presionatmosferica,temperaturaagua,caudal,nivelagua
-        typeI = [6,8,9,10,11]
-        #precipitacion
-        typeII = [1]
-        #temperaturaaire
-        typeIII = [2]
-        #humedadaire
-        typeIV = [3]
-        #direccion y velocidad
-        typeV = [4,5]
-        #radiacion
-        typeVI = [7]
-
-        variables = list(Cruce.objects
-            .filter(est_id=form.cleaned_data['estacion'])
-            .values('var_id')
-            )
-
-        obj_typeI=TypeI()
-        obj_typeII=TypeII()
-        obj_typeIII=TypeIII()
-        obj_typeIV=TypeIV()
-        obj_typeV=TypeV()
-        obj_typeVI=TypeVI()
-
+class ComparacionForm(forms.Form):
+    def lista_estaciones():
+        lista = ()
+        estaciones = Estacion.objects.all()
+        for item in estaciones:
+            fila = ((str(item.est_id),item.est_codigo),)
+            lista = lista + fila
+        return lista
+    def lista_variables():
+        lista=()
+        variables=Variable.objects.order_by('var_id').all()
         for item in variables:
-            print item.get('var_id')
-            if item.get('var_id') in typeI:
-                matriz = obj_typeI.matriz(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                grafico = obj_typeI.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                context.update({str(item.get('var_id')) + '_matriz': matriz})
-                context.update({str(item.get('var_id')) + '_grafico': grafico})
-
-            elif item.get('var_id') in typeII:
-                matriz = obj_typeII.matriz(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                grafico = obj_typeII.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                context.update({str(item.get('var_id')) + '_matriz': matriz})
-                context.update({str(item.get('var_id')) + '_grafico': grafico})
-
-            elif item.get('var_id') in typeIII:
-                matriz = obj_typeIII.matriz(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                grafico = obj_typeIII.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                context.update({str(item.get('var_id')) + '_matriz': matriz})
-                context.update({str(item.get('var_id')) + '_grafico': grafico})
-
-            elif item.get('var_id') in typeIV:
-                matriz = obj_typeIV.matriz(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                grafico = obj_typeIV.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                context.update({str(item.get('var_id')) + '_matriz': matriz})
-                context.update({str(item.get('var_id')) + '_grafico': grafico})
-
-            elif item.get('var_id') in typeV:
-                matriz = obj_typeV.matriz(form.cleaned_data['estacion'],item.get('var_id_id'),form.cleaned_data['anio'])
-                context.update({str(item.get('var_id')) + '_matriz': matriz})
-                #context.update({str(item.get('var_id_id')) + '_grafico': grafico})
-
-
-            elif item.get('var_id') in typeVI:
-                matriz = obj_typeVI.matriz(form.cleaned_data['estacion'],str(item.get('var_id')),form.cleaned_data['anio'])
-                #grafico = obj_typeVI.grafico(form.cleaned_data['estacion'],item.get('var_id'),form.cleaned_data['anio'])
-                context.update({str(item.get('var_id')) + '_matriz': matriz})
-                #context.update({str(item.get('var_id')) + '_grafico': grafico})
-
-        return context
+            i=((str(item.var_id),item.var_nombre),)
+            lista=lista+i
+        return lista
+    '''favorite_colors = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=lista_estaciones(),
+    )'''
+    FRECUENCIA=(
+        ('0','Minima'),
+        ('1','5 Minutos'),
+        ('2','Horario'),
+        ('3','Diario'),
+        ('4','Mensual'),
+    )
+    estacion01 = forms.ChoiceField(
+        required=False,
+        choices=lista_estaciones(),
+        label='Primera Estación')
+    estacion02 = forms.ChoiceField(
+        required=False,
+        choices=lista_estaciones(),
+        label='Segunda Estación')
+    estacion03 = forms.ChoiceField(
+        required=False,
+        choices=lista_estaciones(),
+        label='Tercera Estación')
+    variable=forms.ChoiceField(choices=lista_variables())
+    inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
+    fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
+    frecuencia=forms.ChoiceField(choices=FRECUENCIA)

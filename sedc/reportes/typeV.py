@@ -9,5 +9,4 @@ class TypeV(Titulos):
     def matriz(self,estacion, variable, periodo):
         datos=list(Viento.objects.filter(est_id=estacion)
             .filter(vie_periodo=periodo))
-        print datos
-        return datos #, grafico
+        return datos

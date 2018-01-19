@@ -47,7 +47,6 @@ def rad_max(estacion,variable,periodo):
     for item in range(12):
         radiacion[item].append(max(radiacion[item]))
         radiacion[item].append(radiacion[item].index(max(radiacion[item]))+4)
-    #radiacion[1].append(max(radiacion[1]))
     return radiacion
 def rad_min(estacion,variable,periodo):
     consulta=(Medicion.objects.filter(est_id=estacion)
