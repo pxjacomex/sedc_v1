@@ -28,7 +28,8 @@ class Delimitador(models.Model):
 
 class Formato(models.Model):
     TIPO_FECHA=(
-    ('%m/%d/%Y','MM/DD/YY'),
+    ('%d/%m/%y','DD/MM/YY'),
+    ('%m/%d/%y','MM/DD/YY'),
     ('%Y-%m-%d','YYYY-MM-DD'),
     ('%d/%m/%Y','DD/MM/YYYY'),
     ('%m/%d/%Y','MM/DD/YYYY'),

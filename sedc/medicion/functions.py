@@ -86,7 +86,6 @@ def consultar(form):
     var_id=str(form.cleaned_data['variable'])
     fec_ini=str(form.cleaned_data['fec_ini'])+str(" ")+str(form.cleaned_data['hor_ini'])
     fec_fin=str(form.cleaned_data['fec_fin'])+str(" ")+str(form.cleaned_data['hor_fin'])
-    print (str(form.cleaned_data['fec_ini'])+str(form.cleaned_data['hor_ini']))
     consulta=list(Medicion.objects.raw(
         'SELECT med_id,med_fecha,med_hora,med_valor,med_maximo, med_minimo\
         FROM  medicion_medicion WHERE med_fecha+med_hora>=%s \

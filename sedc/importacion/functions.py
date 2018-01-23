@@ -40,7 +40,6 @@ def procesar_archivo(archivo,form,request):
     request.session['variables']=serialize('json',variables)
 
     if vacio:
-        print "llego"
         request.session['vacios']=serialize('json',objetos_vacios(datos,variables))
         #lista_vacios=objetos_vacios(datos,variables)
     if not valid and not sobreescribir:
@@ -68,7 +67,11 @@ def procesar_archivo(archivo,form,request):
 
 #leer el archivo y convertirlo a una matriz de objetos de la clase Datos
 def construir_matriz(archivo,formato,estacion):
+    #variables para el acumulado
+    ValorReal = 0
+    UltimoValor = 0
     cambiar_fecha=validar_datalogger(formato.mar_id_id)
+    acumulado=validar_acumulado(formato.mar_id_id)
     clasificacion=list(Clasificacion.objects.filter(
         for_id=formato.for_id).values())
     delimitador=Delimitador.objects.get(del_id=formato.del_id_id)
@@ -89,6 +92,15 @@ def construir_matriz(archivo,formato,estacion):
                 #variable=Variable.objects.get(var_id=fila['var_id_id'])
                 if fila['cla_valor'] is not None:
                     valor=float(valores[fila['cla_valor']])
+                    if acumulado:
+                        dblValor=valor
+                        if dblValor==0:
+                            UltimoValor=0
+                        ValorReal=dblValor-UltimoValor
+                        if ValorReal<0:
+                            ValorReal=dblValor
+                        UltimoValor=dblValor
+                        valor=ValorReal
                 else:
                     valor=None
                 if fila['cla_maximo'] is not None:
@@ -118,7 +130,6 @@ def verificar_vacios(datos):
         fecha_datos=list(medicion)[0].get('med_fecha')
         intervalo=timedelta(days=1)
         fecha_comparacion=fecha_datos+intervalo
-        #print fecha_archivo,fecha_datos
         if fecha_comparacion>=fecha_archivo:
             estado=False
         else:
@@ -133,7 +144,6 @@ def objetos_vacios(datos,variables):
     fecha_datos=list(medicion)[0].get('med_fecha')
     hora_datos=list(medicion)[0].get('med_hora')
     estacion=Estacion.objects.get(est_id=datos[0].est_id)
-    print fecha_datos,hora_datos
     for variable in variables:
         vacio=Vacios()
         vacio.est_id=estacion
@@ -143,7 +153,6 @@ def objetos_vacios(datos,variables):
         vacio.vac_fecha_fin=datos[0].med_fecha
         vacio.vac_hora_fin=datos[0].med_hora
         lista_vacios.append(vacio)
-        print variable.var_id
     return lista_vacios
 
 #guardar la informacion
@@ -152,7 +161,6 @@ def guardar_datos(request):
     datos_json=request.session['datos']
     datos=[]
     variables=[]
-    print sobreescribir
     for obj_dato in deserialize("json",datos_json):
         datos.append(obj_dato.object)
     for obj_variable in deserialize("json",request.session['variables']):
@@ -186,6 +194,12 @@ def validar_datalogger(marca):
     if marca.mar_nombre=='VAISALA':
         return True
     return False
+def validar_acumulado(marca):
+    marca=Marca.objects.get(mar_id=marca)
+    if marca.mar_nombre=='HOBO':
+        return True
+    return False
+
 #convertir fecha y hora al formato adecuado
 def formato_fecha(formato,valores,cambiar_fecha):
     if formato.for_col_fecha==formato.for_col_hora:
@@ -233,11 +247,16 @@ def validar_fechas(datos):
     hora_ini=datos[0].med_hora
     fecha_fin=datos[-1].med_fecha
     hora_fin=datos[-1].med_hora
-    consulta=(Medicion.objects
-    .filter(est_id=datos[0].est_id)
-    .filter(var_id=datos[0].var_id)
-    .filter(med_fecha__range=[fecha_ini,fecha_fin])
-    .filter(med_hora__range=[hora_ini,hora_fin]))
-    if consulta:
+    fec_ini=str(fecha_ini)+str(" ")+str(hora_ini)
+    fec_fin=str(fecha_fin)+str(" ")+str(hora_fin)
+    consulta=list(Medicion.objects.raw(
+        'SELECT med_id\
+        FROM  medicion_medicion WHERE med_fecha+med_hora>=%s \
+        and med_fecha+med_hora<=%s and est_id_id=%s\
+        and var_id_id=%s',
+        [fec_ini,fec_fin,datos[0].est_id,datos[0].var_id]
+        )
+    )
+    if len(consulta)>0:
         return False
     return True

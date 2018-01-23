@@ -13,6 +13,8 @@ import datetime
 import plotly.offline as opy
 import plotly.graph_objs as go
 
+from django.db import connection
+
 def filtrar(form):
     context = {}
     #humedadsuelo,presionatmosferica,temperaturaagua,caudal,nivelagua
@@ -73,13 +75,15 @@ def comparar(form):
     variable=form.cleaned_data['variable']
     fecha_inicio=form.cleaned_data['inicio']
     fecha_fin=form.cleaned_data['fin']
-    frecuencia=form.cleaned_data['frecuencia']
-    val01,tiempo=datos_instantaneos(
-        estacion01,variable,fecha_inicio,fecha_fin,'med_valor')
-    val02,tiempo=datos_instantaneos(
-        estacion02,variable,fecha_inicio,fecha_fin,'med_valor')
-    val03,tiempo=datos_instantaneos(
-        estacion03,variable,fecha_inicio,fecha_fin,'med_valor')
+    tiempo=form.cleaned_data['tiempo']
+    unidad=form.cleaned_data['unidad']
+    temporalidad=conversion_tiempo(tiempo,unidad)
+    val01,tiempo=datos_minutos(
+        estacion01,variable,fecha_inicio,fecha_fin,'med_valor',temporalidad)
+    val02,tiempo=datos_minutos(
+        estacion02,variable,fecha_inicio,fecha_fin,'med_valor',temporalidad)
+    val03,tiempo=datos_minutos(
+        estacion03,variable,fecha_inicio,fecha_fin,'med_valor',temporalidad)
     obj_est01=Estacion.objects.get(est_id=estacion01)
     obj_est02=Estacion.objects.get(est_id=estacion02)
     obj_est03=Estacion.objects.get(est_id=estacion03)
@@ -133,3 +137,56 @@ def datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin,parametro):
         frecuencia.append(datetime.datetime.combine(fila['med_fecha'],fila['med_hora']))
 
     return valor,frecuencia
+
+def datos_minutos(estacion,variable,fecha_inicio,fecha_fin,parametro,temporalidad):
+    cursor = connection.cursor()
+    if variable==str(1):
+        cursor.execute("SELECT sum(med_valor) as valor, \
+            to_timestamp(floor((extract('epoch' \
+            from med_fecha+med_hora) / %s )) * %s)\
+            AT TIME ZONE 'UTC' as interval_alias\
+            FROM medicion_medicion\
+            where est_id_id=%s and var_id_id=%s and \
+            med_fecha>=%s and med_fecha<=%s\
+            GROUP BY interval_alias\
+            order by interval_alias",[temporalidad,temporalidad,
+            estacion,variable,fecha_inicio,fecha_fin])
+    else:
+        cursor.execute("SELECT avg(med_valor) as valor, \
+            to_timestamp(floor((extract('epoch' \
+            from med_fecha+med_hora) / %s )) * %s)\
+            AT TIME ZONE 'UTC' as interval_alias\
+            FROM medicion_medicion\
+            where est_id_id=%s and var_id_id=%s and \
+            med_fecha>=%s and med_fecha<=%s\
+            GROUP BY interval_alias\
+            order by interval_alias",[temporalidad,temporalidad,
+            estacion,variable,fecha_inicio,fecha_fin])
+    datos=dictfetchall(cursor)
+    valor=[]
+    frecuencia=[]
+    for fila in datos:
+        if fila.get('valor') is not None:
+            valor.append(fila.get('valor'))
+        frecuencia.append(fila.get('interval_alias'))
+    cursor.close()
+    return valor,frecuencia
+def conversion_tiempo(tiempo,unidad):
+    valor=300
+    print type(unidad)
+    if unidad=="0":
+        valor=tiempo*60
+    elif unidad=="1":
+        valor=tiempo*60*60
+    elif unidad=="2":
+        valor=tiempo*60*60*24
+    elif unidad=="3":
+        valor=tiempo*60*60*24*365
+    return valor
+def dictfetchall(cursor):
+    #Return all rows from a cursor as a dict
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]

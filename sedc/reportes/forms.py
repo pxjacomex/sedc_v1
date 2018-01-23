@@ -48,12 +48,11 @@ class ComparacionForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         choices=lista_estaciones(),
     )'''
-    FRECUENCIA=(
-        ('0','Minima'),
-        ('1','5 Minutos'),
-        ('2','Horario'),
-        ('3','Diario'),
-        ('4','Mensual'),
+    UNIDADES=(
+        ('0','Horario'),
+        ('1','Diaria'),
+        ('2','Mensual'),
+        ('3','Anual'),
     )
     estacion01 = forms.ChoiceField(
         required=False,
@@ -70,4 +69,5 @@ class ComparacionForm(forms.Form):
     variable=forms.ChoiceField(choices=lista_variables())
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
-    frecuencia=forms.ChoiceField(choices=FRECUENCIA)
+    tiempo=forms.IntegerField(max_value=60,min_value=5,label="Tiempo en Minutos")
+    #frecuencia=forms.ChoiceField(choices=UNIDADES,label="Frecuencia")
