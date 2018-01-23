@@ -12,7 +12,7 @@ from formato.models import Clasificacion,Delimitador,Formato,Asociacion
 from marca.models import Marca
 from importacion.forms import VaciosForm
 from django.core.serializers import serialize,deserialize
-
+from django.db import connection
 
 
 #consultar formatos por datalogger y estacion
@@ -177,11 +177,15 @@ def eliminar_datos(datos,variables):
     hora_ini=datos[0].med_hora
     fecha_fin=datos[-1].med_fecha
     hora_fin=datos[-1].med_hora
+    fec_ini=str(fecha_ini)+str(" ")+str(hora_ini)
+    fec_fin=str(fecha_fin)+str(" ")+str(hora_fin)
     for var_id in variables:
-        Medicion.objects.filter(est_id=datos[0].est_id)\
-        .filter(var_id=var_id)\
-        .filter(med_fecha__range=[fecha_ini,fecha_fin])\
-        .filter(med_hora__range=[hora_ini,hora_fin]).delete()
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM medicion_medicion \
+            WHERE est_id_id=%s\
+            and var_id_id=%s and med_fecha+med_hora>=%s \
+            and med_fecha+med_hora<=%s",
+            [datos[0].est_id,var_id,fec_ini,fec_fin] )
 #guardar el registro de los Vacios
 def guardar_vacios(request,observacion):
     vacios_json=request.session['vacios']
