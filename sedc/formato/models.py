@@ -31,6 +31,7 @@ class Formato(models.Model):
     ('%d/%m/%y','DD/MM/YY'),
     ('%m/%d/%y','MM/DD/YY'),
     ('%Y-%m-%d','YYYY-MM-DD'),
+    ('"%Y-%m-%d','YYYY-MM-DD'),
     ('%d/%m/%Y','DD/MM/YYYY'),
     ('%m/%d/%Y','MM/DD/YYYY'),
     ('%d-%b-%y','DD-BB-YY'),
@@ -40,6 +41,7 @@ class Formato(models.Model):
     TIPO_HORA=(
     ('%I:%M:%S %p','HH:MM:SS AM/PM'),
     ('%H:%M:%S','HH:MM:SS 24H'),
+    ('%H:%M:%S"','HH:MM:SS 24H'),
     ('%H:%M','HH:MM 24H'),
     )
     for_id=models.AutoField(primary_key=True)
