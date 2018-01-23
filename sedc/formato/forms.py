@@ -34,7 +34,7 @@ class ClasificacionSearchForm(forms.Form):
     def lista_formato():
         lista = ()
         lista = lista + (('','----'),)
-        formato = Formato.objects.all()
+        formato = Formato.objects.order_by('for_id').all()
         for item in formato:
             fila = ((str(item.for_id),item.for_descripcion),)
             lista = lista + fila
@@ -55,20 +55,23 @@ class ClasificacionSearchForm(forms.Form):
     Formato = forms.ChoiceField(required=False,choices=lista_formato())
 
     def filtrar(self,form):
+        print form.cleaned_data['Formato']
         if form.cleaned_data['Variable'] and form.cleaned_data['Formato']:
             lista=Clasificacion.objects.filter(
                 var_id=form.cleaned_data['Variable']
             ).filter(
                 for_id=form.cleaned_data['Formato']
             )
-        elif form.cleaned_data['Variable'] == "":
+        elif form.cleaned_data['Variable'] == "" and form.cleaned_data['Formato']!="":
             lista=Clasificacion.objects.filter(
-                for_id__icontains=form.cleaned_data['Formato']
+                for_id=form.cleaned_data['Formato']
             )
-        elif form.cleaned_data['Formato'] == "":
+        elif form.cleaned_data['Formato'] == "" and form.cleaned_data['Variable']!="":
             lista=Clasificacion.objects.filter(
                 var_id=form.cleaned_data['Variable']
             )
+        elif form.cleaned_data['Variable']=="" and form.cleaned_data['Formato']=="":
+            lista=Clasificacion.objects.all()
         else:
             lista=Clasificacion.objects.all()
         return lista
