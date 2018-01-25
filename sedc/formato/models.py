@@ -41,7 +41,7 @@ class Formato(models.Model):
     TIPO_HORA=(
     ('%I:%M:%S %p','HH:MM:SS AM/PM'),
     ('%H:%M:%S','HH:MM:SS 24H'),
-    ('%H:%M:%S"','HH:MM:SS 24H'),
+    ('%H:%M:%S"','HH:MM:SS 24h'),
     ('%H:%M','HH:MM 24H'),
     )
     for_id=models.AutoField(primary_key=True)
