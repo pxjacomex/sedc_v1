@@ -17,7 +17,7 @@ class UploadFileForm(forms.Form):
         return lista
     '''def lista_formatos():
         lista = ()
-        formatos = Formato.objects.all()
+        formatos = Formato.objects.order_by('for_id').all()
         for item in formatos:
             fila = ((str(item.for_id),item.for_descripcion+str(" ")),)
             lista = lista + fila
