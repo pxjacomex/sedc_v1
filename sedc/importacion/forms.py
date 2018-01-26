@@ -15,13 +15,13 @@ class UploadFileForm(forms.Form):
             fila = ((str(item.est_id),item.est_codigo+str(" ")+item.est_nombre),)
             lista = lista + fila
         return lista
-    '''def lista_formatos():
+    def lista_formatos():
         lista = ()
         formatos = Formato.objects.order_by('for_id').all()
         for item in formatos:
             fila = ((str(item.for_id),item.for_descripcion+str(" ")),)
             lista = lista + fila
-        return lista'''
+        return lista
     def lista_datalogger():
         lista = ()
         marcas = Marca.objects.all()
@@ -31,7 +31,7 @@ class UploadFileForm(forms.Form):
         return lista
     estacion=forms.ChoiceField(choices=lista_estaciones())
     datalogger=forms.ChoiceField(choices=lista_datalogger())
-    #formato=forms.ChoiceField(choices=lista_formatos())
+    formato=forms.ChoiceField(choices=lista_formatos())
     sobreescribir=forms.BooleanField(required=False)
     archivo = forms.FileField()
 class VaciosForm(forms.Form):

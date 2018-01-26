@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from estacion.models import Estacion
 from formato.models import Formato
+from marca.models import Marca
 from datetime import date
 
 class Importacion(models.Model):
@@ -22,6 +23,13 @@ class Importacion(models.Model):
         blank=True,
         null=True,
         verbose_name="Formato"
+    )
+    mar_id=models.ForeignKey(
+        Marca,
+        models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Datalogger"
     )
     imp_fecha=models.DateField("Fecha",default=date.today)
     imp_hora=models.TimeField("Hora",default=date.today().strftime("%H:%M:%S"))
