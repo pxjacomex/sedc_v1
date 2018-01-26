@@ -25,23 +25,25 @@ class Delimitador(models.Model):
         return self.del_nombre.encode('utf-8')
     def get_absolute_url(self):
         return reverse('formato:delimitador_detail', kwargs={'pk': self.pk})
+class Fecha(models.Model):
+    fec_id=models.AutoField("Id",primary_key=True)
+    fec_formato=models.CharField("Formato",max_length=20)
+    fec_codigo=models.CharField("Código",max_length=20)
+    def __str__(self):
+        return self.fec_codigo
+    class Meta:
+        ordering=('fec_id',)
+class Hora(models.Model):
+    hor_id=models.AutoField("Id",primary_key=True)
+    hor_formato=models.CharField("Formato",max_length=20)
+    hor_codigo=models.CharField("Código",max_length=20)
+    def __str__(self):
+        return self.hor_codigo
+    class Meta:
+        ordering=('hor_id',)
 
 class Formato(models.Model):
-    TIPO_FECHA=(
-    ('%d/%m/%y','DD/MM/YY'),
-    ('%m/%d/%y','MM/DD/YY'),
-    ('%Y-%m-%d','YYYY-MM-DD'),
-    ('%d/%m/%Y','DD/MM/YYYY'),
-    ('%m/%d/%Y','MM/DD/YYYY'),
-    ('%d-%b-%y','DD-BB-YY'),
-    ('%Y-%d-%m','YYYY-DD-MM'),
-    ('%d-%m-%Y','DD-MM-YYYY'),
-    )
-    TIPO_HORA=(
-    ('%I:%M:%S %p','HH:MM:SS AM/PM'),
-    ('%H:%M:%S','HH:MM:SS 24H'),
-    ('%H:%M','HH:MM 24H'),
-    )
+
     for_id=models.AutoField(primary_key=True)
     ext_id=models.ForeignKey(
         Extension,
@@ -67,9 +69,20 @@ class Formato(models.Model):
     for_archivo=models.CharField("Archivo",max_length=100,blank=True,null=True)
     for_num_col=models.IntegerField("Número de columnas")
     for_fil_ini=models.IntegerField("Fila de inicio")
-    for_fecha=models.CharField("Formato de fecha",max_length=12,choices=TIPO_FECHA)
+    fec_id=models.ForeignKey(
+        Fecha,
+        models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Formato de Fecha1")
     for_col_fecha=models.IntegerField("Columna fecha")
-    for_hora=models.CharField("Formato de hora",max_length=12,choices=TIPO_HORA)
+    hor_id=models.ForeignKey(
+        Hora,
+        models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Formato de Hora1"
+    )
     for_col_hora=models.IntegerField("Columna de hora")
     for_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
@@ -77,7 +90,7 @@ class Formato(models.Model):
     def get_absolute_url(self):
         return reverse('formato:formato_detail', kwargs={'pk': self.pk})
     class Meta:
-        ordering=('for_nombre',)
+        ordering=('for_id',)
 
 class Clasificacion(models.Model):
     cla_id=models.AutoField("Id",primary_key=True)

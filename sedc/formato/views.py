@@ -14,8 +14,8 @@ from .forms import FormatoSearchForm, ClasificacionSearchForm
 class FormatoCreate(CreateView):
     model = Formato
     fields = ['ext_id','del_id','mar_id','for_nombre','for_descripcion','for_ubicacion',
-              'for_archivo','for_num_col','for_fil_ini','for_fecha','for_col_fecha','for_hora',
-              'for_col_hora']
+              'for_archivo','for_num_col','for_fil_ini','fec_id',
+              'for_col_fecha','hor_id','for_col_hora']
     def form_valid(self, form):
         return super(FormatoCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -64,8 +64,8 @@ class FormatoDetail(DetailView):
 class FormatoUpdate(UpdateView):
     model=Formato
     fields = ['ext_id','del_id','mar_id','for_nombre','for_descripcion','for_ubicacion',
-              'for_archivo','for_num_col','for_fil_ini','for_fecha','for_col_fecha','for_hora',
-              'for_col_hora']
+              'for_archivo','for_num_col','for_fil_ini','fec_id',
+              'for_col_fecha','hor_id','for_col_hora']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(FormatoUpdate, self).get_context_data(**kwargs)

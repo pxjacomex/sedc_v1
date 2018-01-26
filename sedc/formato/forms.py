@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
+from django.forms import ModelForm
 from formato.models import Formato, Variable, Clasificacion
 
 class FormatoSearchForm(forms.Form):
@@ -30,47 +31,50 @@ class FormatoSearchForm(forms.Form):
         return string
 
 
-class ClasificacionSearchForm(forms.Form):
-    def lista_formato():
+class ClasificacionSearchForm(ModelForm):
+    '''def lista_formato():
         lista = ()
-        lista = lista + (('','----'),)
+        lista = lista + (('','--'),)
         formato = Formato.objects.order_by('for_id').all()
         for item in formato:
             fila = ((str(item.for_id),item.for_descripcion),)
             lista = lista + fila
-        return lista
-    def lista_variables():
+        return lista'''
+    '''def lista_variables():
         lista=()
         lista = lista + (('','----'),)
         variables=Variable.objects.all()
         for item in variables:
             fila=((str(item.var_id),item.var_nombre),)
             lista=lista+fila
-        return lista
+        return lista'''
 
 
 
     lista=[]
-    Variable = forms.ChoiceField(required=False,choices=lista_variables())
-    Formato = forms.ChoiceField(required=False,choices=lista_formato())
-
+    #Variable = forms.ChoiceField(required=False,choices=lista_variables())
+    #Formato = forms.ChoiceField(required=False,choices=lista_formato())
+    class Meta:
+        model=Clasificacion
+        fields=['var_id','for_id']
     def filtrar(self,form):
-        print form.cleaned_data['Formato']
-        if form.cleaned_data['Variable'] and form.cleaned_data['Formato']:
+        for_id=form.cleaned_data['for_id']
+        var_id=form.cleaned_data['var_id']
+        if var_id and for_id:
             lista=Clasificacion.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             ).filter(
-                for_id=form.cleaned_data['Formato']
+                for_id=for_id
             )
-        elif form.cleaned_data['Variable'] == "" and form.cleaned_data['Formato']!="":
+        elif var_id is None and for_id:
             lista=Clasificacion.objects.filter(
-                for_id=form.cleaned_data['Formato']
+                for_id=for_id
             )
-        elif form.cleaned_data['Formato'] == "" and form.cleaned_data['Variable']!="":
+        elif for_id is None and var_id:
             lista=Clasificacion.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             )
-        elif form.cleaned_data['Variable']=="" and form.cleaned_data['Formato']=="":
+        elif var_id is None and for_id is None:
             lista=Clasificacion.objects.all()
         else:
             lista=Clasificacion.objects.all()
@@ -82,8 +86,8 @@ class ClasificacionSearchForm(forms.Form):
         i=1
         for item in keys:
             if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))+"&"
+                string+=item+"="+str(form.cleaned_data[item])+"&"
             else:
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))
+                string+=item+"="+str(form.cleaned_data[item])
             i+=1
         return string
