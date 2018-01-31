@@ -1,46 +1,31 @@
 # -*- coding: utf-8 -*-
 
-from django import forms
+from django.forms import ModelForm
 from bitacora.models import Bitacora
 from estacion.models import Estacion
 from variable.models import Variable
 
 
-class BitacoraSearchForm(forms.Form):
-    def lista_estaciones():
-        lista = ()
-        lista = lista + (('','----'),)
-        estaciones = Estacion.objects.all()
-        for item in estaciones:
-            fila = ((str(item.est_id),item.est_codigo),)
-            lista = lista + fila
-        return lista
-    def lista_variable():
-        lista=()
-        lista = lista + (('','----'),)
-        variable=Variable.objects.all()
-        for item in variable:
-            fila=((str(item.var_id),item.var_nombre),)
-            lista=lista+fila
-        return lista
-
-    Variable = forms.ChoiceField(required=False,choices=lista_variable())
-    Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
-
+class BitacoraSearchForm(ModelForm):
+    class Meta:
+        model=Bitacora
+        fields=['var_id','est_id']
     def filtrar(self,form):
-        if form.cleaned_data['Variable'] and form.cleaned_data['Estacion']:
+        var_id=form.cleaned_data['var_id']
+        est_id=form.cleaned_data['est_id']
+        if var_id and est_id:
             lista=Bitacora.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             ).filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Variable']  == ""and form.cleaned_data['Estacion']:
+        elif var_id  is None and est_id:
             lista=Bitacora.objects.filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Estacion'] == ""and form.cleaned_data['Variable']:
+        elif est_id is None and var_id:
             lista=Bitacora.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             )
         else:
             lista=Bitacora.objects.all()
@@ -52,7 +37,7 @@ class BitacoraSearchForm(forms.Form):
         i=1
         for item in keys:
             if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))+"&"
+                string+=item+"="+str(form.cleaned_data[item])+"&"
             else:
                 string+=item+"="+str(form.cleaned_data[item])
             i+=1

@@ -5,47 +5,27 @@ from sensor.models import Sensor
 from marca.models import Marca
 
 class SensorSearchForm(forms.Form):
-    def lista_marcas():
-        lista=()
-        lista = lista + (('','----'),)
-        marcas=Marca.objects.all()
-        for item in marcas:
-            fila=((str(item.mar_id),item.mar_nombre),)
-            lista=lista+fila
-        return lista
-    TIPO_NOMBRE=(
-        ('','----'),
-        ('Termómetro','Termómetro'),
-        ('Higrómetro','Higrómetro'),
-        ('Pluviógrafo','Pluviógrafo'),
-        ('Veleta','Veleta'),
-        ('Anemómetro','Anemómetro'),
-        ('Barómetro','Barómetro'),
-        ('TDR','TDR'),
-        ('Piranómetro','Piranómetro'),
-        ('Termómetro de agua','Termómetro de agua'),
-        ('Sensor de nivel','Sensor de nivel'),
-    )
-    lista=[]
-    Nombre = forms.ChoiceField(required=False,choices=TIPO_NOMBRE)
-    Marca = forms.ChoiceField(required=False,choices=lista_marcas())
-
+    class Meta:
+        model=Sensor
+        fields=['sen_nombre','mar_id']
     def filtrar(self,form):
+        sen_nombre=form.cleaned_data['sen_nombre']
+        mar_id=form.cleaned_data['mar_id']
         #filtra los resultados en base al form
-        if form.cleaned_data['Nombre'] and form.cleaned_data['Marca']:
+        if sen_nombre and mar_id:
             lista=Sensor.objects.filter(
-                sen_nombre=form.cleaned_data['Nombre']
+                sen_nombre=sen_nombre
             ).filter(
-                mar_id=form.cleaned_data['Marca']
+                mar_id=mar_id
             )
 
-        elif form.cleaned_data['Nombre'] == "" and form.cleaned_data['Marca']!="":
+        elif sen_nombre is None and mar_id:
             lista=Sensor.objects.filter(
-                mar_id=form.cleaned_data['Marca']
+                mar_id=mar_id
             )
-        elif form.cleaned_data['Marca'] == "" and form.cleaned_data['Nombre']!="":
+        elif mar_id is None and sen_nombre:
             lista=Sensor.objects.filter(
-                sen_nombre=form.cleaned_data['Nombre']
+                sen_nombre=sen_nombre
             )
         else:
             lista=Sensor.objects.all()
@@ -58,8 +38,8 @@ class SensorSearchForm(forms.Form):
         i=1
         for item in keys:
             if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))+"&"
+                string+=item+"="+str(form.cleaned_data[item])+"&"
             else:
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))
+                string+=item+"="+str(form.cleaned_data[item])
             i+=1
         return string

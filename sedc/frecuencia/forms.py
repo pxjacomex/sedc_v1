@@ -1,47 +1,34 @@
 # -*- coding: utf-8 -*-
 
-from django import forms
+from django.forms import ModelForm
 from frecuencia.models import Frecuencia
 from estacion.models import Estacion
 from formato.models import Variable
 
-class FrecuenciaSearchForm(forms.Form):
-    def lista_estaciones():
-        lista = ()
-        lista = lista + (('','----'),)
-        estaciones = Estacion.objects.all()
-        for item in estaciones:
-            fila = ((str(item.est_id),item.est_codigo),)
-            lista = lista + fila
-        return lista
-    def lista_variables():
-        lista=()
-        lista = lista + (('','----'),)
-        variables=Variable.objects.all()
-        for item in variables:
-            fila=((str(item.var_id),item.var_nombre),)
-            lista=lista+fila
-        return lista
-
+class FrecuenciaSearchForm(ModelForm):
+    class Meta:
+        model=Frecuencia
+        fields=['est_id','var_id']
     lista=[]
-    Variable = forms.ChoiceField(required=False,choices=lista_variables())
-    Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
-    #Fecha = forms.DateField(required=False,input_formats=['%d/%m/%Y'],label="Fecha (dd/mm/yyyy)")
+    #Variable = forms.ChoiceField(required=False,choices=lista_variables())
+    #Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
 
     def filtrar(self,form):
-        if form.cleaned_data['Variable'] and form.cleaned_data['Estacion']:
+        var_id=form.cleaned_data['var_id']
+        est_id=form.cleaned_data['est_id']
+        if var_id and est_id:
             lista=Frecuencia.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             ).filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Variable']  == "" and form.cleaned_data['Estacion']!="":
+        elif var_id  is None and est_id:
             lista=Frecuencia.objects.filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Estacion'] == "" and form.cleaned_data['Variable']!="":
+        elif est_id is None and var_id:
             lista=Frecuencia.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             )
         else:
             lista=Frecuencia.objects.all()

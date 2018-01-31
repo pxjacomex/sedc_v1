@@ -1,82 +1,60 @@
 # -*- coding: utf-8 -*-
 
-from django import forms
+from django.forms import ModelForm
 from variable.models import Control
 from estacion.models import Estacion
 from formato.models import Variable
 from sensor.models import Sensor
 
-class ControlSearchForm(forms.Form):
-    def lista_estaciones():
-        lista = ()
-        lista = lista + (('','----'),)
-        estaciones = Estacion.objects.all()
-        for item in estaciones:
-            fila = ((str(item.est_id),item.est_codigo),)
-            lista = lista + fila
-        return lista
-    def lista_variables():
-        lista=()
-        lista = lista + (('','----'),)
-        variables=Variable.objects.all()
-        for item in variables:
-            fila=((str(item.var_id),item.var_nombre),)
-            lista=lista+fila
-        return lista
-    def lista_sensores():
-        lista=()
-        lista = lista + (('','----'),)
-        sensores=Sensor.objects.all()
-        for item in sensores:
-            fila=((str(item.sen_id),item.sen_nombre + " " + item.sen_modelo + " " + item.sen_serial),)
-            lista=lista+fila
-        return lista
-
+class ControlSearchForm(ModelForm):
+    class Meta:
+        model=Control
+        fields=['var_id','est_id','sen_id']
     lista=[]
-    Variable = forms.ChoiceField(required=False,choices=lista_variables())
-    Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
-    Sensor = forms.ChoiceField(required=False,choices=lista_sensores())
 
 
     def filtrar(self,form):
-        if form.cleaned_data['Variable'] and form.cleaned_data['Estacion'] and form.cleaned_data['Sensor']:
+        var_id=form.cleaned_data['var_id']
+        est_id=form.cleaned_data['est_id']
+        sen_id=form.cleaned_data['sen_id']
+        if var_id and est_id and sen_id:
             lista=Control.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             ).filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             ).filter(
-                sen_id=form.cleaned_data['Sensor']
+                sen_id=sen_id
             )
-        elif form.cleaned_data['Variable'] == "" and form.cleaned_data['Estacion'] == "":
+        elif var_id is None and est_id is None:
             lista=Control.objects.filter(
-                sen_id=form.cleaned_data['Sensor']
+                sen_id=sen_id
             )
-        elif form.cleaned_data['Variable'] == "" and form.cleaned_data['Sensor'] == "":
-            print form.cleaned_data['Estacion']
+        elif var_id is None and sen_id is None:
+            print est_id
             lista=Control.objects.filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Estacion'] == "" and form.cleaned_data['Sensor'] == "":
+        elif est_id is None and sen_id is None:
             lista=Control.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             )
-        elif form.cleaned_data['Variable']  == "":
+        elif var_id is None:
             lista=Control.objects.filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             ).filter(
-                sen_id=form.cleaned_data['Sensor']
+                sen_id=sen_id
             )
-        elif form.cleaned_data['Estacion'] == "":
+        elif est_id is None:
             lista=Control.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             ).filter(
-                sen_id=form.cleaned_data['Sensor']
+                sen_id=sen_id
             )
-        elif form.cleaned_data['Sensor'] == "":
+        elif sen_id is None:
             lista=Control.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             ).filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
         else:
             lista=Control.objects.all()
@@ -88,8 +66,8 @@ class ControlSearchForm(forms.Form):
         i=1
         for item in keys:
             if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))+"&"
+                string+=item+"="+str(form.cleaned_data[item])+"&"
             else:
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))
+                string+=item+"="+str(form.cleaned_data[item])
             i+=1
         return string

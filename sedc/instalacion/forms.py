@@ -7,40 +7,26 @@ from datalogger.models import Datalogger
 
 
 class InstalacionSearchForm(forms.Form):
-    def lista_estaciones():
-        lista = ()
-        lista = lista + (('','----'),)
-        estaciones = Estacion.objects.all()
-        for item in estaciones:
-            fila = ((str(item.est_id),item.est_codigo),)
-            lista = lista + fila
-        return lista
-    def lista_datalogger():
-        lista = ()
-        lista = lista + (('','----'),)
-        dataloggers = Datalogger.objects.all()
-        for item in dataloggers:
-            fila = ((str(item.dat_id),item.dat_serial),)
-            lista = lista + fila
-        return lista
-
-    Datalogger = forms.ChoiceField(required=False,choices=lista_datalogger())
-    Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
+    class Meta:
+        model=Instalacion
+        fields=['est_id','dat_id']
 
     def filtrar(self,form):
-        if form.cleaned_data['Datalogger'] and form.cleaned_data['Estacion']:
+        dat_id=form.cleaned_data['dat_id']
+        est_id=form.cleaned_data['est_id']
+        if dat_id and est_id:
             lista=Instalacion.objects.filter(
-                dat_id=form.cleaned_data['Datalogger']
+                dat_id=dat_id
             ).filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Datalogger']  == "" and form.cleaned_data['Estacion']!="":
+        elif dat_id  is None and est_id:
             lista=Instalacion.objects.filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Estacion'] == "" and form.cleaned_data['Datalogger']!="":
+        elif est_id is None and dat_id:
             lista=Instalacion.objects.filter(
-                dat_id=form.cleaned_data['Datalogger']
+                dat_id=dat_id
             )
         else:
             lista=Instalacion.objects.all()
@@ -52,7 +38,7 @@ class InstalacionSearchForm(forms.Form):
         i=1
         for item in keys:
             if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))+"&"
+                string+=item+"="+str(form.cleaned_data[item])+"&"
             else:
                 string+=item+"="+str(form.cleaned_data[item])
             i+=1

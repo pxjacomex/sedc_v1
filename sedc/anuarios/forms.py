@@ -3,22 +3,8 @@
 from django import forms
 from estacion.models import Estacion
 from variable.models import Variable
+from cruce.models import Cruce
 class AnuarioForm(forms.Form):
-    def lista_estaciones():
-        lista = ()
-        estaciones = Estacion.objects.all()
-        for item in estaciones:
-            fila = ((str(item.est_id),item.est_codigo + str(" ") + item.est_nombre),)
-            lista = lista + fila
-        return lista
-    def lista_variables():
-        lista = ()
-        variables = Variable.objects.order_by('var_id').all()
-        for item in variables:
-            fila = ((str(item.var_id),item.var_nombre),)
-            lista = lista + fila
-        return lista
-
     YEAR = (
         ('2007','2007'),
         ('2008','2008'),
@@ -32,6 +18,9 @@ class AnuarioForm(forms.Form):
         ('2016','2016'),
     )
 
-    estacion = forms.ChoiceField(required=False,choices=lista_estaciones(),label='Estación')
-    variable = forms.ChoiceField(required=False,choices=lista_variables(),label='Variable')
+    estacion = forms.ModelChoiceField(required=False,
+        queryset=Estacion.objects.order_by('est_id').all(),label='Estación')
+    variable = forms.ModelChoiceField(required=False,
+        queryset=Variable.objects.order_by('var_id').all(),label='Variable')
+    #variable = forms.ChoiceField(required=False,choices=lista_variables(),label='Variable')
     periodo = forms.ChoiceField(required=False,choices=YEAR,label='Año')

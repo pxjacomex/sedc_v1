@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
+from django.forms import ModelForm
 from estacion.models import Estacion
 from medicion.models import Medicion
 from variable.models import Variable, Unidad
 from cruce.models import Cruce
 
-class AnuarioForm(forms.Form):
-    def lista_estaciones():
+class AnuarioForm(ModelForm):
+    '''def lista_estaciones():
         lista = ()
         estaciones = Estacion.objects.all()
         for item in estaciones:
             fila = ((str(item.est_id),item.est_nombre),)
             lista = lista + fila
-        return lista
-
-    ESTACION = lista_estaciones()
+        return lista'''
+    class Meta:
+        model=Estacion
+        fields=['est_id']
+    #ESTACION = lista_estaciones()
     YEAR = (
         ('2007','2007'),
         ('2008','2008'),
@@ -26,10 +29,10 @@ class AnuarioForm(forms.Form):
         ('2016','2016'),
     )
     lista=[]
-    estacion = forms.ChoiceField(required=False,choices=ESTACION,label='Estación')
+    #estacion = forms.ChoiceField(required=False,choices=ESTACION,label='Estación')
     anio = forms.ChoiceField(required=False,choices=YEAR,label='Año')
 class ComparacionForm(forms.Form):
-    def lista_estaciones():
+    '''def lista_estaciones():
         lista = ()
         estaciones = Estacion.objects.all()
         for item in estaciones:
@@ -42,7 +45,7 @@ class ComparacionForm(forms.Form):
         for item in variables:
             i=((str(item.var_id),item.var_nombre),)
             lista=lista+i
-        return lista
+        return lista'''
     '''favorite_colors = forms.MultipleChoiceField(
         required=False,
         widget=forms.CheckboxSelectMultiple,
@@ -54,7 +57,7 @@ class ComparacionForm(forms.Form):
         ('2','Mensual'),
         ('3','Anual'),
     )
-    estacion01 = forms.ChoiceField(
+    '''estacion01 = forms.ChoiceField(
         required=False,
         choices=lista_estaciones(),
         label='Primera Estación')
@@ -66,7 +69,7 @@ class ComparacionForm(forms.Form):
         required=False,
         choices=lista_estaciones(),
         label='Tercera Estación')
-    variable=forms.ChoiceField(choices=lista_variables())
+    variable=forms.ChoiceField(choices=lista_variables())'''
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
     tiempo=forms.IntegerField(max_value=60,min_value=5,label="Tiempo en Minutos")

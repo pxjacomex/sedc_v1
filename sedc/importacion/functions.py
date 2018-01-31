@@ -8,7 +8,7 @@ from variable.models import Variable
 from temporal.models import Datos
 from datalogger.models import Datalogger
 from vacios.models import Vacios
-from formato.models import Clasificacion,Delimitador,Formato,Asociacion
+from formato.models import Clasificacion,Delimitador,Formato,Asociacion,Fecha,Hora
 from marca.models import Marca
 from importacion.forms import VaciosForm
 from django.core.serializers import serialize,deserialize
@@ -206,20 +206,36 @@ def validar_acumulado(marca):
 
 #convertir fecha y hora al formato adecuado
 def formato_fecha(formato,valores,cambiar_fecha):
+    con_fecha=list(Fecha.objects.exclude(fec_id=formato.fec_id.fec_id).values('fec_codigo'))
+    con_hora=list(Hora.objects.exclude(hor_id=formato.hor_id.hor_id).values('hor_codigo'))
+    lista_fechas=[d.get('fec_codigo') for d in con_fecha]
+    lista_horas=[d.get('hor_codigo') for d in con_hora]
+    #lista_fechas.insert(0,formato.fec_id.fec_codigo)
+    lista_fechas.append(formato.fec_id.fec_codigo)
+    lista_horas.append(formato.hor_id.hor_codigo)
     if formato.for_col_fecha==formato.for_col_hora:
-        fecha_hora=datetime.strptime(valores[formato.for_col_hora],
-            formato.for_fecha+str(" ")+formato.for_hora)
+        separar=valores[formato.for_col_fecha].split(" ")
+        fecha_str=separar[0]
+        hora_str=separar[1]
     else:
-        fecha_hora=datetime.strptime(valores[formato.for_col_fecha]+
-            valores[formato.for_col_hora],formato.for_fecha+str(" ")+
-            formato.for_hora)
-    #fecha_hora=validar_datalogger(formato.for_id,fecha_hora)
+        fecha_str=valores[formato.for_col_fecha]
+        hora_str=valores[formato.for_col_hora]
+
+    for fila in lista_fechas:
+        try:
+            fecha=datetime.strptime(fecha_str,fila)
+        except ValueError:
+            pass
+    for fila in lista_horas:
+        try:
+            hora=datetime.strptime(hora_str,fila)
+        except ValueError:
+            pass
+    fecha_hora=datetime(fecha.year,fecha.month,fecha.day,hora.hour,hora.minute,hora.second)
     if cambiar_fecha:
         intervalo=timedelta(hours=5)
         fecha_hora-=intervalo
-    #fecha=fecha_hora.strftime('%Y-%m-%d')
     fecha=fecha_hora.date()
-    #hora=fecha_hora.strftime('%H:%M:%S')
     hora=fecha_hora.time()
     return fecha,hora
 # Poner en una variable la información de las variables a importar

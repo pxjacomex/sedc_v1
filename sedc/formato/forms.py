@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from django import forms
+#from django import forms
 from django.forms import ModelForm
 from formato.models import Formato, Variable, Clasificacion
 
-class FormatoSearchForm(forms.Form):
-
+class FormatoSearchForm(ModelForm):
     lista=[]
-    Descripcion = forms.CharField(required=False,max_length=100)
-
+    class Meta:
+        model=Formato
+        fields=['for_descripcion']
     def filtrar(self,form):
-        if form.cleaned_data['Descripcion']:
+        for_descripcion=form.cleaned_data['for_descripcion']
+        if for_descripcion:
             lista=Formato.objects.filter(
-                for_descripcion__icontains=form.cleaned_data['Descripcion']
+                for_descripcion__icontains=for_descripcion
             )
         else:
             lista=Formato.objects.all()
@@ -24,36 +25,14 @@ class FormatoSearchForm(forms.Form):
         i=1
         for item in keys:
             if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))+"&"
+                string+=item+"="+str(form.cleaned_data[item])+"&"
             else:
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))
+                string+=item+"="+str(form.cleaned_data[item])
             i+=1
         return string
 
-
 class ClasificacionSearchForm(ModelForm):
-    '''def lista_formato():
-        lista = ()
-        lista = lista + (('','--'),)
-        formato = Formato.objects.order_by('for_id').all()
-        for item in formato:
-            fila = ((str(item.for_id),item.for_descripcion),)
-            lista = lista + fila
-        return lista'''
-    '''def lista_variables():
-        lista=()
-        lista = lista + (('','----'),)
-        variables=Variable.objects.all()
-        for item in variables:
-            fila=((str(item.var_id),item.var_nombre),)
-            lista=lista+fila
-        return lista'''
-
-
-
     lista=[]
-    #Variable = forms.ChoiceField(required=False,choices=lista_variables())
-    #Formato = forms.ChoiceField(required=False,choices=lista_formato())
     class Meta:
         model=Clasificacion
         fields=['var_id','for_id']

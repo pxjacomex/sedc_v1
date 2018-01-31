@@ -1,47 +1,31 @@
 # -*- coding: utf-8 -*-
 
-from django import forms
+from django.forms import ModelForm
 from vacios.models import Vacios
 from estacion.models import Estacion
 from formato.models import Variable
 
-class VaciosSearchForm(forms.Form):
-    def lista_estaciones():
-        lista = ()
-        lista = lista + (('','----'),)
-        estaciones = Estacion.objects.all()
-        for item in estaciones:
-            fila = ((str(item.est_id),item.est_codigo),)
-            lista = lista + fila
-        return lista
-    def lista_variables():
-        lista=()
-        lista = lista + (('','----'),)
-        variables=Variable.objects.all()
-        for item in variables:
-            fila=((str(item.var_id),item.var_nombre),)
-            lista=lista+fila
-        return lista
-
+class VaciosSearchForm(ModelForm):
+    class Meta:
+        model=Vacios
+        fields=['est_id','var_id']
     lista=[]
-    Variable = forms.ChoiceField(required=False,choices=lista_variables())
-    Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
-    #Fecha = forms.DateField(required=False,input_formats=['%d/%m/%Y'],label="Fecha (dd/mm/yyyy)")
-
     def filtrar(self,form):
-        if form.cleaned_data['Variable'] and form.cleaned_data['Estacion']:
+        var_id=form.cleaned_data['var_id']
+        est_id=form.cleaned_data['est_id']
+        if var_id and est_id:
             lista=Vacios.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             ).filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Variable']  == "":
+        elif var_id is None and est_id:
             lista=Vacios.objects.filter(
-                est_id=form.cleaned_data['Estacion']
+                est_id=est_id
             )
-        elif form.cleaned_data['Estacion'] == "":
+        elif est_id is None and var_id:
             lista=Vacios.objects.filter(
-                var_id=form.cleaned_data['Variable']
+                var_id=var_id
             )
         else:
             lista=Vacios.objects.all()
@@ -53,7 +37,7 @@ class VaciosSearchForm(forms.Form):
         i=1
         for item in keys:
             if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item].encode('utf-8'))+"&"
+                string+=item+"="+str(form.cleaned_data[item])+"&"
             else:
                 string+=item+"="+str(form.cleaned_data[item])
             i+=1

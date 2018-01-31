@@ -103,6 +103,7 @@ DATABASES = {
         'USER':'usr_sedc',
         'PASSWORD':'dev123*',
         'HOST':'192.168.19.8',
+        #'HOST':'localhost',
         'PORT':'5432'
     }
 }
