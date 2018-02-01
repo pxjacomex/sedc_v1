@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
-
-from django import forms
-'''from sensor.models import Sensor
+from django.forms import ModelForm
+from sensor.models import Sensor
 from marca.models import Marca
-
-class SensorSearchForm(forms.Form):
+class SensorSearchForm(ModelForm):
     class Meta:
         model=Sensor
         fields=['sen_nombre','mar_id']
@@ -18,7 +15,6 @@ class SensorSearchForm(forms.Form):
             ).filter(
                 mar_id=mar_id
             )
-
         elif sen_nombre is None and mar_id:
             lista=Sensor.objects.filter(
                 mar_id=mar_id
@@ -30,7 +26,6 @@ class SensorSearchForm(forms.Form):
         else:
             lista=Sensor.objects.all()
         return lista
-
     def cadena(self,form):
         #forma cadena de url
         keys=form.cleaned_data.keys()
@@ -42,4 +37,4 @@ class SensorSearchForm(forms.Form):
             else:
                 string+=item+"="+str(form.cleaned_data[item])
             i+=1
-        return string'''
+        return string

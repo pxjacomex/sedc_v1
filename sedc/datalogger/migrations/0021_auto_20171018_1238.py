@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('variable', '0010_auto_20171018_1238'),
+        ('variable', '0001_initial'),
         ('datalogger', '0020_auto_20170831_1005'),
     ]
 

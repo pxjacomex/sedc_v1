@@ -12,5 +12,5 @@ urlpatterns=[
     url(r'datalogger/edit/(?P<pk>[0-9]+)/$', views.DataloggerUpdate.as_view(), name='datalogger_update'),
     url(r'datalogger/(?P<pk>[0-9]+)/delete/$', views.DataloggerDelete.as_view(), name='datalogger_delete'),
 
-    
+
 ]

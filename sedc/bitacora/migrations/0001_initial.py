@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('estacion', '0007_auto_20170705_1645'),
-        ('variable', '0010_auto_20171018_1238'),
+        ('variable', '0001_initial'),
     ]
 
     operations = [

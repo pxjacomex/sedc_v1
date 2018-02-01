@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('variable', '0008_auto_20170705_1645'),
+        ('variable', '0001_initial'),
         ('estacion', '0007_auto_20170705_1645'),
     ]
 

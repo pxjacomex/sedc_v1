@@ -25,13 +25,13 @@ class Variable(models.Model):
     	blank=True,
     	null=True,
     	verbose_name="Unidad")
-    var_codigo=models.CharField("Código",max_length=6)
+    var_codigo=models.CharField("Codigo",max_length=6)
     var_nombre=models.CharField("Nombre",max_length=50)
-    var_maximo=models.DecimalField("Máximo",max_digits=7,decimal_places=2)
-    var_minimo=models.DecimalField("Mínimo",max_digits=7,decimal_places=2)
+    var_maximo=models.DecimalField("Maximo",max_digits=7,decimal_places=2)
+    var_minimo=models.DecimalField("Minimo",max_digits=7,decimal_places=2)
     var_sos=models.DecimalField("Sospechoso",max_digits=7,decimal_places=2,null=True,blank=True)
     var_err=models.DecimalField("Error",max_digits=7,decimal_places=2,null=True,blank=True)
-    var_min=models.DecimalField("Error mínimo",max_digits=7,decimal_places=2,null=True,blank=True)
+    var_min=models.DecimalField("Error minimo",max_digits=7,decimal_places=2,null=True,blank=True)
     var_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
         return self.var_nombre.encode('utf-8')
@@ -64,5 +64,5 @@ class Control(models.Model):
     con_estado=models.BooleanField("Activo",default=True)
     def get_absolute_url(self):
         return reverse('variable:control_detail', kwargs={'pk': self.pk})
-    class Meta:
-        ordering=('est_id','var_id',)
+    '''class Meta:
+        ordering=('est_id','var_id',)'''

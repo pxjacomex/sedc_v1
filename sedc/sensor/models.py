@@ -6,7 +6,7 @@ from django.urls import reverse
 from marca.models import Marca
 
 # Create your models here.
-'''class Sensor(models.Model):
+class Sensor(models.Model):
     TIPO_NOMBRE=(
         ('Termómetro','Termómetro'),
         ('Higrómetro','Higrómetro'),
@@ -31,10 +31,9 @@ from marca.models import Marca
     sen_modelo=models.CharField("Modelo",max_length=20,null=True)
     sen_serial=models.CharField("Serial",max_length=20,null=True)
     sen_estado=models.BooleanField("Estado",default=True)
-
     def __str__(self):
         return (self.sen_nombre + " " + self.sen_modelo + " " + self.sen_serial).encode('utf-8')
     def get_absolute_url(self):
         return reverse('sensor:sensor_detail', kwargs={'pk': self.pk})
     class Meta:
-        ordering=('sen_nombre','sen_modelo','sen_serial',)'''
+        ordering=('sen_nombre','sen_modelo','sen_serial',)
