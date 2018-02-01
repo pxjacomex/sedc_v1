@@ -3,9 +3,15 @@
 #from django import forms
 from django.forms import ModelForm
 from formato.models import Formato, Variable, Clasificacion
-
+from django import forms
 class FormatoSearchForm(ModelForm):
     lista=[]
+    for_descripcion = forms.CharField(
+        max_length=200,
+        required=False,
+        help_text='Puede usar una o varias palabras',
+        label='Descripción'
+    )
     class Meta:
         model=Formato
         fields=['for_descripcion']
