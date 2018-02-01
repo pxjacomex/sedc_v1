@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from sensor.models import Sensor
+'''from sensor.models import Sensor
 from marca.models import Marca
 
 class SensorSearchForm(forms.Form):
@@ -42,4 +42,4 @@ class SensorSearchForm(forms.Form):
             else:
                 string+=item+"="+str(form.cleaned_data[item])
             i+=1
-        return string
+        return string'''

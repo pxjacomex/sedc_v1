@@ -2,13 +2,13 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render, get_object_or_404
-from datalogger.models import Datalogger#, Sensor
+from datalogger.models import Datalogger
 from django.views.generic import ListView,FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-from datalogger.forms import DataloggerSearchForm#, SensorSearchForm
+from datalogger.forms import DataloggerSearchForm
 
 #Datalogger views
 class DataloggerCreate(CreateView):
@@ -62,60 +62,6 @@ class DataloggerUpdate(UpdateView):
 class DataloggerDelete(DeleteView):
     model=Datalogger
     success_url = reverse_lazy('datalogger:datalogger_index')
-
-#Sensor
-"""class SensorCreate(CreateView):
-    model = Sensor
-    fields = ['sen_nombre','mar_id','sen_modelo','sen_serial']
-    def form_valid(self, form):
-        return super(SensorCreate, self).form_valid(form)
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(SensorCreate, self).get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context['title'] = "Crear"
-        return context
-
-class SensorList(ListView,FormView):
-    #parámetros ListView
-    model=Sensor
-    paginate_by=10
-    #parámetros FormView
-    template_name='datalogger/sensor_list.html'
-    form_class=SensorSearchForm
-    #success_url='/sensor/'
-    #parametros propios
-    cadena=str("")
-    def get(self, request, *args, **kwargs):
-        form=SensorSearchForm(self.request.GET or None)
-        self.object_list=Sensor.objects.all()
-        if form.is_valid():
-            self.object_list=form.filtrar(form)
-            self.cadena=form.cadena(form)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(SensorList, self).get_context_data(**kwargs)
-        page=self.request.GET.get('page')
-        context.update(pagination(self.object_list,page,10))
-        context["cadena"]=self.cadena
-        return context
-
-class SensorDetail(DetailView):
-    model=Sensor
-
-class SensorUpdate(UpdateView):
-    model=Sensor
-    fields = ['sen_nombre','mar_id','sen_modelo','sen_serial']
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(SensorUpdate, self).get_context_data(**kwargs)
-        context['title'] = "Modificar"
-        return context
-
-class SensorDelete(DeleteView):
-    model=Sensor
-    success_url = reverse_lazy('datalogger:sensor_index')"""
 
 def pagination(lista,page,num_reg):
     #lista=model.objects.all()

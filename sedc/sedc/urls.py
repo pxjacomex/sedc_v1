@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^',include('instalacion.urls',namespace='instalacion')),
     url(r'^',include('bitacora.urls',namespace='bitacora')),
     url(r'^',include('cruce.urls',namespace='cruce')),
+    url('^', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG is True:

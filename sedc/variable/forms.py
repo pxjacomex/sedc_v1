@@ -4,19 +4,19 @@ from django.forms import ModelForm
 from variable.models import Control
 from estacion.models import Estacion
 from formato.models import Variable
-from sensor.models import Sensor
+#from sensor.models import Sensor
 
 class ControlSearchForm(ModelForm):
     class Meta:
         model=Control
-        fields=['var_id','est_id','sen_id']
+        fields=['var_id','est_id']
     lista=[]
 
 
     def filtrar(self,form):
         var_id=form.cleaned_data['var_id']
         est_id=form.cleaned_data['est_id']
-        sen_id=form.cleaned_data['sen_id']
+        sen_id=form.cleaned_data['est_id']
         if var_id and est_id and sen_id:
             lista=Control.objects.filter(
                 var_id=var_id

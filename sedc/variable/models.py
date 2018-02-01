@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from sensor.models import Sensor
+#from sensor.models import Sensor
 from estacion.models import Estacion
 from django.urls import reverse
 
@@ -47,11 +47,12 @@ class Control(models.Model):
     	blank=True,
     	null=True,
     	verbose_name="Variable")
-    sen_id=models.ForeignKey(
+    '''sen_id=models.ForeignKey(
     	Sensor,
+        models.SET_NULL,
     	blank=True,
     	null=True,
-    	verbose_name="Sensor")
+    	verbose_name="Sensor")'''
     est_id=models.ForeignKey(
     	Estacion,
     	models.SET_NULL,

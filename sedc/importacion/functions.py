@@ -27,7 +27,6 @@ def consultar_formatos(marca):
 #leer el archivo
 def procesar_archivo(archivo,form,request):
     #try:
-    #formato=Formato.objects.get(for_id=form.cleaned_data['formato'])
     formato=form.cleaned_data['formato']
     estacion=form.cleaned_data['estacion']
     sobreescribir=form.cleaned_data['sobreescribir']

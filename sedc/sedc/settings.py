@@ -100,7 +100,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'db_sedc',
-        'USER':'usr_sedc',
+        'USER':'postgres',
         'PASSWORD':'dev123*',
         'HOST':'192.168.19.8',
         #'HOST':'localhost',

@@ -3,11 +3,10 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.urls import reverse
-#from estacion.models import Estacion
 from marca.models import Marca
 
 # Create your models here.
-class Sensor(models.Model):
+'''class Sensor(models.Model):
     TIPO_NOMBRE=(
         ('Termómetro','Termómetro'),
         ('Higrómetro','Higrómetro'),
@@ -38,4 +37,4 @@ class Sensor(models.Model):
     def get_absolute_url(self):
         return reverse('sensor:sensor_detail', kwargs={'pk': self.pk})
     class Meta:
-        ordering=('sen_nombre','sen_modelo','sen_serial',)
+        ordering=('sen_nombre','sen_modelo','sen_serial',)'''

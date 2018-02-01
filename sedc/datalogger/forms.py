@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.forms import ModelForm
-from datalogger.models import Datalogger#, Sensor
+from datalogger.models import Datalogger
 from marca.models import Marca
 
 class DataloggerSearchForm(ModelForm):

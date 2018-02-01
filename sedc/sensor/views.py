@@ -2,16 +2,16 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from sensor.models import Sensor
+#from sensor.models import Sensor
 from django.views.generic import ListView,FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-from sensor.forms import SensorSearchForm
+#from sensor.forms import SensorSearchForm
 
 # Create your views here.
-class SensorCreate(CreateView):
+'''class SensorCreate(CreateView):
     model = Sensor
     fields = ['sen_nombre','mar_id','sen_modelo','sen_serial']
     def form_valid(self, form):
@@ -86,4 +86,4 @@ def pagination(lista,page,num_reg):
         'last':paginator.num_pages,
         'range':range(start,last+1),
     }
-    return context
+    return context'''
