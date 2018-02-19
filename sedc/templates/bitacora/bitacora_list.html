@@ -2,21 +2,25 @@
 {% block content %}
 {% load bootstrap3 %}
 
-<div class="row">
-  <div class="col-lg-10">
-    <h3>Bitacora</h3>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-lg-9">
+        <h4>Bitacora</h4>
+      </div>
+      <div class="col-lg-3">
+        <a style="float:right" class="btn btn-info"
+        href="{% url 'bitacora:bitacora_create' %}">
+        Nueva Bitacora</a>
+      </div>
+    </div>
   </div>
-  <div class="col-lg-2">
-    <a style="float:right" class="btn btn-info"
-    href="{% url 'bitacora:bitacora_create' %}">
-    Nuevo</a>
 
-  </div>
-  </div>
-<div class ="row">
+<div class ="panel-body">
   <form class="form" method="get" action="{% url 'bitacora:bitacora_index'%}">
     {% for field in form%}
-      {% bootstrap_field field form_group_class='col-lg-4' %}
+    {% bootstrap_field field form_group_class='col-lg-4' %}
     {% endfor %}
     <div class="form-group col-lg-4">
       <label>&nbsp;</label><br>
@@ -29,8 +33,8 @@
     </div>
   </form>
 </div>
-<br>
-<div class="row">
+
+
 <table class="table table-striped table-bordered table-condensed">
   <thead>
     <tr>
@@ -97,5 +101,6 @@
   </ul>
 </nav>
 {% endif %}
+</div>
 
 {% endblock %}
