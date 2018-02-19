@@ -15,7 +15,7 @@ class Radiacion(object):
 
 def matrizVI(estacion,variable,periodo):
     datos=[]
-    obj_estacion=Estacion.objects.get(est_id=estacion)
+    obj_estacion=estacion.est_id.objects.get(est_id=estacion.est_id)
     obj_rad=Radiacion()
     obj_rad.maximo=rad_max(estacion,variable,periodo)
     obj_rad.minimo=rad_min(estacion,variable,periodo)
@@ -23,8 +23,8 @@ def matrizVI(estacion,variable,periodo):
     return datos
 def rad_max(estacion,variable,periodo):
     #consulta de maximos, agrupados por hora y por mes
-    consulta=(Medicion.objects.filter(est_id=estacion)
-        .filter(var_id=variable).filter(med_fecha__year=periodo)
+    consulta=(Medicion.objects.filter(est_id=estacion.est_id)
+        .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
         .filter(med_hora__range=(
             datetime.strptime('05:00:00', '%H:%M:%S').time(),
             datetime.strptime('18:00:00', '%H:%M:%S').time())
@@ -49,8 +49,8 @@ def rad_max(estacion,variable,periodo):
         radiacion[item].append(radiacion[item].index(max(radiacion[item]))+4)
     return radiacion
 def rad_min(estacion,variable,periodo):
-    consulta=(Medicion.objects.filter(est_id=estacion)
-        .filter(var_id=variable).filter(med_fecha__year=periodo)
+    consulta=(Medicion.objects.filter(est_id=estacion.est_id)
+        .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
         .filter(med_hora__range=(
             datetime.strptime('05:00:00', '%H:%M:%S').time(),
             datetime.strptime('18:00:00', '%H:%M:%S').time())
@@ -76,9 +76,9 @@ def rad_min(estacion,variable,periodo):
 
 def datos_guardar(estacion,variable,periodo):
     datos=[]
-    obj_estacion=Estacion.objects.get(est_id=estacion)
-    consulta=(Medicion.objects.filter(est_id=estacion)
-        .filter(var_id=variable).filter(med_fecha__year=periodo)
+    obj_estacion=estacion.est_id.objects.get(est_id=estacion.est_id)
+    consulta=(Medicion.objects.filter(est_id=estacion.est_id)
+        .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
         .filter(med_hora__range=(
             datetime.strptime('05:00:00', '%H:%M:%S').time(),
             datetime.strptime('18:00:00', '%H:%M:%S').time())
@@ -103,12 +103,9 @@ def datos_guardar(estacion,variable,periodo):
         datos.append(obj_rad)
         print fila.get('maximo')
     return datos
-'''def verificarVI(estacion,periodo):
-    return RadiacionSolar.objects.filter(est_id=estacion)\
-        .filter(rad_periodo=periodo).exists()'''
 def datos_radiacion_maxima(datos,estacion,periodo):
     lista=[]
-    obj_estacion=Estacion.objects.get(est_id=estacion)
+    obj_estacion=estacion.est_id.objects.get(est_id=estacion.est_id)
     for fila in datos.maximo:
         obj_rad_max=RadiacionMaxima()
         obj_rad_max.est_id=obj_estacion
@@ -133,7 +130,7 @@ def datos_radiacion_maxima(datos,estacion,periodo):
         obj_rad_max.save()
 def datos_radiacion_minimo(datos,estacion,periodo):
     lista=[]
-    obj_estacion=Estacion.objects.get(est_id=estacion)
+    obj_estacion=estacion.est_id.objects.get(est_id=estacion.est_id)
     for fila in datos.minimo:
         obj_rad_min=RadiacionMinima()
         obj_rad_min.est_id=obj_estacion

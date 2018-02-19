@@ -10,18 +10,18 @@ from datetime import datetime
 def matrizV_mensual(estacion,variable,periodo):
     print "Inicio de la Función mensual ",datetime.now()
     #velocidad media en m/s
-    vel_media=list(Medicion.objects.filter(est_id=estacion).filter(var_id=4)
+    vel_media=list(Medicion.objects.filter(est_id=estacion.est_id).filter(var_id=4)
         .filter(med_fecha__year=periodo)
         .annotate(month=TruncMonth('med_fecha')).values('month')
         .annotate(valor=Avg('med_valor')).values('valor').order_by('month'))
     #numero de registros por mes en velocidad
-    num_obs=list(Medicion.objects.filter(est_id=estacion).filter(var_id=4)
+    num_obs=list(Medicion.objects.filter(est_id=estacion.est_id).filter(var_id=4)
         .filter(med_fecha__year=periodo)
         .annotate(month=TruncMonth('med_fecha')).values('month')
         .annotate(obs=Count('med_valor')).values('obs','month')
         .order_by('month'))
     #numero de registros mayores a 0.5 en velocidad
-    calma=list(Medicion.objects.filter(est_id=estacion).filter(var_id=4)
+    calma=list(Medicion.objects.filter(est_id=estacion.est_id).filter(var_id=4)
         .filter(med_fecha__year=periodo).filter(med_valor__lt=0.5)
         .annotate(month=TruncMonth('med_fecha')).values('month')
         .annotate(calma=Count('med_valor')).values('calma')
@@ -34,14 +34,14 @@ def matrizV_mensual(estacion,variable,periodo):
         print "Inicio de la consulta por mes",datetime.now()
         #lista de datos de la dirección de viento
         dat_dvi=list(Medicion.objects
-            .filter(est_id=estacion).filter(var_id=5)
+            .filter(est_id=estacion.est_id).filter(var_id=5)
             .filter(med_fecha__year=periodo)
             .filter(med_fecha__month=mes)
             .values('med_valor','med_fecha').order_by('med_fecha','med_hora')
         )
         #lista de datos de velocidad del viento
         dat_vvi=list(Medicion.objects
-            .filter(est_id=estacion).filter(var_id=4)
+            .filter(est_id=estacion.est_id).filter(var_id=4)
             .filter(med_fecha__year=periodo)
             .filter(med_fecha__month=mes)
             .values('med_valor','med_maximo').order_by('med_fecha','med_hora')
@@ -124,7 +124,7 @@ def matrizV_mensual(estacion,variable,periodo):
 
 def datos_viento(datos,estacion,periodo):
     lista=[]
-    obj_estacion=Estacion.objects.get(est_id=estacion)
+    obj_estacion=estacion.est_id.objects.get(est_id=estacion.est_id)
     for fila in datos:
         if len(fila)>0:
             obj_viento=Viento()

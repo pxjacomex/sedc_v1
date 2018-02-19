@@ -9,9 +9,9 @@ from django.db.models.functions import (
 
 def matrizI(estacion,variable,periodo):
     datos=[]
-    obj_estacion=Estacion.objects.get(est_id=estacion)
-    consulta=Medicion.objects.filter(est_id=estacion)\
-    .filter(var_id=variable).filter(med_fecha__year=periodo)
+    obj_estacion=estacion.est_id.objects.get(est_id=estacion.est_id)
+    consulta=Medicion.objects.filter(est_id=estacion.est_id)\
+    .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
     if variable == "8":
         consulta = consulta.exclude(med_valor = 0, med_maximo = 0, med_minimo = 0)
     consulta=consulta.annotate(month=TruncMonth('med_fecha')).values('month')
@@ -24,7 +24,7 @@ def matrizI(estacion,variable,periodo):
     maximos = []
     minimos = []
     promedios = []
-    if variable=="6":
+    if variable.var_id==6:
         for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_hsu=HumedadSuelo()
             obj_hsu.est_id=obj_estacion
@@ -40,7 +40,7 @@ def matrizI(estacion,variable,periodo):
                 obj_hsu.hsu_minimo=round(item_min.get('minimo'),2)
             obj_hsu.hsu_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_hsu)
-    elif variable=="8":
+    elif variable.var_id==8:
         for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_pat=PresionAtmosferica()
             obj_pat.est_id=obj_estacion
@@ -56,7 +56,7 @@ def matrizI(estacion,variable,periodo):
                 obj_pat.pat_minimo=round(item_min.get('minimo'),2)
             obj_pat.pat_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_pat)
-    elif variable=="9":
+    elif variable.var_id==9:
         for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_tag=TemperaturaAgua()
             obj_tag.est_id=obj_estacion
@@ -72,7 +72,7 @@ def matrizI(estacion,variable,periodo):
                 obj_tag.tag_minimo=round(item_min.get('minimo'),2)
             obj_tag.tag_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_tag)
-    elif variable=="10":
+    elif variable.var_id==10:
         for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_cau=Caudal()
             obj_cau.est_id=obj_estacion
@@ -88,7 +88,7 @@ def matrizI(estacion,variable,periodo):
                 obj_cau.cau_minimo=round(item_min.get('minimo'),2)
             obj_cau.cau_promedio=round(item_avg.get('valor'),2)
             datos.append(obj_cau)
-    elif variable=="11":
+    elif variable.var_id==11:
         for item_max,item_min,item_avg in zip(med_max,med_min,med_avg):
             obj_nag=NivelAgua()
             obj_nag.est_id=obj_estacion

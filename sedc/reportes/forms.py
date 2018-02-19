@@ -30,46 +30,24 @@ class AnuarioForm(ModelForm):
     )
     lista=[]
     #estacion = forms.ChoiceField(required=False,choices=ESTACION,label='Estación')
+    estacion = forms.ModelChoiceField(required=False,
+        queryset=Estacion.objects.order_by('est_id').all(),label='Estación')
     anio = forms.ChoiceField(required=False,choices=YEAR,label='Año')
 class ComparacionForm(forms.Form):
-    '''def lista_estaciones():
-        lista = ()
-        estaciones = Estacion.objects.all()
-        for item in estaciones:
-            fila = ((str(item.est_id),item.est_codigo),)
-            lista = lista + fila
-        return lista
-    def lista_variables():
-        lista=()
-        variables=Variable.objects.order_by('var_id').all()
-        for item in variables:
-            i=((str(item.var_id),item.var_nombre),)
-            lista=lista+i
-        return lista'''
-    '''favorite_colors = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=lista_estaciones(),
-    )'''
     UNIDADES=(
         ('0','Horario'),
         ('1','Diaria'),
         ('2','Mensual'),
         ('3','Anual'),
     )
-    '''estacion01 = forms.ChoiceField(
-        required=False,
-        choices=lista_estaciones(),
-        label='Primera Estación')
-    estacion02 = forms.ChoiceField(
-        required=False,
-        choices=lista_estaciones(),
-        label='Segunda Estación')
-    estacion03 = forms.ChoiceField(
-        required=False,
-        choices=lista_estaciones(),
-        label='Tercera Estación')
-    variable=forms.ChoiceField(choices=lista_variables())'''
+    estacion01 = forms.ModelChoiceField(required=False,
+        queryset=Estacion.objects.order_by('est_id').all(),label='Estación 01')
+    estacion02 = forms.ModelChoiceField(required=False,
+        queryset=Estacion.objects.order_by('est_id').all(),label='Estación 02')
+    estacion03 = forms.ModelChoiceField(required=False,
+        queryset=Estacion.objects.order_by('est_id').all(),label='Estación 03')
+    variable = forms.ModelChoiceField(required=False,
+        queryset=Variable.objects.order_by('var_id').all(),label='Variable')
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
     tiempo=forms.IntegerField(max_value=60,min_value=5,label="Tiempo en Minutos")

@@ -8,17 +8,16 @@ from django.db.models.functions import (
     ExtractYear,ExtractMonth,ExtractDay,ExtractHour)
 def matrizIV(estacion,variable,periodo):
     datos=[]
-    obj_estacion=Estacion.objects.get(est_id=estacion)
-    consulta=Medicion.objects.filter(est_id=estacion)\
-    .filter(var_id=variable).filter(med_fecha__year=periodo)\
+    consulta=Medicion.objects.filter(est_id=estacion.est_id)\
+    .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)\
     .annotate(month=TruncMonth('med_fecha')).values('month')
-    consulta_max=(Medicion.objects.filter(est_id=estacion)
-    .filter(var_id=variable)
+    consulta_max=(Medicion.objects.filter(est_id=estacion.est_id)
+    .filter(var_id=variable.var_id)
     .filter(med_fecha__year=periodo).values('med_maximo').exists())
 
     datos_diarios_max=list(Medicion.objects
-        .filter(est_id=estacion)
-        .filter(var_id=variable)
+        .filter(est_id=estacion.est_id)
+        .filter(var_id=variable.var_id)
         .filter(med_fecha__year=periodo)
         .exclude(med_valor=0)
         .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
@@ -26,8 +25,8 @@ def matrizIV(estacion,variable,periodo):
         .annotate(maximo=Max('med_maximo'),valor=Max('med_valor'))
         .values('maximo','valor','month','day').order_by('month','day'))
     datos_diarios_min=list(Medicion.objects
-        .filter(est_id=estacion)
-        .filter(var_id=variable)
+        .filter(est_id=estacion.est_id)
+        .filter(var_id=variable.var_id)
         .filter(med_fecha__year=periodo)
         .exclude(med_valor=0)
         .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
@@ -43,7 +42,7 @@ def matrizIV(estacion,variable,periodo):
     for item in med_avg:
         mes=item.get('month').month
         obj_hai=HumedadAire()
-        obj_hai.est_id=obj_estacion
+        obj_hai.est_id=estacion
         obj_hai.hai_periodo=periodo
         obj_hai.hai_mes=mes
         obj_hai.hai_maximo=maximo[mes-1]

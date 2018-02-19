@@ -9,15 +9,15 @@ from django.db.models.functions import (
 
 def matrizII(estacion,variable,periodo):
     datos=[]
-    obj_estacion=Estacion.objects.get(est_id=estacion)
-    consulta=(Medicion.objects.filter(est_id=estacion)
+    obj_estacion=Estacion.objects.get(est_id=estacion.est_id)
+    consulta=(Medicion.objects.filter(est_id=estacion.est_id)
         .filter(var_id=variable).filter(med_fecha__year=periodo)
         .annotate(month=TruncMonth('med_fecha')).values('month'))
     #valores de precipitación mensual
     med_mensual=list(consulta.annotate(suma=Sum('med_valor')).
         values('suma','month').order_by('month'))
     datos_diarios=list(Medicion.objects
-        .filter(est_id=estacion)
+        .filter(est_id=estacion.est_id)
         .filter(var_id=variable)
         .filter(med_fecha__year=periodo)
         .annotate(month=ExtractMonth('med_fecha'),day=ExtractDay('med_fecha'))
@@ -64,5 +64,5 @@ def maximospre(datos_diarios):
         totdias.append(count)
     return max24H,maxdia,totdias
 def verificarII(estacion,periodo):
-    return Precipitacion.objects.filter(est_id=estacion)\
+    return Precipitacion.objects.filter(est_id=estacion.est_id)\
         .filter(pre_periodo=periodo).exists()

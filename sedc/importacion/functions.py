@@ -29,8 +29,9 @@ def procesar_archivo(archivo,form,request):
     #try:
     formato=form.cleaned_data['formato']
     estacion=form.cleaned_data['estacion']
+    datalogger=form.cleaned_data['datalogger']
     sobreescribir=form.cleaned_data['sobreescribir']
-    datos,variables=construir_matriz(archivo,formato,estacion)
+    datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
     valid=validar_fechas(datos)
     vacio=verificar_vacios(datos)
     message=str("")
@@ -66,11 +67,13 @@ def procesar_archivo(archivo,form,request):
     return context
 
 #leer el archivo y convertirlo a una matriz de objetos de la clase Datos
-def construir_matriz(archivo,formato,estacion):
+def construir_matriz(archivo,formato,estacion,datalogger):
     #variables para el acumulado
     ValorReal = 0
     UltimoValor = 0
+    #determinar si debemos restar 5 horas a la fecha del archivo
     cambiar_fecha=validar_datalogger(formato.mar_id_id)
+    #validar si los valores del archivo son acumulados
     acumulado=validar_acumulado(formato.mar_id_id)
     clasificacion=list(Clasificacion.objects.filter(
         for_id=formato.for_id).values())
@@ -86,7 +89,7 @@ def construir_matriz(archivo,formato,estacion):
         #controlar la fila de inicio
         if i>=formato.for_fil_ini:
             valores=linea.split(delimitador.del_caracter)
-            fecha,hora=formato_fecha(formato,valores,cambiar_fecha)
+            fecha=formato_fecha(formato,valores,cambiar_fecha)
             j=0
             for fila in clasificacion:
                 #variable=Variable.objects.get(var_id=fila['var_id_id'])
@@ -112,7 +115,7 @@ def construir_matriz(archivo,formato,estacion):
                 else:
                     minimo=None
                 dato=Datos(var_id=variables[j].var_id,est_id=estacion.est_id,
-                    med_fecha=fecha,med_hora=hora,
+                    med_fecha=fecha,mar_id=datalogger.mar_id,
                     med_valor=valor,med_maximo=maximo,med_minimo=minimo,
                     med_estado=True)
                 datos.append(dato)
@@ -122,14 +125,16 @@ def construir_matriz(archivo,formato,estacion):
 def verificar_vacios(datos):
     estado=False
     vacios=[]
-    fecha_archivo=datos[0].med_fecha
-    hora_fin=datos[0].med_hora
+    fecha_archivo=datos[0].med_fecha.date()
     medicion=Medicion.objects.filter(est_id=datos[0].est_id)\
-    .filter(var_id=datos[0].var_id).values('med_fecha','med_hora').reverse()[:1]
+    .filter(var_id=datos[0].var_id).values('med_fecha').reverse()[:1]
     if len(medicion)>0:
-        fecha_datos=list(medicion)[0].get('med_fecha')
+        fecha_datos=list(medicion)[0].get('med_fecha').date()
+        print type(fecha_datos)
+        print type(fecha_archivo)
         intervalo=timedelta(days=1)
         fecha_comparacion=fecha_datos+intervalo
+
         if fecha_comparacion>=fecha_archivo:
             estado=False
         else:
@@ -140,9 +145,9 @@ def verificar_vacios(datos):
 def objetos_vacios(datos,variables):
     lista_vacios=[]
     medicion=Medicion.objects.filter(est_id=datos[0].est_id)\
-    .filter(var_id=datos[0].var_id).values('med_fecha','med_hora').reverse()[:1]
-    fecha_datos=list(medicion)[0].get('med_fecha')
-    hora_datos=list(medicion)[0].get('med_hora')
+    .filter(var_id=datos[0].var_id).values('med_fecha').reverse()[:1]
+    fecha_datos=list(medicion)[0].get('med_fecha').date()
+    hora_datos=list(medicion)[0].get('med_fecha').time()
     estacion=Estacion.objects.get(est_id=datos[0].est_id)
     for variable in variables:
         vacio=Vacios()
@@ -167,24 +172,21 @@ def guardar_datos(request):
         variables.append(obj_variable.object.pk)
     if sobreescribir:
         eliminar_datos(datos,variables)
-
     Datos.objects.bulk_create(datos)
     Datos.objects.all().delete()
     del datos[:]
 #eliminar informacion en caso de sobreescribir
 def eliminar_datos(datos,variables):
     fecha_ini=datos[0].med_fecha
-    hora_ini=datos[0].med_hora
     fecha_fin=datos[-1].med_fecha
-    hora_fin=datos[-1].med_hora
-    fec_ini=str(fecha_ini)+str(" ")+str(hora_ini)
-    fec_fin=str(fecha_fin)+str(" ")+str(hora_fin)
+    fec_ini=str(fecha_ini)
+    fec_fin=str(fecha_fin)
     for var_id in variables:
         with connection.cursor() as cursor:
             cursor.execute("DELETE FROM medicion_medicion \
             WHERE est_id_id=%s\
-            and var_id_id=%s and med_fecha+med_hora>=%s \
-            and med_fecha+med_hora<=%s",
+            and var_id_id=%s and med_fecha>=%s \
+            and med_fecha<=%s",
             [datos[0].est_id,var_id,fec_ini,fec_fin] )
 #guardar el registro de los Vacios
 def guardar_vacios(request,observacion):
@@ -235,9 +237,7 @@ def formato_fecha(formato,valores,cambiar_fecha):
     if cambiar_fecha:
         intervalo=timedelta(hours=5)
         fecha_hora-=intervalo
-    fecha=fecha_hora.date()
-    hora=fecha_hora.time()
-    return fecha,hora
+    return fecha_hora
 # Poner en una variable la información de las variables a importar
 def informacion_archivo(formato):
     clasificacion=list(Clasificacion.objects.filter(
@@ -255,24 +255,21 @@ def informacion_archivo(formato):
 #Información del rango de fechas a importar
 def rango_fecha(datos):
     fecha_ini=datos[0].med_fecha
-    hora_ini=datos[0].med_hora
     fecha_fin=datos[-1].med_fecha
-    hora_fin=datos[-1].med_hora
-    cadena=str(fecha_ini)+str(" ")+str(hora_ini)+" al "+ \
-        str(fecha_fin)+str(" ")+str(hora_fin)
+    cadena=str(fecha_ini)+" al "+ str(fecha_fin)
     return cadena
 #verificar los datos del archivo
 def validar_fechas(datos):
     fecha_ini=datos[0].med_fecha
-    hora_ini=datos[0].med_hora
+    #hora_ini=datos[0].med_hora
     fecha_fin=datos[-1].med_fecha
-    hora_fin=datos[-1].med_hora
-    fec_ini=str(fecha_ini)+str(" ")+str(hora_ini)
-    fec_fin=str(fecha_fin)+str(" ")+str(hora_fin)
+    #hora_fin=datos[-1].med_hora
+    fec_ini=str(fecha_ini)
+    fec_fin=str(fecha_fin)
     consulta=list(Medicion.objects.raw(
         'SELECT med_id\
-        FROM  medicion_medicion WHERE med_fecha+med_hora>=%s \
-        and med_fecha+med_hora<=%s and est_id_id=%s\
+        FROM  medicion_medicion WHERE med_fecha>=%s \
+        and med_fecha<=%s and est_id_id=%s\
         and var_id_id=%s',
         [fec_ini,fec_fin,datos[0].est_id,datos[0].var_id]
         )
