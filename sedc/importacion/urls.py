@@ -10,6 +10,7 @@ urlpatterns=[
 
     #url(r'importacion/importar/$', views.importar_archivo, name='importar'),
     url(r'importacion/importar/$', views.ImportarArchivo.as_view(), name='importar'),
+    #url(r'importacion/importar/$', views.LeerArchivo.as_view(), name='importar'),
 
     #url(r'importacion/guardar/$', views.guardar_archivo, name='guardar'),
     url(r'importacion/guardar/$', views.GuardarArchivo.as_view(), name='guardar'),

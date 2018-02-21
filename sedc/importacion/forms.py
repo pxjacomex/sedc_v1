@@ -14,5 +14,15 @@ class UploadFileForm(forms.Form):
         queryset=Formato.objects.order_by('for_id').all())
     sobreescribir=forms.BooleanField(required=False)
     archivo = forms.FileField()
+
+class FormUpload(forms.Form):
+    estacion=forms.ModelChoiceField(queryset=Estacion.objects.all())
+    datalogger=forms.ModelChoiceField(queryset=Marca.objects.all())
+    formato=forms.ModelChoiceField(
+        queryset=Formato.objects.order_by('for_id').all())
+    sobreescribir=forms.BooleanField(required=False)
+    archivo = forms.FileField()
+    def __init__(self, *args, **kwargs):
+        super(FormUpload, self).__init__(*args, **kwargs)
 class VaciosForm(forms.Form):
     observacion=forms.CharField(widget=forms.Textarea)

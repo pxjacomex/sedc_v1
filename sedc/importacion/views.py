@@ -10,9 +10,9 @@ from django.http import JsonResponse
 
 from django.http import HttpResponseRedirect
 #from django.shortcuts import render
-from importacion.forms import UploadFileForm,VaciosForm
+from importacion.forms import UploadFileForm,VaciosForm,FormUpload
 from importacion.functions import (consultar_formatos,guardar_datos,
-    procesar_archivo,guardar_vacios)
+    procesar_archivo,guardar_vacios,validar_fechas_archivo)
 from importacion.lectura import iniciar_lectura
 from django.db import transaction
 
@@ -35,6 +35,10 @@ class ImportarArchivo(FormView):
         form=UploadFileForm(request.POST, request.FILES)
         #form=UploadFileForm(self.request.POST)
         if form.is_valid():
+            formato=form.cleaned_data['formato']
+            estacion=form.cleaned_data['estacion']
+            datalogger=form.cleaned_data['datalogger']
+            sobreescribir=form.cleaned_data['sobreescribir']
             self.informacion=procesar_archivo(request.FILES['archivo'],form,request)
             if ((self.informacion['valid'] and
                 not form.cleaned_data['sobreescribir']) or
@@ -69,7 +73,23 @@ class GuardarArchivo(FormView):
         return render(request, 'importacion/mensaje.html',{'mensaje':'Informacion Cargada'})
 
         #return self.render_to_response(self.get_context_data(form=form))
+class LeerArchivo(FormView):
+    template_name='importacion/form.html'
+    form_class=FormUpload
+    success_url='/importacion/importar/'
+    def post(self, request, *args, **kwargs):
+        form = FormUpload(request.POST, request.FILES)
+        print "llego al post"
+        if form.is_valid():
+            print "llego al valid"
+            if 'archivo' in request.FILES:
+                photo = request.FILES['archivo']
+                return self.form_valid(form, **kwargs)
 
+            else:
+                return self.form_invalid(form, **kwargs)
+        else:
+            return self.form_invalid(form, **kwargs)
 
 
 def guardar_archivo(request):

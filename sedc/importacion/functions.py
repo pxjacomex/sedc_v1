@@ -76,12 +76,11 @@ def construir_matriz(archivo,formato,estacion,datalogger):
     ValorReal = 0
     UltimoValor = 0
     #determinar si debemos restar 5 horas a la fecha del archivo
-    cambiar_fecha=validar_datalogger(formato.mar_id.mar_id)
+    cambiar_fecha=validar_datalogger(formato.mar_id)
     #validar si los valores del archivo son acumulados
-    acumulado=validar_acumulado(formato.mar_id.mar_id)
+    acumulado=validar_acumulado(formato.mar_id)
     clasificacion=list(Clasificacion.objects.filter(
         for_id=formato.for_id).values())
-    delimitador=Delimitador.objects.get(del_id=formato.del_id_id)
     i=0
     variables=[]
     datos=[]
@@ -92,7 +91,7 @@ def construir_matriz(archivo,formato,estacion,datalogger):
         i+=1
         #controlar la fila de inicio
         if i>=formato.for_fil_ini:
-            valores=linea.split(delimitador.del_caracter)
+            valores=linea.split(formato.del_id.del_caracter)
             fecha=formato_fecha(formato,valores,cambiar_fecha)
             j=0
             for fila in clasificacion:
@@ -134,8 +133,6 @@ def verificar_vacios(datos):
     .filter(var_id=datos[0].var_id).values('med_fecha').reverse()[:1]
     if len(medicion)>0:
         fecha_datos=list(medicion)[0].get('med_fecha').date()
-        print type(fecha_datos)
-        print type(fecha_archivo)
         intervalo=timedelta(days=1)
         fecha_comparacion=fecha_datos+intervalo
 
@@ -159,8 +156,8 @@ def objetos_vacios(datos,variables):
         vacio.var_id=variable
         vacio.vac_fecha_ini=fecha_datos
         vacio.vac_hora_ini=hora_datos
-        vacio.vac_fecha_fin=datos[0].med_fecha
-        vacio.vac_hora_fin=datos[0].med_hora
+        vacio.vac_fecha_fin=datos[0].med_fecha.date()
+        vacio.vac_hora_fin=datos[0].med_fecha.time()
         lista_vacios.append(vacio)
     return lista_vacios
 
@@ -200,25 +197,18 @@ def guardar_vacios(request,observacion):
         obj_vacio.save()
 #validar si son datalogger VAISALA para restar 5 horas
 def validar_datalogger(marca):
-    marca=Marca.objects.get(mar_id=marca)
+    #marca=Marca.objects.get(mar_id=marca)
     if marca.mar_nombre=='VAISALA':
         return True
     return False
 def validar_acumulado(marca):
-    marca=Marca.objects.get(mar_id=marca)
+    #marca=Marca.objects.get(mar_id=marca)
     if marca.mar_nombre=='HOBO':
         return True
     return False
 
 #convertir fecha y hora al formato adecuado
 def formato_fecha(formato,valores,cambiar_fecha):
-    con_fecha=list(Fecha.objects.exclude(fec_id=formato.fec_id.fec_id).values('fec_codigo'))
-    con_hora=list(Hora.objects.exclude(hor_id=formato.hor_id.hor_id).values('hor_codigo'))
-    lista_fechas=[d.get('fec_codigo') for d in con_fecha]
-    lista_horas=[d.get('hor_codigo') for d in con_hora]
-    #lista_fechas.insert(0,formato.fec_id.fec_codigo)
-    lista_fechas.append(formato.fec_id.fec_codigo)
-    lista_horas.append(formato.hor_id.hor_codigo)
     if formato.for_col_fecha==formato.for_col_hora:
         separar=valores[formato.for_col_fecha].split(" ")
         fecha_str=separar[0]
@@ -228,21 +218,44 @@ def formato_fecha(formato,valores,cambiar_fecha):
         hora_str=valores[formato.for_col_hora]
     fecha_str=fecha_str.strip('\"')
     hora_str=hora_str.strip('\"')
-    for fila in lista_fechas:
-        try:
-            fecha=datetime.strptime(fecha_str,fila)
-        except ValueError:
-            pass
-    for fila in lista_horas:
-        try:
-            hora=datetime.strptime(hora_str,fila)
-        except ValueError:
-            pass
+    try:
+        fecha=datetime.strptime(fecha_str,formato.fec_id.fec_codigo)
+    except ValueError:
+        fecha=cambiar_formato_fecha(formato,fecha_str)
+    try:
+        hora=datetime.strptime(hora_str,formato.hor_id.hor_codigo)
+    except ValueError:
+        hora=cambiar_formato_hora(formato,hora_str)
     fecha_hora=datetime(fecha.year,fecha.month,fecha.day,hora.hour,hora.minute,hora.second)
     if cambiar_fecha:
         intervalo=timedelta(hours=5)
         fecha_hora-=intervalo
     return fecha_hora
+def cambiar_formato_fecha(formato,fecha_str):
+    con_fecha=list(Fecha.objects.exclude(fec_id=formato.fec_id.fec_id))
+    for fila in con_fecha:
+        try:
+            fecha=datetime.strptime(fecha_str,fila.fec_codigo)
+            formato.fec_id=fila
+            formato.save()
+            break
+        except ValueError:
+            pass
+    return fecha
+#busca un formato de hora para registro del archivo
+def cambiar_formato_hora(formato,hora_str):
+    con_hora=list(Hora.objects.exclude(hor_id=formato.hor_id.hor_id))
+    for fila in con_hora:
+        try:
+            hora=datetime.strptime(hora_str,fila.hor_codigo)
+            formato.hor_id=fila
+            formato.save()
+            break
+        except ValueError:
+            pass
+    return hora
+
+
 # Poner en una variable la información de las variables a importar
 def informacion_archivo(formato):
     clasificacion=list(Clasificacion.objects.filter(
@@ -282,3 +295,28 @@ def validar_fechas(datos):
     if len(consulta)>0:
         return False
     return True
+def validar_fechas_archivo(archivo,formato,estacion):
+    cambiar_fecha=validar_datalogger(formato.mar_id)
+    i=0
+    datos=archivo.readlines()
+    for linea in datos:
+        i+=1
+        #controlar la fila de inicio
+        if i==formato.for_fil_ini:
+            valores_ini=linea.split(formato.del_id.del_caracter)
+            fecha_ini=formato_fecha(formato,valores_ini,cambiar_fecha)
+            print fecha_ini
+        if i==len(datos):
+            valores_fin=linea.split(formato.del_id.del_caracter)
+            fecha_fin=formato_fecha(formato,valores_fin,cambiar_fecha)
+            print fecha_fin
+    consulta=(Medicion.objects.filter(est_id=estacion)
+        .filter(med_fecha__range=[fecha_ini,fecha_fin])).exists()
+
+    archivo.seek(0,0)
+    return consulta
+    '''archivo.seek(0)
+    linea_fin=archivo.readline()
+    valores_fin=linea_fin.split(formato.del_id.del_caracter)
+    fecha_fin=formato_fecha(formato,valores_fin,cambiar_fecha)
+    print fecha_fin'''
