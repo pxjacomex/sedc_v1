@@ -13,7 +13,7 @@ from django.http import HttpResponseRedirect
 from importacion.forms import UploadFileForm,VaciosForm
 from importacion.functions import (consultar_formatos,guardar_datos,
     procesar_archivo,guardar_vacios)
-
+from importacion.lectura import iniciar_lectura
 from django.db import transaction
 
 
@@ -86,29 +86,10 @@ def lista_formatos(request):
         'datos':datos,
     }
     return JsonResponse(datos)
-
-'''def importar_archivo(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            informacion=procesar_archivo(request.FILES['archivo'],form,request)
-
-            if informacion['valid'] and not form.cleaned_data['sobreescribir']:
-                return render(request, 'importacion/confirmacion.html',informacion)
-            elif not informacion['valid'] and form.cleaned_data['sobreescribir']:
-                return render(request, 'importacion/confirmacion.html',informacion)
-            elif informacion['valid'] and form.cleaned_data['sobreescribir']:
-                context={
-                    'form':form,
-                    'message':informacion['message'],
-                }
-                return render(request, 'importacion/importacion_form.html',context)
-            else:
-                context={
-                    'form':form,
-                    'message':informacion['message'],
-                }
-                return render(request, 'importacion/importacion_form.html',context)
-    else:
-        form = UploadFileForm()
-    return render(request, 'importacion/importacion_form.html', {'form': form})'''
+#lectura automática
+def lectura_automatica(request):
+    iniciar_lectura()
+    datos={
+        'datos':'Lectura Iniciada'
+    }
+    return JsonResponse(datos)

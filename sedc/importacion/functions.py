@@ -65,6 +65,10 @@ def procesar_archivo(archivo,form,request):
         }
         '''
     return context
+def procesar_archivo_automatico(archivo,formato,estacion,datalogger):
+    #try:
+    datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
+    return datos,variables
 
 #leer el archivo y convertirlo a una matriz de objetos de la clase Datos
 def construir_matriz(archivo,formato,estacion,datalogger):
@@ -72,9 +76,9 @@ def construir_matriz(archivo,formato,estacion,datalogger):
     ValorReal = 0
     UltimoValor = 0
     #determinar si debemos restar 5 horas a la fecha del archivo
-    cambiar_fecha=validar_datalogger(formato.mar_id_id)
+    cambiar_fecha=validar_datalogger(formato.mar_id.mar_id)
     #validar si los valores del archivo son acumulados
-    acumulado=validar_acumulado(formato.mar_id_id)
+    acumulado=validar_acumulado(formato.mar_id.mar_id)
     clasificacion=list(Clasificacion.objects.filter(
         for_id=formato.for_id).values())
     delimitador=Delimitador.objects.get(del_id=formato.del_id_id)
@@ -222,7 +226,8 @@ def formato_fecha(formato,valores,cambiar_fecha):
     else:
         fecha_str=valores[formato.for_col_fecha]
         hora_str=valores[formato.for_col_hora]
-
+    fecha_str=fecha_str.strip('\"')
+    hora_str=hora_str.strip('\"')
     for fila in lista_fechas:
         try:
             fecha=datetime.strptime(fecha_str,fila)

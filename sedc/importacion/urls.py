@@ -13,5 +13,6 @@ urlpatterns=[
 
     #url(r'importacion/guardar/$', views.guardar_archivo, name='guardar'),
     url(r'importacion/guardar/$', views.GuardarArchivo.as_view(), name='guardar'),
+    url(r'importacion/lectura/$', views.lectura_automatica, name='lectura'),
     url(r'^ajax/formatos',views.lista_formatos,name='formatos')
 ]
