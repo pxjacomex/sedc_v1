@@ -54,7 +54,6 @@ class ConsultasPeriodo(FormView):
             #self.lista=form.filtrar(form)
             self.frecuencia=form.cleaned_data["frecuencia"]
             if self.request.is_ajax():
-
                 if form.exists(form):
                     self.grafico=grafico(form)
                 return render(request,'reportes/consultas/grafico.html',

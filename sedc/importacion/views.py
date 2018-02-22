@@ -108,6 +108,7 @@ def lista_formatos(request):
     return JsonResponse(datos)
 #lectura automática
 def lectura_automatica(request):
+    #iniciar_lectura()
     iniciar_lectura()
     datos={
         'datos':'Lectura Iniciada'

@@ -4,7 +4,7 @@ import plotly.offline as opy
 import plotly.graph_objs as go
 from reportes.titulos import Titulos
 from anuarios.models import Precipitacion
-
+import datetime, calendar
 
 #clase para anuario de la variable PRE
 class TypeII(Titulos):
@@ -20,7 +20,8 @@ class TypeII(Titulos):
         meses=[]
         mensual_simple=[]
         for item in datos:
-            meses.append(item.pre_mes)
+            #meses.append(item.pre_mes)
+            meses.append(str(calendar.month_abbr[item.pre_mes]))
             mensual_simple.append(item.pre_suma)
 
         trace1 = go.Bar(
@@ -28,9 +29,9 @@ class TypeII(Titulos):
             y=mensual_simple,
             name='Precipitacion (mm)'
         )
-
         data = go.Data([trace1])
         layout = go.Layout(title = str(self.titulo_grafico(variable)) + str(" (") + str(self.titulo_unidad(variable)) + str(")"))
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
+        print div
         return div

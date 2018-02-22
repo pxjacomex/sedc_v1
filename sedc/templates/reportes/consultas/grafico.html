@@ -1,12 +1,11 @@
-{% if frecuencia == "0" %}
-{% include "reportes/consultas/instantaneo.html" %}
-{% endif%}
-{% if frecuencia == "1" %}
-{% include "reportes/consultas/horario.html" %}
-{% endif%}
-{% if frecuencia == "2" %}
-{% include "reportes/consultas/diaria.html" %}
-{% endif%}
-{% if frecuencia == "3" %}
-{% include "reportes/consultas/mensual.html" %}
-{% endif%}
+<div class="col-md-12">
+
+  {% if grafico %}
+  <div style="width:auto;height:400">
+    {{ grafico|safe }}
+  </div>
+
+  {%else%}
+  <label>No hay información para los parametros ingresados</label>
+  {% endif %}
+</div>

@@ -31,6 +31,7 @@ def procesar_archivo(archivo,form,request):
     estacion=form.cleaned_data['estacion']
     datalogger=form.cleaned_data['datalogger']
     sobreescribir=form.cleaned_data['sobreescribir']
+    print sobreescribir
     datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
     valid=validar_fechas(datos)
     vacio=verificar_vacios(datos)
@@ -68,6 +69,14 @@ def procesar_archivo(archivo,form,request):
 def procesar_archivo_automatico(archivo,formato,estacion,datalogger):
     #try:
     datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
+    print variables
+    list_var=[]
+    for variable in variables:
+        list_var.append(variable.var_id)
+    eliminar_datos(datos,list_var)
+    Datos.objects.bulk_create(datos)
+    Datos.objects.all().delete()
+    del datos[:]
     return datos,variables
 
 #leer el archivo y convertirlo a una matriz de objetos de la clase Datos
@@ -123,6 +132,9 @@ def construir_matriz(archivo,formato,estacion,datalogger):
                     med_estado=True)
                 datos.append(dato)
                 j+=1
+            if formato.for_tipo=='automatico':
+                formato.for_fil_ini=i
+                formato.save()
     return datos,variables
 #verficar vacios
 def verificar_vacios(datos):
@@ -176,6 +188,12 @@ def guardar_datos(request):
     Datos.objects.bulk_create(datos)
     Datos.objects.all().delete()
     del datos[:]
+def guardar_datos_automatico(datos,variables):
+    eliminar_datos(datos,variables)
+    Datos.objects.bulk_create(datos)
+    Datos.objects.all().delete()
+    del datos[:]
+
 #eliminar informacion en caso de sobreescribir
 def eliminar_datos(datos,variables):
     fecha_ini=datos[0].med_fecha

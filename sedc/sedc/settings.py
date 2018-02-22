@@ -35,6 +35,7 @@ TIME_FORMAT= None
 
 INSTALLED_APPS = [
     'bootstrap3',
+    'django_extensions',
     'variable.apps.VariableConfig',
     'formato.apps.FormatoConfig',
     'datalogger.apps.DataloggerConfig',

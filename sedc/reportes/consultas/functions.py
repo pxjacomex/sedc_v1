@@ -19,8 +19,8 @@ def grafico(form):
     fecha_fin=form.cleaned_data['fin']
     frecuencia=form.cleaned_data['frecuencia']
     #filtrar los datos por estacion, variable y rango de fechas
-    consulta=(Medicion.objects.filter(est_id=estacion)
-    .filter(var_id=variable).filter(med_fecha__range=[fecha_inicio,fecha_fin]))
+    consulta=(Medicion.objects.filter(est_id=estacion.est_id)
+    .filter(var_id=variable.var_id).filter(med_fecha__range=[fecha_inicio,fecha_fin]))
     #frecuencia instantanea
     if(frecuencia==str(0)):
         valores,maximos,minimos,tiempo=datos_instantaneos(consulta,variable)
@@ -34,8 +34,10 @@ def grafico(form):
     elif(form.cleaned_data['frecuencia']==str(3)):
         valores,maximos,minimos,tiempo=datos_diarios(consulta,variable)
     #frecuencia mensual
-    else:
+    elif(form.cleaned_data['frecuencia']==str(4)):
         valores,maximos,minimos,tiempo=datos_mensuales(consulta,variable)
+    else:
+        valores,maximos,minimos,tiempo=datos_instantaneos(consulta,variable)
     trace0 = go.Scatter(
         x = tiempo,
         y = maximos,
@@ -65,18 +67,18 @@ def grafico(form):
     )
     data = go.Data([trace0, trace1, trace2])
     layout = go.Layout(
-        title = str(titulo_variable(variable)) +\
+        title = variable.var_nombre +\
         " " + str(titulo_frecuencia(frecuencia))+\
-        " " + str(titulo_estacion(estacion)),
-        yaxis = dict(title = str(titulo_variable(variable)) + \
-                     str(" (") + str(titulo_unidad(variable)) + str(")"))
+        " " + estacion.est_codigo,
+        yaxis = dict(title = variable.var_nombre + \
+                     str(" (") + titulo_unidad(variable)+ str(")"))
         )
     figure = go.Figure(data=data, layout=layout)
     div = opy.plot(figure, auto_open=False, output_type='div')
     return div
 def datos_instantaneos(consulta,variable):
     consulta=list(consulta.values('med_valor','med_maximo','med_minimo'
-        ,'med_fecha','med_hora').order_by('med_fecha','med_hora'))
+        ,'med_fecha').order_by('med_fecha'))
     valor=[]
     maximo=[]
     minimo=[]
@@ -88,31 +90,32 @@ def datos_instantaneos(consulta,variable):
             maximo.append(fila.get('med_maximo'))
         if fila.get('med_minimo') is not None:
             minimo.append(fila.get('med_minimo'))
-        frecuencia.append(datetime.datetime.combine(fila['med_fecha'],fila['med_hora']))
+        #frecuencia.append(datetime.datetime.combine(fila['med_fecha'],fila['med_hora']))
+        frecuencia.append(fila.get('med_fecha'))
     return valor,maximo,minimo,frecuencia
 def datos_5minutos(estacion,variable,fecha_inicio,fecha_fin):
     cursor = connection.cursor()
-    if variable==str(1):
+    if variable.var_id==1:
         cursor.execute("SELECT sum(med_valor) as valor, \
             to_timestamp(floor((extract('epoch' \
-            from med_fecha+med_hora) / 300 )) * 300)\
+            from med_fecha) / 300 )) * 300)\
             AT TIME ZONE 'UTC' as interval_alias\
             FROM medicion_medicion\
             where est_id_id=%s and var_id_id=%s and \
             med_fecha>=%s and med_fecha<=%s\
             GROUP BY interval_alias\
-            order by interval_alias",[estacion,variable,fecha_inicio,fecha_fin])
+            order by interval_alias",[estacion.est_id,variable.var_id,fecha_inicio,fecha_fin])
     else:
         cursor.execute("SELECT avg(med_valor) as valor, \
             avg(med_maximo)as maximo,avg(med_minimo) as minimo,\
             to_timestamp(floor((extract('epoch' \
-            from med_fecha+med_hora) / 300 )) * 300)\
+            from med_fecha) / 300 )) * 300)\
             AT TIME ZONE 'UTC' as interval_alias\
             FROM medicion_medicion\
             where est_id_id=%s and var_id_id=%s and \
             med_fecha>=%s and med_fecha<=%s\
             GROUP BY interval_alias\
-            order by interval_alias",[estacion,variable,fecha_inicio,fecha_fin])
+            order by interval_alias",[estacion.est_id,variable.var_id,fecha_inicio,fecha_fin])
     datos=dictfetchall(cursor)
     valor=[]
     maximo=[]
@@ -134,9 +137,9 @@ def datos_horarios(consulta,variable):
     consulta=consulta.annotate(year=ExtractYear('med_fecha'),
         month=ExtractMonth('med_fecha'),
         day=ExtractDay('med_fecha'),
-        hour=ExtractHour('med_hora')
+        hour=ExtractHour('med_fecha')
     ).values('year','month','day','hour')
-    if(variable==str(1)):
+    if(variable.var_id==1):
         consulta=list(consulta.annotate(valor=Sum('med_valor')).
         values('valor','year','month','day','hour').
         order_by('year','month','day','hour'))
@@ -169,7 +172,7 @@ def datos_diarios(consulta,variable):
         month=ExtractMonth('med_fecha'),
         day=ExtractDay('med_fecha')
     ).values('year','month','day')
-    if(variable==str(1)):
+    if(variable.var_id==1):
         consulta=list(consulta.annotate(valor=Sum('med_valor')).
         values('valor','year','month','day').
         order_by('year','month','day'))
@@ -199,7 +202,7 @@ def datos_mensuales(consulta,variable):
         year=ExtractYear('med_fecha'),
         month=ExtractMonth('med_fecha')
     ).values('month','year')
-    if(variable==str(1)):
+    if(variable.var_id==1):
         consulta=list(consulta.annotate(valor=Sum('med_valor')).
         values('valor','month','year').
         order_by('year','month'))
@@ -222,19 +225,9 @@ def datos_mensuales(consulta,variable):
         fecha_str = str(calendar.month_abbr[fila.get('month')])+" "+str(fila.get('year'))
         frecuencia.append(fecha_str)
     return valor,maximo,minimo,frecuencia
-
-def titulo_estacion(estacion):
-    consulta=list(Estacion.objects.filter(est_id=estacion))
-    return consulta[0]
-
-def titulo_variable(variable):
-    consulta=list(Variable.objects.filter(var_id=variable))
-    return consulta[0]
-
 def titulo_unidad(variable):
-    var=list(Variable.objects.filter(var_id=variable).values())
-    uni=list(Unidad.objects.filter(uni_id=var[0].get('uni_id_id')).values())
-    return (uni[0].get('uni_sigla')).encode('utf-8')
+    uni=list(Unidad.objects.filter(uni_id=variable.uni_id.uni_id).values())
+    return uni[0].get('uni_sigla')
 
 def titulo_frecuencia(frecuencia):
     nombre = []
