@@ -177,6 +177,7 @@ def objetos_vacios(datos,variables):
 def guardar_datos(request):
     sobreescribir=request.session['sobreescribir']
     datos_json=request.session['datos']
+    print sobreescribir,datos_json
     datos=[]
     variables=[]
     for obj_dato in deserialize("json",datos_json):

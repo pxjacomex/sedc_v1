@@ -47,7 +47,6 @@ class MedicionSearchForm(forms.Form):
         consulta=(Medicion.objects.filter(est_id=estacion)
         .filter(var_id=variable)
         .filter(med_fecha__range=[fecha_inicio,fecha_fin]).exists())
-        print consulta
         return consulta
 
 

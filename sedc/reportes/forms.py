@@ -50,5 +50,5 @@ class ComparacionForm(forms.Form):
         queryset=Variable.objects.order_by('var_id').all(),label='Variable')
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
-    tiempo=forms.IntegerField(max_value=60,min_value=5,label="Tiempo en Minutos")
+    tiempo=forms.IntegerField(max_value=60,min_value=5,label="Tiempo en Minutos",help_text="Valor entre 5 y 60")
     #frecuencia=forms.ChoiceField(choices=UNIDADES,label="Frecuencia")

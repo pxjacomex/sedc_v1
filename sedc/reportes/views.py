@@ -31,7 +31,15 @@ class ComparacionValores(FormView):
     def post(self, request, *args, **kwargs):
         form=ComparacionForm(self.request.POST or None)
         if form.is_valid():
-            self.grafico=comparar(form)
+
+            if self.request.is_ajax():
+                self.grafico=comparar(form)
+                return render(request,'reportes/consultas/grafico.html',
+                    {'grafico':self.grafico})
+            else:
+                self.lista=form.filtrar(form)
+                return self.export_datos(self.lista,self.frecuencia)
+
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(ComparacionValores, self).get_context_data(**kwargs)

@@ -43,7 +43,7 @@ $(document).ready(function() {
         $("#btn_graficar").removeAttr('disabled');
 
         $("#div_loading").hide();
-        
+
         $("#div_error").hide();
       },
       error: function () {
@@ -87,25 +87,26 @@ $(document).ready(function() {
       <button name="visualizar" type="submit" class="btn btn-default btn-primary">
         Exportar
       </button>
-      <a class="btn btn-default" href="/reportes/consultas">
-        Limpiar</a>
-      </div>
-    </form>
-  </div>
-  <br>
-  <div id="div_informacion" class="row">
+      <a class="btn btn-default" href="/reportes/consultas">Limpiar</a>
+    </div>
 
+  </form>
+
+</div>
+<br>
+<div id="div_informacion" class="row">
+
+</div>
+<div id="div_loading" class="row" style="display:none;">
+  <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+  <div class="col-lg-4 col-md-4 col-sm-4">
+    <img src="/media/loading6.gif" />
   </div>
-  <div id="div_loading" class="row" style="display:none;">
-    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
-    <div class="col-lg-4 col-md-4 col-sm-4">
-      <img src="/media/loading6.gif" />
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+  <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+<div id="div_error" class="row" style="display:none;">
+  <div class="alert alert-danger alert-dismissible" role="alert">
+    Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
   </div>
-  <div id="div_error" class="row" style="display:none;">
-    <div class="alert alert-danger alert-dismissible" role="alert">
-      Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
-    </div>
-  </div>
-  {% endblock %}
+</div>
+{% endblock %}
