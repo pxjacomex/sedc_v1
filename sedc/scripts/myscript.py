@@ -26,7 +26,7 @@ def iniciar_lectura():
 
                     else:
                         registro=open('/tmp/sedc.txt','a')
-                        registro.write(time.ctime()+': No existe nueva informacion'+'\n')
+                        registro.write(time.ctime()+': No existe nueva informacion para el formato '+str(formato.for_descripcion)+'\n')
                         registro.close()
                 else:
                     registro=open('/tmp/sedc.txt','a')
@@ -38,6 +38,7 @@ def iniciar_lectura():
             registro.write(time.ctime()+': El archivo no existe'+'\n')
             registro.close()
             pass
+        time.sleep(900)
 def run(*args):
     with daemon.DaemonContext():
         iniciar_lectura()
