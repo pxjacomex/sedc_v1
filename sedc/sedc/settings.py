@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'instalacion.apps.InstalacionConfig',
     'bitacora.apps.BitacoraConfig',
     'cruce.apps.CruceConfig',
+    'home.apps.HomeConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,6 +61,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize'
 ]
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

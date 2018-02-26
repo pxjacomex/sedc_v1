@@ -9,10 +9,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from .forms import FrecuenciaSearchForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 #Frecuencia
-class FrecuenciaCreate(CreateView):
+class FrecuenciaCreate(LoginRequiredMixin,CreateView):
     model=Frecuencia
     fields = ['est_id','var_id','fre_valor','fre_fecha_ini','fre_fecha_fin']
     def form_valid(self, form):
@@ -23,18 +23,7 @@ class FrecuenciaCreate(CreateView):
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
         return context
-'''
-class FrecuenciaList(ListView):
-    model=Frecuencia
-    paginate_by = 100
-    def get_context_data(self, **kwargs):
-        context = super(FrecuenciaList, self).get_context_data(**kwargs)
-    	lista=Frecuencia.objects.all()
-        page=self.request.GET.get('page')
-    	context.update(pagination(self.object_list,page,10))
-        return context
-'''
-class FrecuenciaList(ListView,FormView):
+class FrecuenciaList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Frecuencia
     paginate_by=10
@@ -50,7 +39,6 @@ class FrecuenciaList(ListView,FormView):
             self.object_list=form.filtrar(form)
             self.cadena=form.cadena(form)
         return self.render_to_response(self.get_context_data(form=form))
-
     def get_context_data(self, **kwargs):
         context = super(FrecuenciaList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
@@ -58,10 +46,10 @@ class FrecuenciaList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class FrecuenciaDetail(DetailView):
+class FrecuenciaDetail(LoginRequiredMixin,DetailView):
     model=Frecuencia
 
-class FrecuenciaUpdate(UpdateView):
+class FrecuenciaUpdate(LoginRequiredMixin,UpdateView):
     model=Frecuencia
     fields = ['est_id','var_id','fre_fecha_ini','fre_fecha_fin']
     def get_context_data(self, **kwargs):
@@ -70,7 +58,7 @@ class FrecuenciaUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class FrecuenciaDelete(DeleteView):
+class FrecuenciaDelete(LoginRequiredMixin,DeleteView):
     model=Frecuencia
     success_url = reverse_lazy('frecuencia:frecuencia_index')
 

@@ -5,9 +5,10 @@ from consultas.forms import MedicionSearchForm
 import csv
 from django.http import HttpResponse
 #from django.template import loader, Context
-from consultas.functions import grafico
+from consultas.functions import grafico,datos_horarios_json
 from reportes.functions import filtrar,comparar
 from django.shortcuts import render
+from django.http import JsonResponse
 
 class ReportesAnuario(FormView):
     template_name='reportes/anuario_reporte.html'
@@ -111,3 +112,7 @@ class ConsultasPeriodo(FormView):
                 writer.writerow([fila.get('year'), fila.get('month'),
                 fila.get('valor'),fila.get('maximo'),fila.get('minimo')])
         return response
+#web service para consultar datos horarios
+def datos_json_horarios(request,est_id,var_id,fec_ini,fec_fin):
+    datos=datos_horarios_json(est_id,var_id,fec_ini,fec_fin)
+    return JsonResponse(datos,safe=False)

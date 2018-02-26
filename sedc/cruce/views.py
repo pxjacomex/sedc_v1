@@ -9,9 +9,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from cruce.forms import CruceSearchForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 #Cruce views
-class CruceCreate(CreateView):
+class CruceCreate(LoginRequiredMixin,CreateView):
     model=Cruce
     fields = ['cru_id','est_id','var_id']
     def get_context_data(self, **kwargs):
@@ -21,7 +21,7 @@ class CruceCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class CruceList(ListView,FormView):
+class CruceList(LoginRequiredMixin,ListView,FormView):
     model=Cruce
     paginate_by = 10
     template_name='cruce/cruce_list.html'
@@ -44,10 +44,10 @@ class CruceList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class CruceDetail(DetailView):
+class CruceDetail(LoginRequiredMixin,DetailView):
     model=Cruce
 
-class CruceUpdate(UpdateView):
+class CruceUpdate(LoginRequiredMixin,UpdateView):
     model=Cruce
     fields = ['cru_id','est_id','var_id']
     def get_context_data(self, **kwargs):
@@ -56,7 +56,7 @@ class CruceUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class CruceDelete(DeleteView):
+class CruceDelete(LoginRequiredMixin,DeleteView):
     model=Cruce
     success_url = reverse_lazy('cruce:cruce_index')
 def pagination(lista,page,num_reg):

@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', TemplateView.as_view(template_name="home.html")),
+    #url(r'^$', TemplateView.as_view(template_name="home.html")),
     url(r'^',include('home.urls',namespace='home')),
     url(r'^',include('reportes.urls',namespace='reportes')),
     url(r'^',include('datalogger.urls',namespace='datalogger')),

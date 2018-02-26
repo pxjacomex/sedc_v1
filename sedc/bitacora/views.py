@@ -11,9 +11,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from bitacora.forms import BitacoraSearchForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 #bitacora views
-class BitacoraCreate(CreateView):
+class BitacoraCreate(LoginRequiredMixin,CreateView):
     model=Bitacora
     fields = ['bit_id','est_id','var_id','bit_fecha_ini','bit_fecha_fin','bit_observacion']
     def form_valid(self, form):
@@ -25,7 +25,7 @@ class BitacoraCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class BitacoraList(ListView,FormView):
+class BitacoraList(LoginRequiredMixin,ListView,FormView):
     model=Bitacora
     paginate_by = 10
     template_name='bitacora/bitacora_list.html'
@@ -48,10 +48,10 @@ class BitacoraList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class BitacoraDetail(DetailView):
+class BitacoraDetail(LoginRequiredMixin,DetailView):
     model=Bitacora
 
-class BitacoraUpdate(UpdateView):
+class BitacoraUpdate(LoginRequiredMixin,UpdateView):
     model=Bitacora
     fields = ['bit_id','est_id','var_id','bit_fecha_ini','bit_fecha_fin','bit_observacion']
     def get_context_data(self, **kwargs):
@@ -60,7 +60,7 @@ class BitacoraUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class BitacoraDelete(DeleteView):
+class BitacoraDelete(LoginRequiredMixin,DeleteView):
     model=Bitacora
     success_url = reverse_lazy('bitacora:bitacora_index')
 def pagination(lista,page,num_reg):

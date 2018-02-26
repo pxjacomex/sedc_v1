@@ -31,7 +31,6 @@ def procesar_archivo(archivo,form,request):
     estacion=form.cleaned_data['estacion']
     datalogger=form.cleaned_data['datalogger']
     sobreescribir=form.cleaned_data['sobreescribir']
-    print sobreescribir
     datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
     valid=validar_fechas(datos)
     vacio=verificar_vacios(datos)
@@ -67,16 +66,7 @@ def procesar_archivo(archivo,form,request):
         '''
     return context
 def procesar_archivo_automatico(archivo,formato,estacion,datalogger):
-    #try:
     datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
-    print variables
-    list_var=[]
-    for variable in variables:
-        list_var.append(variable.var_id)
-    eliminar_datos(datos,list_var)
-    Datos.objects.bulk_create(datos)
-    Datos.objects.all().delete()
-    del datos[:]
     return datos,variables
 
 #leer el archivo y convertirlo a una matriz de objetos de la clase Datos
@@ -133,7 +123,7 @@ def construir_matriz(archivo,formato,estacion,datalogger):
                 datos.append(dato)
                 j+=1
             if formato.for_tipo=='automatico':
-                formato.for_fil_ini=i
+                formato.for_fil_ini=i+1
                 formato.save()
     return datos,variables
 #verficar vacios
@@ -177,7 +167,6 @@ def objetos_vacios(datos,variables):
 def guardar_datos(request):
     sobreescribir=request.session['sobreescribir']
     datos_json=request.session['datos']
-    print sobreescribir,datos_json
     datos=[]
     variables=[]
     for obj_dato in deserialize("json",datos_json):
@@ -190,7 +179,10 @@ def guardar_datos(request):
     Datos.objects.all().delete()
     del datos[:]
 def guardar_datos_automatico(datos,variables):
-    eliminar_datos(datos,variables)
+    list_var=[]
+    for variable in variables:
+        list_var.append(variable.var_id)
+    eliminar_datos(datos,list_var)
     Datos.objects.bulk_create(datos)
     Datos.objects.all().delete()
     del datos[:]
@@ -324,11 +316,9 @@ def validar_fechas_archivo(archivo,formato,estacion):
         if i==formato.for_fil_ini:
             valores_ini=linea.split(formato.del_id.del_caracter)
             fecha_ini=formato_fecha(formato,valores_ini,cambiar_fecha)
-            print fecha_ini
         if i==len(datos):
             valores_fin=linea.split(formato.del_id.del_caracter)
             fecha_fin=formato_fecha(formato,valores_fin,cambiar_fecha)
-            print fecha_fin
     consulta=(Medicion.objects.filter(est_id=estacion)
         .filter(med_fecha__range=[fecha_ini,fecha_fin])).exists()
 

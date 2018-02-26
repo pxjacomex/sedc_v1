@@ -15,18 +15,19 @@ from importacion.functions import (consultar_formatos,guardar_datos,
     procesar_archivo,guardar_vacios,validar_fechas_archivo)
 from importacion.lectura import iniciar_lectura
 from django.db import transaction
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class ImportacionList(ListView):
+class ImportacionList(LoginRequiredMixin,ListView):
     model=Importacion
     def get_context_data(self, **kwargs):
         context = super(ImportacionList, self).get_context_data(**kwargs)
         return context
 
-class ImportacionDetail(DetailView):
+class ImportacionDetail(LoginRequiredMixin,DetailView):
     model=Importacion
 
-class ImportarArchivo(FormView):
+class ImportarArchivo(LoginRequiredMixin,FormView):
     template_name='importacion/importacion_form.html'
     form_class=UploadFileForm
     success_url='/importacion/importar/'
@@ -58,7 +59,7 @@ class ImportarArchivo(FormView):
             context['message']=self.informacion['message']
         return context
 
-class GuardarArchivo(FormView):
+class GuardarArchivo(LoginRequiredMixin,FormView):
     template_name='importacion/confirmacion.html'
     form_class=VaciosForm
     success_url='/importacion/'
@@ -73,7 +74,7 @@ class GuardarArchivo(FormView):
         return render(request, 'importacion/mensaje.html',{'mensaje':'Informacion Cargada'})
 
         #return self.render_to_response(self.get_context_data(form=form))
-class LeerArchivo(FormView):
+class LeerArchivo(LoginRequiredMixin,FormView):
     template_name='importacion/form.html'
     form_class=FormUpload
     success_url='/importacion/importar/'
@@ -106,7 +107,7 @@ def lista_formatos(request):
         'datos':datos,
     }
     return JsonResponse(datos)
-#lectura automática
+#lectura automática funcion de prueba
 def lectura_automatica(request):
     #iniciar_lectura()
     iniciar_lectura()

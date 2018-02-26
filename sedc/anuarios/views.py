@@ -6,9 +6,10 @@ from anuarios.models import TemperaturaAire
 from django.views.generic import ListView,FormView
 from anuarios.forms import AnuarioForm
 from anuarios import functions
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
-class ProcesarVariables(FormView):
+class ProcesarVariables(LoginRequiredMixin,FormView):
     template_name='anuarios/procesar_variable.html'
     form_class=AnuarioForm
     success_url='/anuarios/procesar'

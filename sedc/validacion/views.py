@@ -11,8 +11,8 @@ from django.core.paginator import Paginator
 from validacion.forms import ValidacionProcess
 from validacion import functions
 # Create your views here.
-
-class ValidacionCreate(CreateView):
+from django.contrib.auth.mixins import LoginRequiredMixin
+class ValidacionCreate(LoginRequiredMixin,CreateView):
     model=Validacion
     fields = ['est_id','var_id','val_fecha','val_num_dat','val_fre_reg','val_porcentaje']
     def get_context_data(self, **kwargs):
@@ -20,7 +20,7 @@ class ValidacionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class ValidacionList(ListView):
+class ValidacionList(LoginRequiredMixin,ListView):
     model=Validacion
     paginate_by = 10
     def get_context_data(self, **kwargs):
@@ -30,10 +30,10 @@ class ValidacionList(ListView):
     	context.update(pagination(self.object_list,page,10))
         return context
 
-class ValidacionDetail(DetailView):
+class ValidacionDetail(LoginRequiredMixin,DetailView):
     model=Validacion
 
-class ValidacionUpdate(UpdateView):
+class ValidacionUpdate(LoginRequiredMixin,UpdateView):
     model=Validacion
     fields = ['est_id','var_id','val_fecha','val_num_dat','val_fre_reg','val_porcentaje']
     def get_context_data(self, **kwargs):
@@ -41,7 +41,7 @@ class ValidacionUpdate(UpdateView):
         context = super(ValidacionUpdate, self).get_context_data(**kwargs)
         context['title'] = "Modificar"
         return context
-class ValidacionDelete(DeleteView):
+class ValidacionDelete(LoginRequiredMixin,DeleteView):
     model=Validacion
     success_url = reverse_lazy('medicion:validacion_index')
 def procesar_validacion(request):
@@ -52,7 +52,7 @@ def procesar_validacion(request):
         form=ValidacionProcess()
     return render(request,'validacion/validacion_procesar.html',{'form':form})
 #lista de validaciones por estacion y variable
-class ProcesarValidacion(FormView):
+class ProcesarValidacion(LoginRequiredMixin,FormView):
     template_name='validacion/validacion_procesar.html'
     form_class=ValidacionProcess
     success_url='/validacion/'

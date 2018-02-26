@@ -8,9 +8,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from instalacion.forms import InstalacionSearchForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 #Variable views
-class InstalacionCreate(CreateView):
+class InstalacionCreate(LoginRequiredMixin,CreateView):
     model=Instalacion
     fields = ['ins_id','est_id','dat_id','ins_fecha_ini','ins_fecha_fin','ins_en_uso','ins_observacion']
     def form_valid(self, form):
@@ -22,7 +22,7 @@ class InstalacionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class InstalacionList(ListView,FormView):
+class InstalacionList(LoginRequiredMixin,ListView,FormView):
     model=Instalacion
     paginate_by = 10
     template_name='instalacion/instalacion_list.html'
@@ -36,7 +36,7 @@ class InstalacionList(ListView,FormView):
             self.object_list=form.filtrar(form)
             self.cadena=form.cadena(form)
         return self.render_to_response(self.get_context_data(form=form))
-    
+
     def get_context_data(self, **kwargs):
         context = super(InstalacionList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
@@ -45,10 +45,10 @@ class InstalacionList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class InstalacionDetail(DetailView):
+class InstalacionDetail(LoginRequiredMixin,DetailView):
     model=Instalacion
 
-class InstalacionUpdate(UpdateView):
+class InstalacionUpdate(LoginRequiredMixin,UpdateView):
     model=Instalacion
     fields = ['ins_id','est_id','dat_id','ins_fecha_ini','ins_fecha_fin','ins_en_uso','ins_observacion']
     def get_context_data(self, **kwargs):
@@ -57,7 +57,7 @@ class InstalacionUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class InstalacionDelete(DeleteView):
+class InstalacionDelete(LoginRequiredMixin,DeleteView):
     model=Instalacion
     success_url = reverse_lazy('instalacion:instalacion_index')
 def pagination(lista,page,num_reg):

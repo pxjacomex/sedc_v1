@@ -9,10 +9,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from .forms import VaciosSearchForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 #Vacios
-class VaciosCreate(CreateView):
+class VaciosCreate(LoginRequiredMixin,CreateView):
     model=Vacios
     fields = ['est_id','var_id','vac_fecha_ini','vac_hora_ini','vac_fecha_fin','vac_hora_fin','vac_observacion']
     def form_valid(self, form):
@@ -24,7 +24,7 @@ class VaciosCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class VaciosList(ListView,FormView):
+class VaciosList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Vacios
     paginate_by=10
@@ -48,10 +48,10 @@ class VaciosList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class VaciosDetail(DetailView):
+class VaciosDetail(LoginRequiredMixin,DetailView):
     model=Vacios
 
-class VaciosUpdate(UpdateView):
+class VaciosUpdate(LoginRequiredMixin,UpdateView):
     model=Vacios
     fields = ['est_id','var_id','vac_fecha_ini','vac_hora_ini','vac_fecha_fin','vac_hora_fin','vac_observacion']
     def get_context_data(self, **kwargs):
@@ -60,7 +60,7 @@ class VaciosUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class VaciosDelete(DeleteView):
+class VaciosDelete(LoginRequiredMixin,DeleteView):
     model=Vacios
     success_url = reverse_lazy('vacios:vacios_index')
 

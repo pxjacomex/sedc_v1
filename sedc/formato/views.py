@@ -7,11 +7,11 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-from .forms import FormatoSearchForm, ClasificacionSearchForm
-
+from .forms import FormatoSearchForm, ClasificacionSearchForm, AsociacionSearchForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 #Formato views
-class FormatoCreate(CreateView):
+class FormatoCreate(LoginRequiredMixin,CreateView):
     model = Formato
     fields = ['ext_id','del_id','mar_id','for_nombre','for_descripcion','for_ubicacion',
               'for_archivo','for_tipo','for_fil_ini','fec_id',
@@ -25,7 +25,7 @@ class FormatoCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class FormatoList(ListView,FormView):
+class FormatoList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Formato
     paginate_by=10
@@ -50,7 +50,7 @@ class FormatoList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class FormatoDetail(DetailView):
+class FormatoDetail(LoginRequiredMixin,DetailView):
     model=Formato
     def get_context_data(self, **kwargs):
         context = super(FormatoDetail, self).get_context_data(**kwargs)
@@ -61,7 +61,7 @@ class FormatoDetail(DetailView):
         return context
 
 
-class FormatoUpdate(UpdateView):
+class FormatoUpdate(LoginRequiredMixin,UpdateView):
     model=Formato
     fields = ['ext_id','del_id','mar_id','for_nombre','for_descripcion','for_ubicacion',
               'for_archivo','for_tipo','for_fil_ini','fec_id',
@@ -72,12 +72,12 @@ class FormatoUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class FormatoDelete(DeleteView):
+class FormatoDelete(LoginRequiredMixin,DeleteView):
     model=Formato
     success_url = reverse_lazy('formato:formato_index')
 
 #Extension
-class ExtensionCreate(CreateView):
+class ExtensionCreate(LoginRequiredMixin,CreateView):
     model=Extension
     fields = ['ext_valor']
     def form_valid(self, form):
@@ -89,7 +89,7 @@ class ExtensionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class ExtensionList(ListView):
+class ExtensionList(LoginRequiredMixin,ListView):
     model=Extension
     paginate_by = 10
     def get_context_data(self, **kwargs):
@@ -99,10 +99,10 @@ class ExtensionList(ListView):
         context.update(pagination(self.object_list,page,10))
         return context
 
-class ExtensionDetail(DetailView):
+class ExtensionDetail(LoginRequiredMixin,DetailView):
     model=Extension
 
-class ExtensionUpdate(UpdateView):
+class ExtensionUpdate(LoginRequiredMixin,UpdateView):
     model=Extension
     fields = ['ext_valor']
     def get_context_data(self, **kwargs):
@@ -111,12 +111,12 @@ class ExtensionUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class ExtensionDelete(DeleteView):
+class ExtensionDelete(LoginRequiredMixin,DeleteView):
     model=Extension
     success_url = reverse_lazy('formato:extension_index')
 
 #Delimitador
-class DelimitadorCreate(CreateView):
+class DelimitadorCreate(LoginRequiredMixin,CreateView):
     model=Delimitador
     fields = ['del_nombre', 'del_caracter']
     def form_valid(self, form):
@@ -128,7 +128,7 @@ class DelimitadorCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class DelimitadorList(ListView):
+class DelimitadorList(LoginRequiredMixin,ListView):
     model=Delimitador
     paginate_by = 10
     def get_context_data(self, **kwargs):
@@ -138,10 +138,10 @@ class DelimitadorList(ListView):
     	context.update(pagination(self.object_list,page,10))
         return context
 
-class DelimitadorDetail(DetailView):
+class DelimitadorDetail(LoginRequiredMixin,DetailView):
     model=Delimitador
 
-class DelimitadorUpdate(UpdateView):
+class DelimitadorUpdate(LoginRequiredMixin,UpdateView):
     model=Delimitador
     fields = ['del_nombre', 'del_caracter']
     def get_context_data(self, **kwargs):
@@ -150,12 +150,12 @@ class DelimitadorUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class DelimitadorDelete(DeleteView):
+class DelimitadorDelete(LoginRequiredMixin,DeleteView):
     model=Delimitador
     success_url = reverse_lazy('formato:delimitador_index')
 
 #Clasificacion
-class ClasificacionCreate(CreateView):
+class ClasificacionCreate(LoginRequiredMixin,CreateView):
     model=Clasificacion
     fields = ['for_id','var_id','cla_valor','cla_maximo','cla_minimo']
     def form_valid(self, form):
@@ -167,7 +167,7 @@ class ClasificacionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class ClasificacionList(ListView,FormView):
+class ClasificacionList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Clasificacion
     paginate_by=10
@@ -191,10 +191,10 @@ class ClasificacionList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class ClasificacionDetail(DetailView):
+class ClasificacionDetail(LoginRequiredMixin,DetailView):
     model=Clasificacion
 
-class ClasificacionUpdate(UpdateView):
+class ClasificacionUpdate(LoginRequiredMixin,UpdateView):
     model=Clasificacion
     fields = ['for_id','var_id','cla_valor','cla_maximo','cla_minimo']
     def get_context_data(self, **kwargs):
@@ -203,12 +203,12 @@ class ClasificacionUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class ClasificacionDelete(DeleteView):
+class ClasificacionDelete(LoginRequiredMixin,DeleteView):
     model=Clasificacion
     success_url = reverse_lazy('formato:clasificacion_index')
 
 #Asociacion
-class AsociacionCreate(CreateView):
+class AsociacionCreate(LoginRequiredMixin,CreateView):
     model=Asociacion
     fields = ['for_id','est_id']
     def form_valid(self, form):
@@ -220,20 +220,34 @@ class AsociacionCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class AsociacionList(ListView):
+class AsociacionList(LoginRequiredMixin,ListView):
+    #parámetros ListView
     model=Asociacion
-    paginate_by = 10
+    paginate_by=10
+    #parámetros FormView
+    template_name='formato/asociacion_list.html'
+    form_class=AsociacionSearchForm
+    #parametros propios
+    cadena=str("")
+    def get(self, request, *args, **kwargs):
+        form=AsociacionSearchForm(self.request.GET or None)
+        self.object_list=Asociacion.objects.all()
+        if form.is_valid():
+            self.object_list=form.filtrar(form)
+            self.cadena=form.cadena(form)
+        return self.render_to_response(self.get_context_data(form=form))
+
     def get_context_data(self, **kwargs):
         context = super(AsociacionList, self).get_context_data(**kwargs)
-    	lista=Asociacion.objects.all()
         page=self.request.GET.get('page')
-    	context.update(pagination(self.object_list,page,10))
+        context.update(pagination(self.object_list,page,10))
+        context["cadena"]=self.cadena
         return context
 
-class AsociacionDetail(DetailView):
+class AsociacionDetail(LoginRequiredMixin,DetailView):
     model=Asociacion
 
-class AsociacionUpdate(UpdateView):
+class AsociacionUpdate(LoginRequiredMixin,UpdateView):
     model=Asociacion
     fields = ['for_id','est_id']
     def get_context_data(self, **kwargs):
@@ -242,7 +256,7 @@ class AsociacionUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class AsociacionDelete(DeleteView):
+class AsociacionDelete(LoginRequiredMixin,DeleteView):
     model=Asociacion
     success_url = reverse_lazy('formato:asociacion_index')
 

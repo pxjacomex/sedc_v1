@@ -8,10 +8,10 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Marca de Datalogger y Sensores
-class MarcaCreate(CreateView):
+class MarcaCreate(LoginRequiredMixin,CreateView):
     model=Marca
     fields = ['mar_nombre']
     def get_context_data(self, **kwargs):
@@ -20,7 +20,7 @@ class MarcaCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class MarcaList(ListView):
+class MarcaList(LoginRequiredMixin,ListView):
     #parámetros ListView
     model=Marca
     paginate_by=10
@@ -30,10 +30,10 @@ class MarcaList(ListView):
         context.update(pagination(self.object_list,page,10))
         return context
 
-class MarcaDetail(DetailView):
+class MarcaDetail(LoginRequiredMixin,DetailView):
     model=Marca
 
-class MarcaUpdate(UpdateView):
+class MarcaUpdate(LoginRequiredMixin,UpdateView):
     model=Marca
     fields = ['mar_nombre']
     def get_context_data(self, **kwargs):
@@ -41,7 +41,7 @@ class MarcaUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class MarcaDelete(DeleteView):
+class MarcaDelete(LoginRequiredMixin,DeleteView):
     model=Marca
     success_url = reverse_lazy('marca:marca_index')
 

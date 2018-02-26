@@ -9,10 +9,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from .forms import EstacionSearchForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
-class EstacionCreate(CreateView):
+class EstacionCreate(LoginRequiredMixin,CreateView):
     model = Estacion
     fields = ['est_id', 'est_codigo','est_nombre','est_tipo','est_provincia','est_estado','est_latitud','est_longitud','est_altura','est_ficha']
     def form_valid(self, form):
@@ -36,7 +36,7 @@ class EstacionCreate(CreateView):
             'form': form
         })
 
-class EstacionList(ListView,FormView):
+class EstacionList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Estacion
     paginate_by=10
@@ -60,9 +60,9 @@ class EstacionList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class EstacionDetail(DetailView):
+class EstacionDetail(LoginRequiredMixin,DetailView):
     model=Estacion
-class EstacionUpdate(UpdateView):
+class EstacionUpdate(LoginRequiredMixin,UpdateView):
     model=Estacion
     fields = ['est_id', 'est_codigo','est_nombre','est_tipo','est_provincia','est_estado','est_latitud','est_longitud','est_altura','est_ficha']
     def get_context_data(self, **kwargs):
@@ -71,12 +71,12 @@ class EstacionUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class EstacionDelete(DeleteView):
+class EstacionDelete(LoginRequiredMixin,DeleteView):
     model=Estacion
     success_url = reverse_lazy('estacion:estacion_index')
 
 #Registro
-class RegistroCreate(CreateView):
+class RegistroCreate(LoginRequiredMixin,CreateView):
     model=Registro
     fields = ['est_id','reg_fecha','reg_archivo','reg_ubicacion']
     def form_valid(self, form):
@@ -88,7 +88,7 @@ class RegistroCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class RegistroList(ListView):
+class RegistroList(LoginRequiredMixin,ListView):
     model=Registro
     paginate_by = 10
     def get_context_data(self, **kwargs):
@@ -98,10 +98,10 @@ class RegistroList(ListView):
         context.update(pagination(self.object_list,page,10))
         return context
 
-class RegistroDetail(DetailView):
+class RegistroDetail(LoginRequiredMixin,DetailView):
     model=Registro
 
-class RegistroUpdate(UpdateView):
+class RegistroUpdate(LoginRequiredMixin,UpdateView):
     model=Registro
     fields = ['est_id','reg_fecha','reg_archivo','reg_ubicacion']
     def get_context_data(self, **kwargs):
@@ -110,7 +110,7 @@ class RegistroUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class RegistroDelete(DeleteView):
+class RegistroDelete(LoginRequiredMixin,DeleteView):
     model=Registro
     success_url = reverse_lazy('estacion:registro_index')
 

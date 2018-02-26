@@ -9,9 +9,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from sensor.forms import SensorSearchForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
-class SensorCreate(CreateView):
+class SensorCreate(LoginRequiredMixin,CreateView):
     model = Sensor
     fields = ['sen_nombre','mar_id','sen_modelo','sen_serial']
     def form_valid(self, form):
@@ -22,7 +22,7 @@ class SensorCreate(CreateView):
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
         return context
-class SensorList(ListView,FormView):
+class SensorList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Sensor
     paginate_by=10
@@ -45,9 +45,9 @@ class SensorList(ListView,FormView):
         #context.update(pagination(self.object_list,page,10))
         context["cadena"]=self.cadena
         return context
-class SensorDetail(DetailView):
+class SensorDetail(LoginRequiredMixin,DetailView):
     model=Sensor
-class SensorUpdate(UpdateView):
+class SensorUpdate(LoginRequiredMixin,UpdateView):
     model=Sensor
     fields = ['sen_nombre','mar_id','sen_modelo','sen_serial']
     def get_context_data(self, **kwargs):
@@ -55,7 +55,7 @@ class SensorUpdate(UpdateView):
         context = super(SensorUpdate, self).get_context_data(**kwargs)
         context['title'] = "Modificar"
         return context
-class SensorDelete(DeleteView):
+class SensorDelete(LoginRequiredMixin,DeleteView):
     model=Sensor
     success_url = reverse_lazy('sensor:sensor_index')
 def pagination(lista,page,num_reg):

@@ -8,9 +8,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from .forms import ControlSearchForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 #Variable views
-class VariableCreate(CreateView):
+class VariableCreate(LoginRequiredMixin,CreateView):
     model=Variable
     fields = ['var_codigo','var_nombre','uni_id','var_maximo','var_minimo','var_sos','var_err','var_min']
     def form_valid(self, form):
@@ -22,7 +23,7 @@ class VariableCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class VariableList(ListView):
+class VariableList(LoginRequiredMixin,ListView):
     model=Variable
     paginate_by = 100
     def get_context_data(self, **kwargs):
@@ -32,10 +33,10 @@ class VariableList(ListView):
     	context.update(pagination(self.object_list,page,10))
         return context
 
-class VariableDetail(DetailView):
+class VariableDetail(LoginRequiredMixin,DetailView):
     model=Variable
 
-class VariableUpdate(UpdateView):
+class VariableUpdate(LoginRequiredMixin,UpdateView):
     model=Variable
     fields = ['var_codigo','var_nombre','uni_id','var_maximo','var_minimo','var_sos','var_err','var_min']
     def get_context_data(self, **kwargs):
@@ -44,12 +45,12 @@ class VariableUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class VariableDelete(DeleteView):
+class VariableDelete(LoginRequiredMixin,DeleteView):
     model=Variable
     success_url = reverse_lazy('variable:variable_index')
 
 #Unidad
-class UnidadCreate(CreateView):
+class UnidadCreate(LoginRequiredMixin,CreateView):
     model=Unidad
     fields = ['uni_nombre','uni_sigla']
     def form_valid(self, form):
@@ -61,7 +62,7 @@ class UnidadCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class UnidadList(ListView):
+class UnidadList(LoginRequiredMixin,ListView):
     model=Unidad
     paginate_by = 10
     def get_context_data(self, **kwargs):
@@ -71,10 +72,10 @@ class UnidadList(ListView):
     	context.update(pagination(self.object_list,page,10))
         return context
 
-class UnidadDetail(DetailView):
+class UnidadDetail(LoginRequiredMixin,DetailView):
     model=Unidad
 
-class UnidadUpdate(UpdateView):
+class UnidadUpdate(LoginRequiredMixin,UpdateView):
     model=Unidad
     fields = ['uni_nombre','uni_sigla']
     def get_context_data(self, **kwargs):
@@ -83,12 +84,12 @@ class UnidadUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class UnidadDelete(DeleteView):
+class UnidadDelete(LoginRequiredMixin,DeleteView):
     model=Unidad
     success_url = reverse_lazy('variable:unidad_index')
 
 #Control
-class ControlCreate(CreateView):
+class ControlCreate(LoginRequiredMixin,CreateView):
     model=Control
     fields = ['var_id','sen_id','est_id','con_fecha_ini','con_fecha_fin','con_estado']
     def form_valid(self, form):
@@ -100,7 +101,7 @@ class ControlCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class ControlList(ListView,FormView):
+class ControlList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Control
     paginate_by=10
@@ -124,10 +125,10 @@ class ControlList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class ControlDetail(DetailView):
+class ControlDetail(LoginRequiredMixin,DetailView):
     model=Control
 
-class ControlUpdate(UpdateView):
+class ControlUpdate(LoginRequiredMixin,UpdateView):
     model=Control
     fields = ['var_id','sen_id','est_id','con_fecha_ini','con_fecha_fin','con_estado']
     def get_context_data(self, **kwargs):
@@ -136,7 +137,7 @@ class ControlUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class ControlDelete(DeleteView):
+class ControlDelete(LoginRequiredMixin,DeleteView):
     model=Control
     success_url = reverse_lazy('variable:control_index')
 

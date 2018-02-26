@@ -10,12 +10,12 @@ from django.urls import reverse_lazy
 from medicion.forms import MedicionSearchForm,FilterDeleteForm
 from medicion.functions import filtrar,datos_variable,consultar,eliminar
 from django.db import connection
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 #Medicion views
-class MedicionCreate(CreateView):
+class MedicionCreate(LoginRequiredMixin,CreateView):
     model=Medicion
-    fields = ['var_id','est_id','med_fecha','med_hora','med_valor','med_maximo',
-              'med_minimo','med_validado']
+    fields = ['var_id','est_id','med_fecha','med_valor','med_maximo',
+              'med_minimo']
     def form_valid(self, form):
         return super(MedicionCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):
@@ -26,7 +26,7 @@ class MedicionCreate(CreateView):
         return context
 
 #Lista de datos crudos
-class MedicionList(FormView):
+class MedicionList(LoginRequiredMixin,FormView):
     template_name='medicion/medicion_list.html'
     form_class=MedicionSearchForm
     success_url='/medicion/'
@@ -44,7 +44,7 @@ class MedicionList(FormView):
         context['variable']=self.variable
         return context
 #Clase para filtrar datos para la vista delete
-class ListDelete(FormView):
+class ListDelete(LoginRequiredMixin,FormView):
     template_name='medicion/list_delete.html'
     form_class=FilterDeleteForm
     success_url='/medicion/listdelete/'
@@ -60,14 +60,14 @@ class ListDelete(FormView):
         context['lista']=self.lista
         return context
 #filtro de Datos Crudos
-class MedicionFilter(FormView):
+class MedicionFilter(LoginRequiredMixin,FormView):
     template_name='medicion/medicion_filter.html'
     form_class=MedicionSearchForm
     success_url='/medicion/filter/'
 
 
 #filtro para eliminar los datos
-class FilterDelete(FormView):
+class FilterDelete(LoginRequiredMixin,FormView):
     template_name='medicion/filter_delete.html'
     form_class=FilterDeleteForm
     success_url='/medicion/filterdelete/'
@@ -85,10 +85,10 @@ class FilterDelete(FormView):
         return context
 
 
-class MedicionDetail(DetailView):
+class MedicionDetail(LoginRequiredMixin,DetailView):
     model=Medicion
 
-class MedicionUpdate(UpdateView):
+class MedicionUpdate(LoginRequiredMixin,UpdateView):
     model=Medicion
     fields = ['med_valor','med_maximo','med_minimo']
     url=""
@@ -124,7 +124,7 @@ class MedicionUpdate(UpdateView):
         context['url']=self.url
         return context
 
-class MedicionDelete(UpdateView):
+class MedicionDelete(LoginRequiredMixin,UpdateView):
     model=Medicion
     fields = ['est_id','var_id','med_fecha','med_valor','med_valor','med_maximo','med_minimo']
     url=""

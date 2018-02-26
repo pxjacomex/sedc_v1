@@ -9,9 +9,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from datalogger.forms import DataloggerSearchForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 #Datalogger views
-class DataloggerCreate(CreateView):
+class DataloggerCreate(LoginRequiredMixin,CreateView):
     model = Datalogger
     fields = ['est_id','dat_codigo','mar_id','dat_modelo','dat_serial']
     def form_valid(self, form):
@@ -23,7 +23,7 @@ class DataloggerCreate(CreateView):
         context['title'] = "Crear"
         return context
 
-class DataloggerList(ListView,FormView):
+class DataloggerList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Datalogger
     paginate_by=10
@@ -39,7 +39,6 @@ class DataloggerList(ListView,FormView):
             self.object_list=form.filtrar(form)
             self.cadena=form.cadena(form)
         return self.render_to_response(self.get_context_data(form=form))
-
     def get_context_data(self, **kwargs):
         context = super(DataloggerList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
@@ -47,10 +46,10 @@ class DataloggerList(ListView,FormView):
         context["cadena"]=self.cadena
         return context
 
-class DataloggerDetail(DetailView):
+class DataloggerDetail(LoginRequiredMixin,DetailView):
     model=Datalogger
 
-class DataloggerUpdate(UpdateView):
+class DataloggerUpdate(LoginRequiredMixin,UpdateView):
     model=Datalogger
     fields = ['est_id','dat_codigo','mar_id','dat_modelo','dat_serial']
     def get_context_data(self, **kwargs):
@@ -59,7 +58,7 @@ class DataloggerUpdate(UpdateView):
         context['title'] = "Modificar"
         return context
 
-class DataloggerDelete(DeleteView):
+class DataloggerDelete(LoginRequiredMixin,DeleteView):
     model=Datalogger
     success_url = reverse_lazy('datalogger:datalogger_index')
 

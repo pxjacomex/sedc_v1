@@ -250,3 +250,41 @@ def dictfetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
+def datos_horarios_json(est_id,var_id,fec_ini,fec_fin):
+    consulta=(Medicion.objects.filter(est_id=est_id)
+    .filter(var_id=var_id).filter(med_fecha__range=[fec_ini,fec_fin]))
+    consulta=consulta.annotate(year=ExtractYear('med_fecha'),
+        month=ExtractMonth('med_fecha'),
+        day=ExtractDay('med_fecha'),
+        hour=ExtractHour('med_fecha')
+    ).values('year','month','day','hour')
+    if(var_id==1):
+        consulta=list(consulta.annotate(valor=Sum('med_valor')).
+        values('valor','year','month','day','hour').
+        order_by('year','month','day','hour'))
+    else:
+        consulta=list(consulta.annotate(valor=Avg('med_valor'),
+        maximo=Max('med_maximo'),minimo=Min('med_minimo')).
+        values('valor','maximo','minimo','year','month','day','hour').
+        order_by('year','month','day','hour'))
+    datos=[]
+    if len(consulta)>0:
+        for fila in consulta:
+            fecha_str = (str(fila.get('year'))+":"+
+                str(fila.get('month'))+":"+str(fila.get('day')))
+            print fecha_str
+            fecha = datetime.datetime.strptime(fecha_str,'%Y:%m:%d').date()
+            hora=datetime.time(fila.get('hour'))
+            fecha_hora=datetime.datetime.combine(fecha,hora)
+            dato={
+                'fecha':fecha_hora,
+                'valor':fila.get('valor'),
+                'maximo':fila.get('maximo'),
+                'minimo':fila.get('minimo'),
+            }
+            datos.append(dato)
+    else:
+        datos={
+            'mensaje':'no hay datos'
+        }
+    return datos
