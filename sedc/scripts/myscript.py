@@ -13,7 +13,7 @@ def iniciar_lectura():
                 consulta=list(Asociacion.objects.filter(for_id=formato.for_id))
                 if len(consulta)>0:
                     estacion=consulta[0].est_id
-                    archivo=open(formato.for_ubicacion+formato.for_archivo,'r')
+                    archivo=open(formato.for_ubicacion+formato.for_archivo)
                     datos,variables=procesar_archivo_automatico(archivo,formato,estacion,formato.mar_id)
                     archivo.close()
                     if len(datos)>0:
