@@ -209,6 +209,7 @@ def guardar_vacios(request,observacion):
 #validar si son datalogger VAISALA para restar 5 horas
 def validar_datalogger(marca):
     #marca=Marca.objects.get(mar_id=marca)
+    print marca.mar_nombre
     if marca.mar_nombre=='VAISALA':
         return True
     return False
