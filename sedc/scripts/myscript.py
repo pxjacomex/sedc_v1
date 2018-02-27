@@ -6,6 +6,7 @@ from importacion.forms import UploadFileForm
 import daemon
 import time
 def iniciar_lectura():
+    #time.sleep(10)
     while True:
         try:
             formatos=list(Formato.objects.filter(for_tipo='automatico'))
@@ -13,20 +14,21 @@ def iniciar_lectura():
                 consulta=list(Asociacion.objects.filter(for_id=formato.for_id))
                 if len(consulta)>0:
                     estacion=consulta[0].est_id
+                    registro=open('/tmp/sedc.txt','a')
+                    registro.write(time.ctime()+': Lectura Iniciada - Estacion:'+str(estacion.est_codigo)+' Formato: '+str(formato.for_descripcion)+'\n')
+                    registro.close()
                     archivo=open(formato.for_ubicacion+formato.for_archivo)
                     datos,variables=procesar_archivo_automatico(archivo,formato,estacion,formato.mar_id)
                     archivo.close()
                     if len(datos)>0:
-                        print time.ctime()
-                        guardar_datos_automatico(datos,variables)
-                        print time.ctime()
+                        #guardar_datos_automatico(datos,variables)
                         registro=open('/tmp/sedc.txt','a')
-                        registro.write(time.ctime()+': Información guardada '+str(estacion.est_codigo)+str(formato.for_descripcion)+'\n')
+                        registro.write(time.ctime()+': Información guardada Estacion:'+str(estacion.est_codigo)+'Formato:'+str(formato.for_descripcion)+'\n')
                         registro.close()
 
                     else:
                         registro=open('/tmp/sedc.txt','a')
-                        registro.write(time.ctime()+': No existe nueva informacion para el formato '+str(formato.for_descripcion)+'\n')
+                        registro.write(time.ctime()+': No existe nueva informacion para el Formato: '+str(formato.for_descripcion)+'\n')
                         registro.close()
                 else:
                     registro=open('/tmp/sedc.txt','a')
@@ -38,7 +40,7 @@ def iniciar_lectura():
             registro.write(time.ctime()+': El archivo no existe'+'\n')
             registro.close()
             pass
-        time.sleep(900)
+        time.sleep(60)
 def run(*args):
     with daemon.DaemonContext():
         iniciar_lectura()
