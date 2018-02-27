@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from formato.models import Formato,Asociacion
-from importacion.functions import (consultar_formatos,guardar_datos,
-    procesar_archivo_automatico,guardar_vacios)
-from importacion.forms import UploadFileForm
+from importacion.functions import (
+    procesar_archivo_automatico,guardar_datos_automatico)
 import daemon
 import time
 def iniciar_lectura():
@@ -21,7 +20,7 @@ def iniciar_lectura():
                     datos,variables=procesar_archivo_automatico(archivo,formato,estacion,formato.mar_id)
                     archivo.close()
                     if len(datos)>0:
-                        #guardar_datos_automatico(datos,variables)
+                        guardar_datos_automatico(datos,variables)
                         registro=open('/tmp/sedc.txt','a')
                         registro.write(time.ctime()+': Información guardada Estacion:'+str(estacion.est_codigo)+'Formato:'+str(formato.for_descripcion)+'\n')
                         registro.close()
@@ -40,7 +39,7 @@ def iniciar_lectura():
             registro.write(time.ctime()+': El archivo no existe'+'\n')
             registro.close()
             pass
-        time.sleep(60)
+        time.sleep(900)
 def run(*args):
     with daemon.DaemonContext():
         iniciar_lectura()
