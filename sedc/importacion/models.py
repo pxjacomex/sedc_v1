@@ -33,6 +33,6 @@ class Importacion(models.Model):
     )
     imp_fecha=models.DateField("Fecha",default=date.today)
     imp_hora=models.TimeField("Hora",default=date.today().strftime("%H:%M:%S"))
-    imp_archivo=models.CharField("Archivo",max_length=100)
+    imp_archivo=models.FileField("Archivo",upload_to='archivos/')
     def get_absolute_url(self):
         return reverse('importacion:importacion_detail', kwargs={'pk': self.pk})

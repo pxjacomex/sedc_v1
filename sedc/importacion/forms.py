@@ -7,6 +7,7 @@ from datalogger.models import Datalogger
 from marca.models import Marca
 from datetime import datetime,timedelta
 from formato.models import Formato
+from importacion.models import Importacion
 class UploadFileForm(forms.Form):
     estacion=forms.ModelChoiceField(queryset=Estacion.objects.all())
     datalogger=forms.ModelChoiceField(queryset=Marca.objects.all())
@@ -26,3 +27,7 @@ class FormUpload(forms.Form):
         super(FormUpload, self).__init__(*args, **kwargs)
 class VaciosForm(forms.Form):
     observacion=forms.CharField(widget=forms.Textarea)
+class ImportacionForm(forms.ModelForm):
+    class Meta:
+        model = Importacion
+        fields = ('imp_fecha', 'imp_archivo', )

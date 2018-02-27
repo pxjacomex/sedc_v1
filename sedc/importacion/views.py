@@ -10,12 +10,13 @@ from django.http import JsonResponse
 
 from django.http import HttpResponseRedirect
 #from django.shortcuts import render
-from importacion.forms import UploadFileForm,VaciosForm,FormUpload
+from importacion.forms import UploadFileForm,VaciosForm,FormUpload,ImportacionForm
 from importacion.functions import (consultar_formatos,guardar_datos,
     procesar_archivo,guardar_vacios,validar_fechas_archivo)
 from importacion.lectura import iniciar_lectura
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 
 class ImportacionList(LoginRequiredMixin,ListView):
@@ -92,6 +93,29 @@ class LeerArchivo(LoginRequiredMixin,FormView):
         else:
             return self.form_invalid(form, **kwargs)
 
+
+class ImportacionCreate(CreateView):
+    model = Importacion
+    fields = '__all__'
+    def form_valid(self, form):
+        return super(ImportacionCreate, self).form_valid(form)
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(ImportacionCreate, self).get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['title'] = "Subir Archivo"
+        return context
+    '''def model_form_upload(request):
+        if request.method == 'POST':
+            form = ImportacionForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('index')
+        else:
+            form = ImportacionForm()
+        return render(request, 'core/model_form_upload.html', {
+            'form': form
+        })'''
 
 def guardar_archivo(request):
     sobreescribir=request.GET.get('sobreescribir',None)
