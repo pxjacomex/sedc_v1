@@ -39,7 +39,7 @@ def iniciar_lectura():
             registro.write(time.ctime()+': El archivo no existe'+'\n')
             registro.close()
             pass
-        time.sleep(60)
+        time.sleep(900)
 def run(*args):
     with daemon.DaemonContext():
         iniciar_lectura()
