@@ -7,7 +7,7 @@ from django.utils import timezone
 from estacion.models import Estacion
 from formato.models import Formato
 from marca.models import Marca
-from datetime import date
+import time
 
 class Importacion(models.Model):
     imp_id=models.AutoField("Id",primary_key=True)
@@ -24,15 +24,10 @@ class Importacion(models.Model):
         null=True,
         verbose_name="Formato"
     )
-    mar_id=models.ForeignKey(
-        Marca,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Datalogger"
-    )
-    imp_fecha=models.DateField("Fecha",default=date.today)
-    imp_hora=models.TimeField("Hora",default=date.today().strftime("%H:%M:%S"))
+    imp_fecha=models.DateTimeField("Fecha",default=time.strftime('%Y-%m-%d %H:%M:%S'))
+    imp_fecha_ini=models.DateTimeField("Fecha Inicial",default=time.strftime('%Y-%m-%d %H:%M:%S'))
+    imp_fecha_fin=models.DateTimeField("Fecha Final",default=time.strftime('%Y-%m-%d %H:%M:%S'))
+    imp_sobreescribir=models.BooleanField("Sobreescribir",default=False)
     imp_archivo=models.FileField("Archivo",upload_to='archivos/')
     def get_absolute_url(self):
         return reverse('importacion:importacion_detail', kwargs={'pk': self.pk})

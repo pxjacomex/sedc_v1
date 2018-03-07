@@ -3,36 +3,132 @@
 {% block content %}
 
 {% load bootstrap3 %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+$(document).ready(function() {
+  $("#btn_confirmar").click(function(){
+    $(this).attr('disabled',true);
+    enlace=$(this).attr('href')
+    $.ajax({
+      url: enlace,
+      type:'GET',
+      beforeSend: function () {
+        $("#div_informacion").hide();
+        $("#div_loading").show();
+        $("#div_error").hide();
+      },
+      success: function (data) {
+        $("#div_informacion").show();
+        $("#div_informacion").html(data)
+        $("#btn_confirmar").removeAttr('disabled');
 
+        $("#div_loading").hide();
+
+        $("#div_error").hide();
+      },
+      error: function () {
+        //$("#div_informacion").hide();
+        $("#div_loading").hide();
+        $("#div_error").show();
+        $("#btn_confirmar").removeAttr('disabled');
+      }
+    });
+    return false;
+  });
+
+
+});
+</script>
 <div class="row">
-  <div class="col-lg-4">
-    <h1><small>Detalle de registro</small></h1>
-    <br>
+  <h1><small>Detalle de subida de información</small></h1>
+</div>
+<div class="row">
+  <div class="col-lg-6 col-md-8 col-sm-12">
     <table class="table table-striped table-bordered">
       <tr>
-        <th>Estación</th>
+        <th colspan="2">Información del archivo</th>
+      </tr>
+      <tr>
+        <th>Código de la Estación</th>
         <td>{{importacion.est_id}}</td>
       </tr>
       <tr>
-        <th>Formato</th>
+        <th>Formato de Importación</th>
         <td>{{importacion.for_id}}</td>
       </tr>
       <tr>
-        <th>Fecha</th>
-        <td>{{importacion.imp_fecha|date:"d/m/Y"}}</td>
+        <th>Fecha Inicial</th>
+        <td>{{importacion.imp_fecha_ini|date:"d/m/Y H:i:s"}}</td>
       </tr>
       <tr>
-        <th>Hora</th>
-        <td>{{importacion.imp_hora}}</td>
+        <th>Fecha Final</th>
+        <td>{{importacion.imp_fecha_fin|date:"d/m/Y H:i:s "}}</td>
       </tr>
 
 
     </table>
+  </div><!--div class col-lg-6-->
+  <div class="col-lg-6 col-md-8 col-sm-12">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr><th colspan="3">Información de Importación</th></tr>
+        <tr>
+
+          <th>Variable</th>
+          <th>Sobreescribir</th>
+          <th>Ultima Fecha de Información</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in informacion %}
+        <tr>
+          <td>{{ item.var_nombre}}</td>
+          {% if item.existe %}
+          <td>*Si</td>
+          {%else%}
+          <td>No</td>
+          {% endif %}
+
+          <td>{{ item.ultima_fecha|date:"d/m/Y H:i:s"}}</td>
+        </tr>
+
+        {% endfor%}
+
+      </tbody>
+    </table>
   </div>
+
 </div>
 <div class="row">
-  <div class="col-lg-8">
-    <a class="btn btn-default" href="{% url 'importacion:importacion_index' %}">Regresar</a>
+
+</div>
+<p><small>*Cuando se sobreescribe la información se toma las fechas inicial y final del archivo</small></p>
+<div class="row">
+  <div class="form-group">
+    <a class="btn btn-primary" id="btn_confirmar"
+    href="{% url 'importacion:importacion_guardar' importacion.imp_id %}">
+    Confirmar</a>
+    <a class="btn btn-default"
+    href="{% url 'importacion:importacion_index' %}">
+    Cancelar</a>
+  </div>
+
+</div>
+
+<br>
+<div id="div_informacion" class="row">
+
+</div>
+<div id="div_loading" class="row" style="display:none;">
+  <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+  <div class="col-lg-4 col-md-4 col-sm-4">
+    <img src="/media/loading6.gif" />
+  </div>
+  <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+<div id="div_error" class="row" style="display:none;">
+  <div class="alert alert-danger alert-dismissible" role="alert">
+    Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
   </div>
 </div>
 

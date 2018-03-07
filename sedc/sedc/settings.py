@@ -162,6 +162,7 @@ BOOTSTRAP3 = {
 
     # The URL to the jQuery JavaScript file
     'jquery_url': 'http://code.jquery.com/jquery.min.js',
+    #'jquery_url':'http://code.jquery.com/jquery-3.3.1.min.js',
 
     # The Bootstrap base URL
     'base_url': '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/',

@@ -11,7 +11,7 @@
       </div>
       <div class="col-lg-3">
         <a style="float:right" class="btn btn-info"
-        href="{% url 'importacion:importar' %}">
+        href="{% url 'importacion:importacion_create' %}">
         Nuevo</a>
       </div>
     </div>
@@ -23,7 +23,9 @@
         <tr>
           <th>Estación</th>
           <th>Formato</th>
-          <th>Fecha</th>
+          <th>Fecha de Importacion</th>
+          <th>Fecha Inicial del Archivo</th>
+          <th>Fecha Final del Archivo</th>
           <th>Archivo</th>
         </tr>
       </thead>
@@ -32,7 +34,9 @@
         <tr>
           <td>{{ item.est_id}}</td>
           <td>{{ item.for_id}}</td>
-          <td>{{ item.imp_fecha|date:"d/m/Y"}}</td>
+          <td>{{ item.imp_fecha}}</td>
+          <td>{{ item.imp_fecha_ini}}</td>
+          <td>{{ item.imp_fecha_fin}}</td>
           <td>{{ item.imp_archivo}}</td>
           <td>
             <a href="{% url 'importacion:importacion_detail' item.imp_id %}">

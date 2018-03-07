@@ -11,66 +11,47 @@ from vacios.models import Vacios
 from formato.models import Clasificacion,Delimitador,Formato,Asociacion,Fecha,Hora
 from marca.models import Marca
 from importacion.forms import VaciosForm
-from django.core.serializers import serialize,deserialize
 from django.db import connection
-
+import time
+from importacion.models import Importacion
+from sedc.settings import BASE_DIR
 
 #consultar formatos por datalogger y estacion
-def consultar_formatos(marca):
-    formatos=list(Formato.objects.filter(mar_id=marca).
-        values('for_id','for_descripcion'))
+def consultar_formatos(estacion):
+    asociacion=list(Asociacion.objects.filter(est_id=estacion))
     lista={}
-    i=0
-    for item in formatos:
-        lista[item['for_id']]=item['for_descripcion']
+    for item in asociacion:
+        lista[item.for_id.for_id]=item.for_id.for_descripcion
     return lista
-#leer el archivo
-def procesar_archivo(archivo,form,request):
-    #try:
-    formato=form.cleaned_data['formato']
-    estacion=form.cleaned_data['estacion']
-    datalogger=form.cleaned_data['datalogger']
-    sobreescribir=form.cleaned_data['sobreescribir']
-    datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
-    valid=validar_fechas(datos)
-    vacio=verificar_vacios(datos)
-    message=str("")
-    datos_json=serialize('json', datos)
-    request.session['datos']=datos_json
-    request.session['sobreescribir']=sobreescribir
-    request.session['variables']=serialize('json',variables)
+#guardar la informacion
+def guardar_datos(imp_id):
+    importacion=Importacion.objects.get(imp_id=imp_id)
+    formato=importacion.for_id
+    estacion=importacion.est_id
+    #archivo a guardar
+    print 'validar_fechas: '+time.ctime()
+    informacion=validar_fechas(importacion)
+    archivo=open(str(BASE_DIR)+'/media/'+str(importacion.imp_archivo))
+    print 'checar sobreescribir y eliminar datos: '+time.ctime()
+    for fila in informacion:
+        if fila.get('existe'):
+            eliminar_datos(fila,importacion)
+        '''if fila.get('vacio') and form.is_valid:
+            observacion=form.cleaned_data['observacion']
+            guardar_vacios(fila,estacion,observacion,importacion.imp_fecha_ini)'''
+    print 'construir_matriz: '+time.ctime()
+    datos=construir_matriz(archivo,formato,estacion)
+    print 'crear datos: '+time.ctime()
+    Datos.objects.bulk_create(datos)
+    print 'eliminar tabla datos'+time.ctime()
+    Datos.objects.all().delete()
 
-    if vacio:
-        request.session['vacios']=serialize('json',objetos_vacios(datos,variables))
-        #lista_vacios=objetos_vacios(datos,variables)
-    if not valid and not sobreescribir:
-        message="Datos existentes, por favor seleccione la opcion sobreescribir"
-    elif not valid and sobreescribir:
-        message="Se va a sobreescribir la informacion"
-    elif valid and sobreescribir:
-        message="Los datos no existen, no hay que sobreescribir la información"
-    else:
-        message="Ninguno"
-    context={
-        'variables':informacion_archivo(formato),
-        'fechas':rango_fecha(datos),
-        'message':message,
-        'valid':valid,
-        'vacio':vacio,
-    }
-    '''except ValueError:
-        context={
-            'message':"El formato del datalogger no coincide con el archivo",
-            'valid':False
-        }
-        '''
-    return context
 def procesar_archivo_automatico(archivo,formato,estacion,datalogger):
     datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
     return datos,variables
 
 #leer el archivo y convertirlo a una matriz de objetos de la clase Datos
-def construir_matriz(archivo,formato,estacion,datalogger):
+def construir_matriz(archivo,formato,estacion):
     #variables para el acumulado
     ValorReal = 0
     UltimoValor = 0
@@ -79,13 +60,9 @@ def construir_matriz(archivo,formato,estacion,datalogger):
     #validar si los valores del archivo son acumulados
     acumulado=validar_acumulado(formato.mar_id)
     clasificacion=list(Clasificacion.objects.filter(
-        for_id=formato.for_id).values())
+        for_id=formato.for_id))
     i=0
-    variables=[]
     datos=[]
-    for fila in clasificacion:
-        variable=Variable.objects.get(var_id=fila['var_id_id'])
-        variables.append(variable)
     for linea in archivo.readlines():
         i+=1
         #controlar la fila de inicio
@@ -94,9 +71,8 @@ def construir_matriz(archivo,formato,estacion,datalogger):
             fecha=formato_fecha(formato,valores,cambiar_fecha)
             j=0
             for fila in clasificacion:
-                #variable=Variable.objects.get(var_id=fila['var_id_id'])
-                if fila['cla_valor'] is not None:
-                    valor=float(valores[fila['cla_valor']])
+                if fila.cla_valor is not None:
+                    valor=float(valores[fila.cla_valor])
                     if acumulado:
                         dblValor=valor
                         if dblValor==0:
@@ -108,16 +84,16 @@ def construir_matriz(archivo,formato,estacion,datalogger):
                         valor=ValorReal
                 else:
                     valor=None
-                if fila['cla_maximo'] is not None:
-                    maximo=float(valores[fila['cla_maximo']])
+                if fila.cla_maximo is not None:
+                    maximo=float(valores[fila.cla_maximo])
                 else:
                     maximo=None
-                if fila['cla_minimo'] is not None:
-                    minimo=float(valores[fila['cla_minimo']])
+                if fila.cla_minimo is not None:
+                    minimo=float(valores[fila.cla_minimo])
                 else:
                     minimo=None
-                dato=Datos(var_id=variables[j].var_id,est_id=estacion.est_id,
-                    med_fecha=fecha,mar_id=datalogger.mar_id,
+                dato=Datos(var_id=fila.var_id.var_id,est_id=estacion.est_id,
+                    med_fecha=fecha,mar_id=formato.mar_id.mar_id,
                     med_valor=valor,med_maximo=maximo,med_minimo=minimo,
                     med_estado=True)
                 datos.append(dato)
@@ -125,59 +101,33 @@ def construir_matriz(archivo,formato,estacion,datalogger):
             if formato.for_tipo=='automatico':
                 formato.for_fil_ini=i+1
                 formato.save()
-    return datos,variables
+    return datos
 #verficar vacios
-def verificar_vacios(datos):
+def verificar_vacios(fecha_archivo,fecha_datos):
     estado=False
     vacios=[]
-    fecha_archivo=datos[0].med_fecha.date()
-    medicion=Medicion.objects.filter(est_id=datos[0].est_id)\
-    .filter(var_id=datos[0].var_id).values('med_fecha').reverse()[:1]
-    if len(medicion)>0:
-        fecha_datos=list(medicion)[0].get('med_fecha').date()
+    #fecha_datos=list(medicion)[0].get('med_fecha').date()
+    if isinstance(fecha_datos,str):
+        estado=False
+    else:
         intervalo=timedelta(days=1)
-        fecha_comparacion=fecha_datos+intervalo
-
-        if fecha_comparacion>=fecha_archivo:
+        fecha_datos+=intervalo
+        if fecha_datos>=fecha_archivo:
             estado=False
         else:
             estado=True
-    else:
-        estado=False
     return estado
-def objetos_vacios(datos,variables):
-    lista_vacios=[]
-    medicion=Medicion.objects.filter(est_id=datos[0].est_id)\
-    .filter(var_id=datos[0].var_id).values('med_fecha').reverse()[:1]
-    fecha_datos=list(medicion)[0].get('med_fecha').date()
-    hora_datos=list(medicion)[0].get('med_fecha').time()
-    estacion=Estacion.objects.get(est_id=datos[0].est_id)
-    for variable in variables:
-        vacio=Vacios()
-        vacio.est_id=estacion
-        vacio.var_id=variable
-        vacio.vac_fecha_ini=fecha_datos
-        vacio.vac_hora_ini=hora_datos
-        vacio.vac_fecha_fin=datos[0].med_fecha.date()
-        vacio.vac_hora_fin=datos[0].med_fecha.time()
-        lista_vacios.append(vacio)
-    return lista_vacios
+def guardar_vacios(informacion,estacion,observacion,fecha_archivo):
+    variable=Variable.objects.get(var_id=informacion.get('var_id'))
+    vacio=Vacios()
+    vacio.est_id=estacion
+    vacio.var_id=variable
+    vacio.vac_fecha_ini=informacion.get('ultima_fecha').date()
+    vacio.vac_hora_ini=informacion.get('ultima_fecha').time
+    vacio.vac_fecha_fin=fecha_archivo.date()
+    vacio.vac_hora_fin=fecha_archivo.time()
+    vacio.save()
 
-#guardar la informacion
-def guardar_datos(request):
-    sobreescribir=request.session['sobreescribir']
-    datos_json=request.session['datos']
-    datos=[]
-    variables=[]
-    for obj_dato in deserialize("json",datos_json):
-        datos.append(obj_dato.object)
-    for obj_variable in deserialize("json",request.session['variables']):
-        variables.append(obj_variable.object.pk)
-    if sobreescribir:
-        eliminar_datos(datos,variables)
-    Datos.objects.bulk_create(datos)
-    Datos.objects.all().delete()
-    del datos[:]
 def guardar_datos_automatico(datos,variables):
     list_var=[]
     for variable in variables:
@@ -187,44 +137,62 @@ def guardar_datos_automatico(datos,variables):
     Datos.objects.all().delete()
     del datos[:]
 
-#eliminar informacion en caso de sobreescribir
-def eliminar_datos(datos,variables):
-    fecha_ini=datos[0].med_fecha
-    fecha_fin=datos[-1].med_fecha
+#eliminar informacion en caso de existir
+def eliminar_datos(informacion,importacion):
+    fecha_ini=importacion.imp_fecha_ini
+    fecha_fin=importacion.imp_fecha_fin
     fec_ini=str(fecha_ini)
     fec_fin=str(fecha_fin)
-    for var_id in variables:
+    year_ini=fecha_ini.strftime('%Y')
+    year_fin=fecha_fin.strftime('%Y')
+    est_id=str(importacion.est_id.est_id)
+    var_cod=informacion.get('var_cod')
+    if year_ini==year_fin:
+        tabla=var_cod+'.m'+year_ini
+        sql='DELETE FROM '+tabla+ ' WHERE '
+        sql+='est_id_id='+str(est_id)+ ' and '
+        sql+='med_fecha>=\''+fec_ini+'\' and '
+        sql+='med_fecha<=\''+fec_fin+'\''
+        print sql
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM medicion_medicion \
-            WHERE est_id_id=%s\
-            and var_id_id=%s and med_fecha>=%s \
-            and med_fecha<=%s",
-            [datos[0].est_id,var_id,fec_ini,fec_fin] )
-#guardar el registro de los Vacios
-def guardar_vacios(request,observacion):
-    vacios_json=request.session['vacios']
-    for obj_vacio in deserialize("json",vacios_json):
-        obj_vacio.object.vac_observacion=observacion
-        obj_vacio.save()
+            cursor.execute(sql)
+    else:
+        range_year=range(int(year_ini),int(year_fin)+1)
+        for year in range_year:
+            tabla=var_cod+'.m'+str(year)
+            if str(year)==year_ini:
+                sql='DELETE FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(est_id)+ ' and '
+                sql+='med_fecha>=\''+fec_ini+'\''
+
+            elif str(year)==year_fin:
+                sql='DELETE FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(est_id)+ ' and '
+                sql+='med_fecha<=\''+fec_fin+'\''
+
+            else:
+                sql='DELETE FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(est_id)
+            print sql
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
 #validar si son datalogger VAISALA para restar 5 horas
 def validar_datalogger(marca):
-    #marca=Marca.objects.get(mar_id=marca)
-    print marca.mar_nombre
     if marca.mar_nombre=='VAISALA':
         return True
     return False
 def validar_acumulado(marca):
-    #marca=Marca.objects.get(mar_id=marca)
     if marca.mar_nombre=='HOBO':
         return True
     return False
-
 #convertir fecha y hora al formato adecuado
 def formato_fecha(formato,valores,cambiar_fecha):
     if formato.for_col_fecha==formato.for_col_hora:
         separar=valores[formato.for_col_fecha].split(" ")
         fecha_str=separar[0]
         hora_str=separar[1]
+        if len(separar)==3:
+            hora_str+=' '+separar[2]
     else:
         fecha_str=valores[formato.for_col_fecha]
         hora_str=valores[formato.for_col_hora]
@@ -288,45 +256,82 @@ def rango_fecha(datos):
     fecha_fin=datos[-1].med_fecha
     cadena=str(fecha_ini)+" al "+ str(fecha_fin)
     return cadena
-#verificar los datos del archivo
-def validar_fechas(datos):
-    fecha_ini=datos[0].med_fecha
-    #hora_ini=datos[0].med_hora
-    fecha_fin=datos[-1].med_fecha
-    #hora_fin=datos[-1].med_hora
+#verificar si existen los datos
+def validar_fechas(importacion):
+    print "validar_fechas"+time.ctime()
+    fecha_ini=importacion.imp_fecha_ini
+    fecha_fin=importacion.imp_fecha_fin
+    formato=importacion.for_id
+    estacion=importacion.est_id
+    year=fecha_ini.strftime('%Y')
+    year_fin=fecha_fin.strftime('%Y')
+    print year_fin
     fec_ini=str(fecha_ini)
-    fec_fin=str(fecha_fin)
-    consulta=list(Medicion.objects.raw(
-        'SELECT med_id\
-        FROM  medicion_medicion WHERE med_fecha>=%s \
-        and med_fecha<=%s and est_id_id=%s\
-        and var_id_id=%s',
-        [fec_ini,fec_fin,datos[0].est_id,datos[0].var_id]
-        )
-    )
+    clasificacion=list(Clasificacion.objects.filter(
+        for_id=formato.for_id))
+    result=[]
+    existe_vacio=False
+    for fila in clasificacion:
+        var_cod=fila.var_id.var_codigo
+        var_id=str(fila.var_id.var_id)
+        est_id=str(estacion.est_id)
+        tabla=var_cod+'.m'+year
+        fecha_datos=ultima_fecha(est_id,var_cod,year_fin)
+        #existe_vacio=existe_vacio or verificar_vacios(fecha_ini ,fecha_datos)
+        resumen={
+            'var_id':fila.var_id.var_id,
+            'var_cod':fila.var_id.var_codigo,
+            'var_nombre':fila.var_id.var_nombre,
+            'ultima_fecha':fecha_datos,
+            'existe':consulta_fecha(fec_ini,est_id,tabla),
+            'vacio':verificar_vacios(fecha_ini ,fecha_datos)
+        }
+        result.append(resumen)
+    return result
+def ultima_fecha(est_id,var_cod,year):
+    print "ultima_fecha: "+time.ctime()
+    #año base de la información
+    year_int=2007
+    tabla=var_cod+'.m'+year
+    while True:
+        sql='SELECT med_id,med_fecha FROM '+ tabla
+        sql+=' WHERE est_id_id='+est_id+' and med_estado=true '
+        sql+=' ORDER BY med_fecha DESC LIMIT 1'
+        print sql
+        consulta=list(Medicion.objects.raw(sql))
+        if len(consulta)>0:
+            informacion=consulta[0].med_fecha
+            break
+        else:
+            year_int=int(year)
+            year_int-=1
+            tabla=tabla=var_cod+'.m'+str(year_int)
+            year=str(year_int)
+        if year_int<2016:
+            break
+    if len(consulta)<=0:
+        informacion="No existen datos"
+    return informacion
+def consulta_fecha(fec_ini,est_id,tabla):
+    print "consulta_fecha: "+time.ctime()
+    sql='SELECT med_id FROM '+ tabla
+    sql+=' WHERE med_fecha>= \''+fec_ini+'\' '
+    sql+='and est_id_id='+est_id+ ' and med_estado=true LIMIT 1'
+    print sql
+    consulta=list(Medicion.objects.raw(sql))
     if len(consulta)>0:
-        return False
-    return True
-def validar_fechas_archivo(archivo,formato,estacion):
-    cambiar_fecha=validar_datalogger(formato.mar_id)
-    i=0
-    datos=archivo.readlines()
-    for linea in datos:
-        i+=1
-        #controlar la fila de inicio
-        if i==formato.for_fil_ini:
-            valores_ini=linea.split(formato.del_id.del_caracter)
-            fecha_ini=formato_fecha(formato,valores_ini,cambiar_fecha)
-        if i==len(datos):
-            valores_fin=linea.split(formato.del_id.del_caracter)
-            fecha_fin=formato_fecha(formato,valores_fin,cambiar_fecha)
-    consulta=(Medicion.objects.filter(est_id=estacion)
-        .filter(med_fecha__range=[fecha_ini,fecha_fin])).exists()
+        return True
+    return False
 
-    archivo.seek(0,0)
-    return consulta
-    '''archivo.seek(0)
-    linea_fin=archivo.readline()
+
+#obtener la fecha incial y final del archivo en base al formato
+def get_fechas_archivo(archivo,formato,form):
+    cambiar_fecha=validar_datalogger(formato.mar_id)
+    datos=archivo.readlines()
+    linea_ini=datos[formato.for_fil_ini-1]
+    linea_fin=datos[len(datos)-1]
+    valores_ini=linea_ini.split(formato.del_id.del_caracter)
     valores_fin=linea_fin.split(formato.del_id.del_caracter)
-    fecha_fin=formato_fecha(formato,valores_fin,cambiar_fecha)
-    print fecha_fin'''
+    form.instance.imp_fecha_ini=formato_fecha(formato,valores_ini,cambiar_fecha)
+    form.instance.imp_fecha_fin=formato_fecha(formato,valores_fin,cambiar_fecha)
+    return form

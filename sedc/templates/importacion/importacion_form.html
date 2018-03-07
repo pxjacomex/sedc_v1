@@ -3,9 +3,9 @@
 <script>
 $( function() {
   //cargar valores desde la bd
-  $("#id_datalogger").change(function () {
+  $("#id_est_id").change(function () {
     var datalogger = $(this).val();
-    $("#id_formato").find('option').remove().end()
+    $("#id_for_id").find('option').remove().end()
     $.ajax({
       url: '/ajax/formatos/',
       data: {
@@ -15,7 +15,7 @@ $( function() {
       success: function (data) {
         //datos=JSON.parse(data)
         $.each(data, function(index, value) {
-          $("#id_formato").append('<option value="' + index + '">' + value + '</option>');
+          $("#id_for_id").append('<option value="' + index + '">' + value + '</option>');
           //console.log(value)
         });
       }
@@ -48,7 +48,7 @@ $( function() {
           Procesar
         </button>
         <a class="btn btn-default"
-        href="{% url 'estacion:registro_index' %}">
+        href="{% url 'importacion:importacion_index' %}">
         Cancelar</a>
       </form>
     </div>

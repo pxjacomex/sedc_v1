@@ -27,7 +27,3 @@ class FormUpload(forms.Form):
         super(FormUpload, self).__init__(*args, **kwargs)
 class VaciosForm(forms.Form):
     observacion=forms.CharField(widget=forms.Textarea)
-class ImportacionForm(forms.ModelForm):
-    class Meta:
-        model = Importacion
-        fields = ('imp_fecha', 'imp_archivo', )
