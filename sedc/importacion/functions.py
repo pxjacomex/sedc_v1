@@ -6,7 +6,6 @@ from estacion.models import Estacion
 from medicion.models import Medicion
 from variable.models import Variable
 from temporal.models import Datos
-from datalogger.models import Datalogger
 from vacios.models import Vacios
 from formato.models import Clasificacion,Delimitador,Formato,Asociacion,Fecha,Hora
 from marca.models import Marca
@@ -46,9 +45,9 @@ def guardar_datos(imp_id):
     print 'eliminar tabla datos'+time.ctime()
     Datos.objects.all().delete()
 
-def procesar_archivo_automatico(archivo,formato,estacion,datalogger):
-    datos,variables=construir_matriz(archivo,formato,estacion,datalogger)
-    return datos,variables
+def procesar_archivo_automatico(archivo,formato,estacion):
+    datos=construir_matriz(archivo,formato,estacion)
+    return datos
 
 #leer el archivo y convertirlo a una matriz de objetos de la clase Datos
 def construir_matriz(archivo,formato,estacion):
@@ -128,11 +127,7 @@ def guardar_vacios(informacion,estacion,observacion,fecha_archivo):
     vacio.vac_hora_fin=fecha_archivo.time()
     vacio.save()
 
-def guardar_datos_automatico(datos,variables):
-    list_var=[]
-    for variable in variables:
-        list_var.append(variable.var_id)
-    eliminar_datos(datos,list_var)
+def guardar_datos_automatico(datos):
     Datos.objects.bulk_create(datos)
     Datos.objects.all().delete()
     del datos[:]
@@ -236,26 +231,6 @@ def cambiar_formato_hora(formato,hora_str):
     return hora
 
 
-# Poner en una variable la información de las variables a importar
-def informacion_archivo(formato):
-    clasificacion=list(Clasificacion.objects.filter(
-        for_id=formato.for_id).values())
-    i=1
-    cadena=""
-    for fila in clasificacion:
-        variable=Variable.objects.get(var_id=fila['var_id_id'])
-        if i<len(clasificacion):
-            cadena+=variable.var_nombre+","
-        else:
-            cadena+=variable.var_nombre
-        i+=1
-    return cadena
-#Información del rango de fechas a importar
-def rango_fecha(datos):
-    fecha_ini=datos[0].med_fecha
-    fecha_fin=datos[-1].med_fecha
-    cadena=str(fecha_ini)+" al "+ str(fecha_fin)
-    return cadena
 #verificar si existen los datos
 def validar_fechas(importacion):
     print "validar_fechas"+time.ctime()

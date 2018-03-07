@@ -13,10 +13,10 @@ def iniciar_lectura():
             if len(consulta)>0:
                 estacion=consulta[0].est_id
                 archivo=open(formato.for_ubicacion+formato.for_archivo)
-                datos,variables=procesar_archivo_automatico(archivo,formato,estacion,formato.mar_id)
+                datos=procesar_archivo_automatico(archivo,formato,estacion)
                 archivo.close()
                 if len(datos)>0:
-                    guardar_datos_automatico(datos,variables)
+                    guardar_datos_automatico(datos)
                     registro=open('/tmp/sedc.txt','a')
                     registro.write(time.ctime()+': Información guardada '+str(estacion.est_codigo)+str(formato.for_descripcion)+'\n')
                     registro.close()

@@ -17,10 +17,10 @@ def iniciar_lectura():
                     registro.write(time.ctime()+': Lectura Iniciada - Estacion:'+str(estacion.est_codigo)+' Formato: '+str(formato.for_descripcion)+'\n')
                     registro.close()
                     archivo=open(formato.for_ubicacion+formato.for_archivo)
-                    datos,variables=procesar_archivo_automatico(archivo,formato,estacion,formato.mar_id)
+                    datos=procesar_archivo_automatico(archivo,formato,estacion)
                     archivo.close()
                     if len(datos)>0:
-                        guardar_datos_automatico(datos,variables)
+                        guardar_datos_automatico(datos)
                         registro=open('/tmp/sedc.txt','a')
                         registro.write(time.ctime()+': Información guardada Estacion:'+str(estacion.est_codigo)+'Formato:'+str(formato.for_descripcion)+'\n')
                         registro.close()
