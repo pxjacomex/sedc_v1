@@ -34,9 +34,9 @@
         <tr>
           <td>{{ item.est_id}}</td>
           <td>{{ item.for_id}}</td>
-          <td>{{ item.imp_fecha}}</td>
-          <td>{{ item.imp_fecha_ini}}</td>
-          <td>{{ item.imp_fecha_fin}}</td>
+          <td>{{ item.imp_fecha|date:"d/m/Y H:i:s"}}</td>
+          <td>{{ item.imp_fecha_ini|date:"d/m/Y H:i:s"}}</td>
+          <td>{{ item.imp_fecha_fin|date:"d/m/Y H:i:s"}}</td>
           <td>{{ item.imp_archivo}}</td>
           <td>
             <a href="{% url 'importacion:importacion_detail' item.imp_id %}">

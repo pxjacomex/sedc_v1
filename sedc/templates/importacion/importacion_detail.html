@@ -36,6 +36,36 @@ $(document).ready(function() {
     return false;
   });
 
+  $("#btn_cancelar").click(function(){
+    $(this).attr('disabled',true);
+    enlace=$(this).attr('href')
+    $.ajax({
+      url: enlace,
+      type:'GET',
+      beforeSend: function () {
+        $("#div_informacion").hide();
+        $("#div_loading").show();
+        $("#div_error").hide();
+      },
+      success: function (data) {
+        $("#div_informacion").show();
+        $("#div_informacion").html(data)
+        $("#btn_confirmar").removeAttr('disabled');
+
+        $("#div_loading").hide();
+
+        $("#div_error").hide();
+      },
+      error: function () {
+        //$("#div_informacion").hide();
+        $("#div_loading").hide();
+        $("#div_error").show();
+        $("#btn_confirmar").removeAttr('disabled');
+      }
+    });
+    return false;
+  });
+
 
 });
 </script>
@@ -109,8 +139,8 @@ $(document).ready(function() {
       <a class="btn btn-primary" id="btn_confirmar"
       href="{% url 'importacion:importacion_guardar' importacion.imp_id %}">
       Confirmar</a>
-      <a class="btn btn-default"
-      href="{% url 'importacion:importacion_index' %}">
+      <a class="btn btn-default" id="btn_cancelar"
+      href="{% url 'importacion:importacion_delete' importacion.imp_id %}">
       Cancelar</a>
     </div>
 

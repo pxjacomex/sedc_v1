@@ -14,6 +14,7 @@ from django.db import connection
 import time
 from importacion.models import Importacion
 from sedc.settings import BASE_DIR
+from numbers import Number
 
 #consultar formatos por datalogger y estacion
 def consultar_formatos(estacion):
@@ -71,7 +72,8 @@ def construir_matriz(archivo,formato,estacion):
             j=0
             for fila in clasificacion:
                 if fila.cla_valor is not None:
-                    valor=float(valores[fila.cla_valor])
+                    #valor=float(valores[fila.cla_valor])
+                    valor=valid_number(valores[fila.cla_valor])
                     if acumulado:
                         dblValor=valor
                         if dblValor==0:
@@ -84,11 +86,13 @@ def construir_matriz(archivo,formato,estacion):
                 else:
                     valor=None
                 if fila.cla_maximo is not None:
-                    maximo=float(valores[fila.cla_maximo])
+                    #maximo=float(valores[fila.cla_maximo])
+                    maximo=valid_number(valores[fila.cla_maximo])
                 else:
                     maximo=None
                 if fila.cla_minimo is not None:
-                    minimo=float(valores[fila.cla_minimo])
+                    #minimo=float(valores[fila.cla_minimo])
+                    minimo=valid_number(valores[fila.cla_minimo])
                 else:
                     minimo=None
                 dato=Datos(var_id=fila.var_id.var_id,est_id=estacion.est_id,
@@ -310,3 +314,14 @@ def get_fechas_archivo(archivo,formato,form):
     form.instance.imp_fecha_ini=formato_fecha(formato,valores_ini,cambiar_fecha)
     form.instance.imp_fecha_fin=formato_fecha(formato,valores_fin,cambiar_fecha)
     return form
+def valid_number(val_str):
+    val_num=None
+    try:
+        if isinstance(val_str, Number):
+            val_num=float(val_str)
+        else:
+            val_str.replace(",",".")
+            val_num=float(val_str)
+    except:
+        val_num=None
+    return val_num

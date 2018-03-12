@@ -19,7 +19,7 @@ class Extension(models.Model):
 
 class Delimitador(models.Model):
     del_id=models.AutoField("Id",primary_key=True)
-    del_nombre=models.CharField("Nombre",max_length=50)
+    del_nombre=models.CharField("Nombre",max_length=100)
     del_caracter=models.CharField("Caracter",max_length=5)
     def __str__(self):
         return self.del_nombre.encode('utf-8')

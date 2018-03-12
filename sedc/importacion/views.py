@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render,redirect
+from django.urls import reverse_lazy
 from importacion.models import Importacion
 from vacios.models import Vacios
 from django.views.generic import ListView,FormView
@@ -27,7 +28,7 @@ class ImportacionDetail(LoginRequiredMixin,DetailView):
         informacion=validar_fechas(self.object)
         context['informacion']=informacion
         return context
-class ImportacionCreate(CreateView):
+class ImportacionCreate(LoginRequiredMixin,CreateView):
     model = Importacion
     fields = ['est_id','for_id','imp_sobreescribir','imp_archivo']
     def form_valid(self, form):
@@ -38,6 +39,9 @@ class ImportacionCreate(CreateView):
         context = super(ImportacionCreate, self).get_context_data(**kwargs)
         context['title'] = "Subir Archivo"
         return context
+class ImportacionDelete(LoginRequiredMixin,DeleteView):
+    model=Importacion
+    success_url = reverse_lazy('importacion:importacion_index')
 def guardar_archivo(request,imp_id):
     #sobreescribir=request.GET.get('sobreescribir',None)
     with transaction.atomic():
