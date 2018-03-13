@@ -33,9 +33,10 @@ class MedicionSearchForm(forms.Form):
         queryset=Estacion.objects.order_by('est_id').all())
     variable=forms.ModelChoiceField(
         queryset=Variable.objects.order_by('var_id').all())
-    frecuencia=forms.ChoiceField(choices=FRECUENCIA)
+
     inicio=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Inicio(dd/mm/yyyy)")
     fin=forms.DateField(input_formats=['%d/%m/%Y'],label="Fecha de Fin(dd/mm/yyyy)")
+    frecuencia=forms.ChoiceField(choices=FRECUENCIA)
     #saber si hay datos
     def exists(self,form):
         #print self.estacion
