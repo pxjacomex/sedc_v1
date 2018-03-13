@@ -36,7 +36,7 @@ class MedicionList(LoginRequiredMixin,FormView):
         form=MedicionSearchForm(self.request.POST or None)
         if form.is_valid():
             self.lista=filtrar(form)
-            self.variable=datos_variable(form)
+            self.variable=form.cleaned_data['variable']
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(MedicionList, self).get_context_data(**kwargs)

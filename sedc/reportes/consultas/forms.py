@@ -10,6 +10,7 @@ import plotly.offline as opy
 import plotly.graph_objs as go
 import datetime, calendar
 
+
 from django.db import connection
 #cursor = connection.cursor()
 
@@ -23,10 +24,10 @@ class MedicionSearchForm(forms.Form):
         return lista
     FRECUENCIA=(
         ('0','Minima'),
-        ('1','5 Minutos'),
-        ('2','Horario'),
-        ('3','Diario'),
-        ('4','Mensual'),
+        #('1','5 Minutos'),
+        #('2','Horario'),
+        #('3','Diario'),
+        #('4','Mensual'),
     )
     estacion=forms.ModelChoiceField(
         queryset=Estacion.objects.order_by('est_id').all())
@@ -64,8 +65,36 @@ class MedicionSearchForm(forms.Form):
 
         #frecuencia instantanea
         if(frecuencia==str(0)):
-            datos=list(consulta.values('med_valor','med_maximo','med_minimo'
-                ,'med_fecha','med_hora').order_by('med_fecha','med_hora'))
+            year_ini=fecha_inicio.strftime('%Y')
+            year_fin=fecha_fin.strftime('%Y')
+            var_cod=variable.var_codigo
+            if year_ini==year_fin:
+                tabla=var_cod+'.m'+year_ini
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
+                sql+='med_fecha<=\''+str(fecha_fin)+'\''
+                print sql
+                datos=list(Medicion.objects.raw(sql))
+            else:
+                range_year=range(int(year_ini),int(year_fin)+1)
+                datos=[]
+                for year in range_year:
+                    tabla=var_cod+'.m'+str(year)
+                    if str(year)==year_ini:
+                        sql='SELECT * FROM '+tabla+ ' WHERE '
+                        sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                        sql+='med_fecha>=\''+str(fecha_inicio)+'\''
+                    elif str(year)==year_fin:
+                        sql='DELETE FROM '+tabla+ ' WHERE '
+                        sql+='est_id_id='+str(est_id)+ ' and '
+                        sql+='med_fecha<=\''+str(fecha_fin)+'\''
+
+                    else:
+                        sql='DELETE FROM '+tabla+ ' WHERE '
+                        sql+='est_id_id='+str(estacion.est_id)
+                    print sql
+                    datos.append(list(Medicion.objects.raw(sql)))
         #cada 5 min
         elif(frecuencia==str(1)):
             if variable==str(1):

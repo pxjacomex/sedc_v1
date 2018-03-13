@@ -319,9 +319,12 @@ def valid_number(val_str):
     try:
         if isinstance(val_str, Number):
             val_num=float(val_str)
+        elif val_str=="":
+            val_num=None
         else:
             val_str.replace(",",".")
             val_num=float(val_str)
     except:
+        print val_num
         val_num=None
     return val_num

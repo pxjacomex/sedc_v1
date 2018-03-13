@@ -63,8 +63,8 @@ class ConsultasPeriodo(FormView):
             #self.lista=form.filtrar(form)
             self.frecuencia=form.cleaned_data["frecuencia"]
             if self.request.is_ajax():
-                if form.exists(form):
-                    self.grafico=grafico(form)
+                #if form.exists(form):
+                self.grafico=grafico(form)
                 return render(request,'reportes/consultas/grafico.html',
                     {'grafico':self.grafico,'frecuencia':self.frecuencia})
             else:
@@ -83,11 +83,10 @@ class ConsultasPeriodo(FormView):
         response['Content-Disposition'] = 'attachment; filename="reporte.csv"'
         writer = csv.writer(response)
         if frecuencia=="0":
-            writer.writerow(['med_fecha', 'med_hora','med_valor','med_maximo','med_minimo'])
+            writer.writerow(['med_fecha', 'med_valor','med_maximo','med_minimo'])
             for fila in datos:
-                writer.writerow([fila.get('med_fecha'), fila.get('med_hora')
-                    , fila.get('med_valor'), fila.get('med_maximo'),
-                    fila.get('minimo')])
+                writer.writerow([fila.med_fecha,fila.med_valor,fila.med_maximo,
+                    fila.med_minimo])
         elif frecuencia=="1":
             writer.writerow(['fecha','valor'])
             for fila in datos:

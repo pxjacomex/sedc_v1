@@ -10,88 +10,120 @@ import plotly.graph_objs as go
 import datetime, calendar
 
 from django.db import connection
-
+import time
 
 def grafico(form):
+    print time.ctime()
     estacion=form.cleaned_data['estacion']
     variable=form.cleaned_data['variable']
     fecha_inicio=form.cleaned_data['inicio']
     fecha_fin=form.cleaned_data['fin']
     frecuencia=form.cleaned_data['frecuencia']
-    #filtrar los datos por estacion, variable y rango de fechas
-    consulta=(Medicion.objects.filter(est_id=estacion.est_id)
-    .filter(var_id=variable.var_id).filter(med_fecha__range=[fecha_inicio,fecha_fin]))
+    div=""
     #frecuencia instantanea
     if(frecuencia==str(0)):
-        valores,maximos,minimos,tiempo=datos_instantaneos(consulta,variable)
+        valores,maximos,minimos,tiempo=datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin)
     #frecuencia 5 minutos
     elif(form.cleaned_data['frecuencia']==str(1)):
         valores,maximos,minimos,tiempo=datos_5minutos(estacion,variable,fecha_inicio,fecha_fin)
     #frecuencia horaria
-    elif(form.cleaned_data['frecuencia']==str(2)):
-        valores,maximos,minimos,tiempo=datos_horarios(consulta,variable)
+    #elif(form.cleaned_data['frecuencia']==str(2)):
+
     #frecuencia diaria
-    elif(form.cleaned_data['frecuencia']==str(3)):
-        valores,maximos,minimos,tiempo=datos_diarios(consulta,variable)
+    #elif(form.cleaned_data['frecuencia']==str(3)):
+
     #frecuencia mensual
-    elif(form.cleaned_data['frecuencia']==str(4)):
-        valores,maximos,minimos,tiempo=datos_mensuales(consulta,variable)
+    #elif(form.cleaned_data['frecuencia']==str(4)):
+
     else:
-        valores,maximos,minimos,tiempo=datos_instantaneos(consulta,variable)
-    trace0 = go.Scatter(
-        x = tiempo,
-        y = maximos,
-        name = 'Max',
-        mode = 'lines',
-        line = dict(
-            color = ('rgb(205, 12, 24)'),
-            )
-    )
-    trace1 = go.Scatter(
-        x = tiempo,
-        y = minimos,
-        name = 'Min',
-        mode = 'lines',
-        line = dict(
-            color = ('rgb(50, 205, 50)'),
-            )
-    )
-    trace2 = go.Scatter(
-        x = tiempo,
-        y = valores,
-        name = 'Media',
-        mode = 'lines',
-        line = dict(
-            color = ('rgb(22, 96, 167)'),
-            )
-    )
-    data = go.Data([trace0, trace1, trace2])
-    layout = go.Layout(
-        title = variable.var_nombre +\
-        " " + str(titulo_frecuencia(frecuencia))+\
-        " " + estacion.est_codigo,
-        yaxis = dict(title = variable.var_nombre + \
-                     str(" (") + titulo_unidad(variable)+ str(")"))
+        valores,maximos,minimos,tiempo=datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin)
+    if len(valores)>0:
+        trace0 = go.Scatter(
+            x = tiempo,
+            y = maximos,
+            name = 'Max',
+            mode = 'lines',
+            line = dict(
+                color = ('rgb(205, 12, 24)'),
+                )
         )
-    figure = go.Figure(data=data, layout=layout)
-    div = opy.plot(figure, auto_open=False, output_type='div')
+        trace1 = go.Scatter(
+            x = tiempo,
+            y = minimos,
+            name = 'Min',
+            mode = 'lines',
+            line = dict(
+                color = ('rgb(50, 205, 50)'),
+                )
+        )
+        trace2 = go.Scatter(
+            x = tiempo,
+            y = valores,
+            name = 'Media',
+            mode = 'lines',
+            line = dict(
+                color = ('rgb(22, 96, 167)'),
+                )
+        )
+        data = go.Data([trace0, trace1, trace2])
+        layout = go.Layout(
+            title = variable.var_nombre +\
+            " " + str(titulo_frecuencia(frecuencia))+\
+            " " + estacion.est_codigo,
+            yaxis = dict(title = variable.var_nombre + \
+                         str(" (") + titulo_unidad(variable)+ str(")")),
+            xaxis = dict(range = [str(fecha_inicio),str(fecha_fin)])
+            )
+        figure = go.Figure(data=data, layout=layout)
+        div = opy.plot(figure, auto_open=False, output_type='div')
     return div
-def datos_instantaneos(consulta,variable):
-    consulta=list(consulta.values('med_valor','med_maximo','med_minimo'
-        ,'med_fecha').order_by('med_fecha'))
+def datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin):
+    year_ini=fecha_inicio.strftime('%Y')
+    year_fin=fecha_fin.strftime('%Y')
+    var_cod=variable.var_codigo
+    if year_ini==year_fin:
+        tabla=var_cod+'.m'+year_ini
+        sql='SELECT * FROM '+tabla+ ' WHERE '
+        sql+='est_id_id='+str(estacion.est_id)+ ' and '
+        sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
+        sql+='med_fecha<=\''+str(fecha_fin)+'\' order by med_fecha'
+        consulta=list(Medicion.objects.raw(sql))
+    else:
+        range_year=range(int(year_ini),int(year_fin)+1)
+        consulta=[]
+        for year in range_year:
+            tabla=var_cod+'.m'+str(year)
+            if str(year)==year_ini:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                sql+='med_fecha>=\''+str(fecha_inicio)+'\' order by med_fecha'
+            elif str(year)==year_fin:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                sql+='med_fecha<=\''+str(fecha_fin)+' 23:59:59 \' order by med_fecha'
+            else:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+' order by med_fecha'
+            consulta.extend(list(Medicion.objects.raw(sql)))
     valor=[]
     maximo=[]
     minimo=[]
     frecuencia=[]
     for fila in consulta:
-        if fila.get('med_valor') is not None:
-            valor.append(fila.get('med_valor'))
-        if fila.get('med_maximo') is not None:
-            maximo.append(fila.get('med_maximo'))
-        if fila.get('med_minimo') is not None:
-            minimo.append(fila.get('med_minimo'))
+        if fila.med_valor is not None:
+            valor.append(fila.med_valor)
+        else:
+            valor.append(None)
+        if fila.med_maximo is not None:
+            maximo.append(fila.med_maximo)
+        else:
+            maximo.append(None)
+        if fila.med_minimo is not None:
+            minimo.append(fila.med_minimo)
+        else:
+            minimo.append(None)
         #frecuencia.append(datetime.datetime.combine(fila['med_fecha'],fila['med_hora']))
-        frecuencia.append(fila.get('med_fecha'))
+        frecuencia.append(fila.med_fecha)
     return valor,maximo,minimo,frecuencia
 def datos_5minutos(estacion,variable,fecha_inicio,fecha_fin):
     cursor = connection.cursor()
