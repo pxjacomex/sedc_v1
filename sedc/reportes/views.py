@@ -88,7 +88,7 @@ class ConsultasPeriodo(FormView):
                 writer.writerow([fila.med_fecha,fila.med_valor,fila.med_maximo,
                     fila.med_minimo])
         elif frecuencia=="1":
-            writer.writerow(['fecha','valor'])
+            writer.writerow(['fecha','valor','maximo','minimo'])
             for fila in datos:
                 writer.writerow([fila.get('interval_alias'), fila.get('valor'),
                     fila.get('maximo'),fila.get('minimo')])

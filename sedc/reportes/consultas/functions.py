@@ -8,7 +8,7 @@ from django.db.models.functions import (
 import plotly.offline as opy
 import plotly.graph_objs as go
 import datetime, calendar
-
+from datetime import timedelta
 from django.db import connection
 import time
 
@@ -38,6 +38,7 @@ def grafico(form):
     else:
         valores,maximos,minimos,tiempo=datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin)
     if len(valores)>0:
+        print "llego"
         trace0 = go.Scatter(
             x = tiempo,
             y = maximos,
@@ -65,14 +66,14 @@ def grafico(form):
                 color = ('rgb(22, 96, 167)'),
                 )
         )
-        data = go.Data([trace0, trace1, trace2])
+        data = go.Data([trace0,trace1,trace2])
         layout = go.Layout(
             title = variable.var_nombre +\
             " " + str(titulo_frecuencia(frecuencia))+\
             " " + estacion.est_codigo,
             yaxis = dict(title = variable.var_nombre + \
                          str(" (") + titulo_unidad(variable)+ str(")")),
-            xaxis = dict(range = [str(fecha_inicio),str(fecha_fin)])
+            #xaxis = dict(range = [str(fecha_inicio),str(fecha_fin)])
             )
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
@@ -126,42 +127,85 @@ def datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin):
         frecuencia.append(fila.med_fecha)
     return valor,maximo,minimo,frecuencia
 def datos_5minutos(estacion,variable,fecha_inicio,fecha_fin):
+    year_ini=fecha_inicio.strftime('%Y')
+    year_fin=fecha_fin.strftime('%Y')
+    var_cod=variable.var_codigo
     cursor = connection.cursor()
-    if variable.var_id==1:
-        cursor.execute("SELECT sum(med_valor) as valor, \
-            to_timestamp(floor((extract('epoch' \
-            from med_fecha) / 300 )) * 300)\
-            AT TIME ZONE 'UTC' as interval_alias\
-            FROM medicion_medicion\
-            where est_id_id=%s and var_id_id=%s and \
-            med_fecha>=%s and med_fecha<=%s\
-            GROUP BY interval_alias\
-            order by interval_alias",[estacion.est_id,variable.var_id,fecha_inicio,fecha_fin])
+    if year_ini==year_fin:
+        tabla=var_cod+'.m'+year_ini
+        if variable.var_id==1:
+            sql='SELECT sum(med_valor) as valor, '
+            sql+='to_timestamp(floor((extract(\'epoch\' '
+            sql+='from med_fecha) / 300 )) * 300)'
+            sql+='AT TIME ZONE \'UTC5\' as interval_alias '
+            sql+='FROM '+tabla+ ' WHERE '
+            sql+='est_id_id='+str(estacion.est_id)+ ' and '
+            sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
+            sql+='med_fecha<=\''+str(fecha_fin)+'\''
+            sql+='GROUP BY interval_alias '
+            sql+='ORDER BY interval_alias'
+        else:
+            sql='SELECT avg(med_valor) as valor, '
+            sql+='to_timestamp(floor((extract(\'epoch\' '
+            sql+='from med_fecha) / 300 )) * 300)'
+            sql+='AT TIME ZONE \'UTC5\' as interval_alias '
+            sql+='FROM '+tabla+ ' WHERE '
+            sql+='est_id_id='+str(estacion.est_id)+ ' and '
+            sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
+            sql+='med_fecha<=\''+str(fecha_fin)+'\' 23:59:59'
+            sql+='GROUP BY interval_alias '
+            sql+='ORDER BY interval_alias'
+        cursor.execute(sql)
     else:
-        cursor.execute("SELECT avg(med_valor) as valor, \
-            avg(med_maximo)as maximo,avg(med_minimo) as minimo,\
-            to_timestamp(floor((extract('epoch' \
-            from med_fecha) / 300 )) * 300)\
-            AT TIME ZONE 'UTC' as interval_alias\
-            FROM medicion_medicion\
-            where est_id_id=%s and var_id_id=%s and \
-            med_fecha>=%s and med_fecha<=%s\
-            GROUP BY interval_alias\
-            order by interval_alias",[estacion.est_id,variable.var_id,fecha_inicio,fecha_fin])
+        range_year=range(int(year_ini),int(year_fin)+1)
+        consulta=[]
+        for year in range_year:
+            tabla=var_cod+'.m'+str(year)
+            if str(year)==year_ini:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                sql+='med_fecha>=\''+str(fecha_inicio)+'\' order by med_fecha'
+            elif str(year)==year_fin:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                sql+='med_fecha<=\''+str(fecha_fin)+' 23:59:59 \' order by med_fecha'
+            else:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+' order by med_fecha'
+            consulta.extend(list(Medicion.objects.raw(sql)))
     datos=dictfetchall(cursor)
     valor=[]
     maximo=[]
     minimo=[]
     frecuencia=[]
+    intervalo=timedelta(minutes=5)
+    fecha=datetime.datetime.combine(fecha_inicio, datetime.datetime.min.time())
     for fila in datos:
-        if fila.get('valor') is not None:
-            valor.append(fila.get('valor'))
-        if fila.get('maximo') is not None:
-            maximo.append(fila.get('maximo'))
-        if fila.get('minimo') is not None:
-            minimo.append(fila.get('minimo'))
-        frecuencia.append(fila.get('interval_alias'))
+        fecha_datos=fila.get('interval_alias')
+        #print "fechadatos",fecha_datos
+        while True:
+            if fecha_datos==fecha:
+                valor.append(fila.get('valor'))
+                maximo.append(fila.get('maximo'))
+                minimo.append(fila.get('minimo'))
+                frecuencia.append(fila.get('interval_alias'))
+                fecha+=intervalo
+                break
+            else:
+                valor.append(0)
+                maximo.append(None)
+                minimo.append(None)
+                frecuencia.append(fecha)
+
+                fecha+=intervalo
+                #print "fecha",fecha
+        '''valor.append(fila.get('valor'))
+        maximo.append(fila.get('maximo'))
+        minimo.append(fila.get('minimo'))
+        frecuencia.append(fila.get('interval_alias'))'''
     cursor.close()
+    for tim,val in zip(frecuencia,valor):
+        print tim,val
     return valor,maximo,minimo,frecuencia
 
 
