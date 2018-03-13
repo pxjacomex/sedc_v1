@@ -74,15 +74,16 @@ def construir_matriz(archivo,formato,estacion):
                 if fila.cla_valor is not None:
                     #valor=float(valores[fila.cla_valor])
                     valor=valid_number(valores[fila.cla_valor])
-                    if acumulado:
-                        dblValor=valor
-                        if dblValor==0:
-                            UltimoValor=0
-                        ValorReal=dblValor-UltimoValor
-                        if ValorReal<0:
-                            ValorReal=dblValor
-                        UltimoValor=dblValor
-                        valor=ValorReal
+                    if valor!=None:
+                        if acumulado:
+                            dblValor=valor
+                            if dblValor==0:
+                                UltimoValor=0
+                            ValorReal=dblValor-UltimoValor
+                            if ValorReal<0:
+                                ValorReal=dblValor
+                            UltimoValor=dblValor
+                            valor=ValorReal
                 else:
                     valor=None
                 if fila.cla_maximo is not None:
