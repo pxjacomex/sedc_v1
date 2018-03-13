@@ -75,8 +75,9 @@ def construir_matriz(archivo,formato,estacion):
                     #valor=float(valores[fila.cla_valor])
                     valor=valid_number(valores[fila.cla_valor])
                     if valor!=None:
-                        if acumulado:
+                        if acumulado and fila.var_id.var_id==1:
                             dblValor=valor
+                            print dblValor
                             if dblValor==0:
                                 UltimoValor=0
                             ValorReal=dblValor-UltimoValor
@@ -275,7 +276,7 @@ def ultima_fecha(est_id,var_cod,year):
     tabla=var_cod+'.m'+year
     while True:
         sql='SELECT med_id,med_fecha FROM '+ tabla
-        sql+=' WHERE est_id_id='+est_id+' and med_estado=true '
+        sql+=' WHERE est_id_id='+est_id+' and med_estado=true or med_estado is null '
         sql+=' ORDER BY med_fecha DESC LIMIT 1'
         print sql
         consulta=list(Medicion.objects.raw(sql))
@@ -296,7 +297,7 @@ def consulta_fecha(fec_ini,est_id,tabla):
     print "consulta_fecha: "+time.ctime()
     sql='SELECT med_id FROM '+ tabla
     sql+=' WHERE med_fecha>= \''+fec_ini+'\' '
-    sql+='and est_id_id='+est_id+ ' and med_estado=true LIMIT 1'
+    sql+='and est_id_id='+est_id+ ' and med_estado=true or med_estado is null LIMIT 1'
     print sql
     consulta=list(Medicion.objects.raw(sql))
     if len(consulta)>0:

@@ -35,14 +35,14 @@ def filtrar(form):
                 sql+='med_fecha>=\''+str(inicio)+'\' order by med_fecha'
             elif str(year)==year_fin:
                 sql='SELECT * FROM '+tabla+ ' WHERE '
-                sql+='est_id_id='+str(est_id)+ ' and '
+                sql+='est_id_id='+str(estacion.est_id)+ ' and '
                 sql+='med_fecha<=\''+str(fin)+'\' order by med_fecha'
 
             else:
                 sql='SELECT * FROM '+tabla+ ' WHERE '
                 sql+='est_id_id='+str(estacion.est_id)+' order by med_fecha'
             print sql
-            consulta.append(list(Medicion.objects.raw(sql)))
+            consulta.extend(list(Medicion.objects.raw(sql)))
 
     #parametros para la resta consecutiva
     i=0
