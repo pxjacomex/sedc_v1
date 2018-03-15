@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from .models import Estacion, Registro
+from .models import Estacion#, Registro
 from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -56,6 +56,7 @@ class EstacionList(LoginRequiredMixin,ListView,FormView):
     def get_context_data(self, **kwargs):
         context = super(EstacionList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
+        print page
         context.update(pagination(self.object_list,page,10))
         context["cadena"]=self.cadena
         return context
@@ -76,6 +77,7 @@ class EstacionDelete(LoginRequiredMixin,DeleteView):
     success_url = reverse_lazy('estacion:estacion_index')
 
 #Registro
+'''
 class RegistroCreate(LoginRequiredMixin,CreateView):
     model=Registro
     fields = ['est_id','reg_fecha','reg_archivo','reg_ubicacion']
@@ -112,7 +114,7 @@ class RegistroUpdate(LoginRequiredMixin,UpdateView):
 
 class RegistroDelete(LoginRequiredMixin,DeleteView):
     model=Registro
-    success_url = reverse_lazy('estacion:registro_index')
+    success_url = reverse_lazy('estacion:registro_index')'''
 
 def pagination(lista,page,num_reg):
     #lista=model.objects.all()

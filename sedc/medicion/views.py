@@ -8,7 +8,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
 from medicion.forms import MedicionSearchForm,FilterDeleteForm
-from medicion.functions import filtrar,consultar,eliminar,consultar_objeto,modificar_medicion,eliminar_medicion
+from medicion.functions import (filtrar,consultar,eliminar,
+    consultar_objeto,modificar_medicion,eliminar_medicion,
+    guardar_log)
 from django.db import connection
 from django.contrib.auth.mixins import LoginRequiredMixin
 #Medicion views
@@ -119,6 +121,7 @@ class MedicionUpdate(LoginRequiredMixin,UpdateView):
     def post(self, request, *args, **kwargs):
         modificar_medicion(kwargs,request.POST)
         self.object=consultar_objeto(kwargs)
+        guardar_log(accion="Modificar",medicion=self.object,user=request.user)
         return self.render_to_response(self.get_context_data(**kwargs))
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
@@ -141,6 +144,7 @@ class MedicionDelete(LoginRequiredMixin,UpdateView):
     def post(self, request, *args, **kwargs):
         eliminar_medicion(kwargs,request.POST)
         self.object=consultar_objeto(kwargs)
+        guardar_log(accion="Eliminar",medicion=self.object,user=request.user)
         return self.render_to_response(self.get_context_data(**kwargs))
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context

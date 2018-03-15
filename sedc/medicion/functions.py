@@ -2,11 +2,10 @@
 from estacion.models import Estacion
 from variable.models import Variable
 from medicion.models import Medicion
-from django.db.models import Max, Min, Avg, Count,Sum
-from django.db.models.functions import (
-    ExtractYear,ExtractMonth,ExtractDay,ExtractHour)
+from registro.models import LogMedicion
 from datetime import datetime,timedelta,date
 from django.db import connection
+from django.contrib.auth.models import User
 
 def filtrar(form):
     estacion=form.cleaned_data['estacion']
@@ -182,6 +181,25 @@ def eliminar_medicion(kwargs,data):
     print sql
     with connection.cursor() as cursor:
         cursor.execute(sql)
+#funcion para registrar los cambios en la tabla medicion
+def guardar_log(accion,medicion,user):
+    logmedicion=LogMedicion()
+    logmedicion.medicion=medicion.med_id
+    logmedicion.variable=medicion.var_id
+    logmedicion.estacion=medicion.est_id
+    logmedicion.marca=medicion.mar_id
+    logmedicion.med_fecha=medicion.med_fecha
+    logmedicion.med_valor=medicion.med_valor
+    logmedicion.med_maximo=medicion.med_maximo
+    logmedicion.med_minimo=medicion.med_minimo
+    logmedicion.usuario=user
+    logmedicion.log_accion=accion
+    if accion=="Modificar":
+        logmedicion.log_mensaje="Valores Modificados"
+    else:
+        logmedicion.log_mensaje="Valores Eliminados"
+    logmedicion.save()
+
 def consultar(form):
     est_id=str(form.cleaned_data['estacion'])
     var_id=str(form.cleaned_data['variable'])

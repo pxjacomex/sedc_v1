@@ -9,7 +9,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 # Create your models here.
-
+#frecuencia de registro de la estación. 
 class Frecuencia(models.Model):
     fre_id=models.AutoField("Id",primary_key=True)
     est_id=models.ForeignKey(

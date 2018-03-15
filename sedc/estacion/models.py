@@ -26,8 +26,10 @@ class Estacion(models.Model):
         return self.est_codigo.encode('utf-8')
     def get_absolute_url(self):
         return reverse('estacion:estacion_detail', kwargs={'pk': self.pk})
+    class Meta:
+        ordering=('est_id',)
 
-class Registro(models.Model):
+'''class Registro(models.Model):
     reg_id=models.AutoField("Id",primary_key=True)
     est_id=models.ForeignKey(
     	Estacion,
@@ -39,4 +41,4 @@ class Registro(models.Model):
     reg_archivo=models.CharField("Archivo",max_length=50, null=True)
     reg_ubicacion=models.CharField("Ubicación",max_length=200, null=True)
     def get_absolute_url(self):
-        return reverse('estacion:registro_detail', kwargs={'pk': self.pk})
+        return reverse('estacion:registro_detail', kwargs={'pk': self.pk})'''
