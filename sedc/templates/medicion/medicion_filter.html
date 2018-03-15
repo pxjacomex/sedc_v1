@@ -29,12 +29,12 @@ $( function() {
   $( "#div_delete" ).dialog({
     autoOpen: false,
     width:400,
-    height:550
+    height:350
   });
 });
 function actualizar_lista(){
   $.ajax({
-    url: '/medicion/',
+    url: '/medicion/filter/',
     data: $("#form_filter").serialize(),
     type:'POST',
     beforeSend: function () {
@@ -93,6 +93,7 @@ function desactivar_espera(){
 </div>
 <br>
 <div id="div_informacion" class="row">
+
 </div>
 <div id="div_edit" title="Modificar Información">
 </div>

@@ -276,7 +276,7 @@ def ultima_fecha(est_id,var_cod,year):
     tabla=var_cod+'.m'+year
     while True:
         sql='SELECT med_id,med_fecha FROM '+ tabla
-        sql+=' WHERE est_id_id='+est_id+' and med_estado=true or med_estado is null '
+        sql+=' WHERE est_id_id='+est_id+' and med_estado is not False '
         sql+=' ORDER BY med_fecha DESC LIMIT 1'
         print sql
         consulta=list(Medicion.objects.raw(sql))
@@ -297,7 +297,7 @@ def consulta_fecha(fec_ini,est_id,tabla):
     print "consulta_fecha: "+time.ctime()
     sql='SELECT med_id FROM '+ tabla
     sql+=' WHERE med_fecha>= \''+fec_ini+'\' '
-    sql+='and est_id_id='+est_id+ ' and med_estado=true or med_estado is null LIMIT 1'
+    sql+='and est_id_id='+est_id+ ' and med_estado is not False LIMIT 1'
     print sql
     consulta=list(Medicion.objects.raw(sql))
     if len(consulta)>0:

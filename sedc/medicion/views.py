@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
 from medicion.forms import MedicionSearchForm,FilterDeleteForm
-from medicion.functions import filtrar,datos_variable,consultar,eliminar
+from medicion.functions import filtrar,consultar,eliminar,consultar_objeto,modificar_medicion,eliminar_medicion
 from django.db import connection
 from django.contrib.auth.mixins import LoginRequiredMixin
 #Medicion views
@@ -24,7 +24,27 @@ class MedicionCreate(LoginRequiredMixin,CreateView):
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
         return context
-
+#filtro para la validación de Datos Crudos
+class MedicionFilter(LoginRequiredMixin,FormView):
+    template_name='medicion/medicion_filter.html'
+    form_class=MedicionSearchForm
+    success_url='/medicion/filter/'
+    lista=[]
+    variable=""
+    def post(self, request, *args, **kwargs):
+        form=MedicionSearchForm(self.request.POST or None)
+        if form.is_valid():
+            if self.request.is_ajax():
+                self.lista=filtrar(form)
+                self.variable=form.cleaned_data['variable']
+                return render(request,'medicion/medicion_list.html',
+                    {'lista':self.lista,'variable':self.variable})
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        context = super(MedicionFilter, self).get_context_data(**kwargs)
+        context['lista']=self.lista
+        context['variable']=self.variable
+        return context
 #Lista de datos crudos
 class MedicionList(LoginRequiredMixin,FormView):
     template_name='medicion/medicion_list.html'
@@ -59,11 +79,7 @@ class ListDelete(LoginRequiredMixin,FormView):
         context = super(ListDelete, self).get_context_data(**kwargs)
         context['lista']=self.lista
         return context
-#filtro de Datos Crudos
-class MedicionFilter(LoginRequiredMixin,FormView):
-    template_name='medicion/medicion_filter.html'
-    form_class=MedicionSearchForm
-    success_url='/medicion/filter/'
+
 
 
 #filtro para eliminar los datos
@@ -96,31 +112,17 @@ class MedicionUpdate(LoginRequiredMixin,UpdateView):
         #print kwargs.get('pk')
         med_id=kwargs.get('pk')
         med_fecha=kwargs.get('fecha')
-        med_hora=kwargs.get('hora')
-        obj_medicion=Medicion.objects.filter(med_fecha=med_fecha)\
-        .filter(med_hora=med_hora).get(med_id=med_id)
-        self.object=obj_medicion
-        self.url="/medicion/"+med_id+"/"+med_fecha+"/"+med_hora+"/"
+        var_id=kwargs.get('var_id')
+        self.object=consultar_objeto(kwargs)
+        self.url="/medicion/"+med_id+"/"+med_fecha+"/"+var_id+"/"
         return self.render_to_response(self.get_context_data(**kwargs))
     def post(self, request, *args, **kwargs):
-        med_id=kwargs.get('pk')
-        med_fecha=kwargs.get('fecha')
-        med_hora=kwargs.get('hora')
-        obj_medicion=Medicion.objects.filter(med_fecha=med_fecha)\
-        .filter(med_hora=med_hora).get(med_id=med_id)
-        data=request.POST
-        with connection.cursor() as cursor:
-            cursor.execute("UPDATE medicion_medicion SET med_valor = %s, \
-            med_maximo=%s, med_minimo=%s  WHERE med_fecha = %s \
-            and med_hora=%s and med_id=%s",[data.get('med_valor'),
-            data.get('med_maximo'),data.get('med_minimo'),med_fecha,med_hora,
-            med_id])
-        self.object=obj_medicion
+        modificar_medicion(kwargs,request.POST)
+        self.object=consultar_objeto(kwargs)
         return self.render_to_response(self.get_context_data(**kwargs))
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(MedicionUpdate, self).get_context_data(**kwargs)
-        context['title'] = "Modificar"
         context['url']=self.url
         return context
 
@@ -132,28 +134,16 @@ class MedicionDelete(LoginRequiredMixin,UpdateView):
     def get(self, request, *args, **kwargs):
         med_id=kwargs.get('pk')
         med_fecha=kwargs.get('fecha')
-        med_hora=kwargs.get('hora')
-        obj_medicion=Medicion.objects.filter(med_fecha=med_fecha)\
-        .filter(med_hora=med_hora).get(med_id=med_id)
-        self.object=obj_medicion
-        self.url="/medicion/delete/"+med_id+"/"+med_fecha+"/"+med_hora+"/"
+        var_id=kwargs.get('var_id')
+        self.object=consultar_objeto(kwargs)
+        self.url="/medicion/delete/"+med_id+"/"+med_fecha+"/"+var_id+"/"
         return self.render_to_response(self.get_context_data(**kwargs))
     def post(self, request, *args, **kwargs):
-        med_id=kwargs.get('pk')
-        med_fecha=kwargs.get('fecha')
-        med_hora=kwargs.get('hora')
-        obj_medicion=Medicion.objects.filter(med_fecha=med_fecha)\
-        .filter(med_hora=med_hora).get(med_id=med_id)
-        data=request.POST
-        with connection.cursor() as cursor:
-            cursor.execute("UPDATE medicion_medicion SET med_estado = false \
-            WHERE med_fecha = %s \
-            and med_hora=%s and med_id=%s",[med_fecha,med_hora,med_id])
-        self.object=obj_medicion
+        eliminar_medicion(kwargs,request.POST)
+        self.object=consultar_objeto(kwargs)
         return self.render_to_response(self.get_context_data(**kwargs))
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(MedicionDelete, self).get_context_data(**kwargs)
-        context['title'] = "Modificar"
         context['url']=self.url
         return context

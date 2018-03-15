@@ -27,6 +27,7 @@ class AnuarioForm(ModelForm):
         ('2011','2011'),
         ('2012','2012'),
         ('2016','2016'),
+        ('2017','2017'),
     )
     lista=[]
     #estacion = forms.ChoiceField(required=False,choices=ESTACION,label='Estación')
