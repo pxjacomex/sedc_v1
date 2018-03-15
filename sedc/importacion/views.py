@@ -30,7 +30,7 @@ class ImportacionDetail(LoginRequiredMixin,DetailView):
         return context
 class ImportacionCreate(LoginRequiredMixin,CreateView):
     model = Importacion
-    fields = ['est_id','for_id','imp_sobreescribir','imp_archivo']
+    fields = ['est_id','for_id','imp_archivo']
     def form_valid(self, form):
         archivo=self.request.FILES['imp_archivo']
         form=get_fechas_archivo(archivo,form.instance.for_id,form)
