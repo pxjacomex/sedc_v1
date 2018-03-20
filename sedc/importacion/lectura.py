@@ -2,7 +2,6 @@
 from formato.models import Formato,Asociacion
 from importacion.functions import (consultar_formatos,guardar_datos,
     procesar_archivo_automatico,guardar_vacios,guardar_datos_automatico)
-from importacion.forms import UploadFileForm
 import daemon
 import time
 def iniciar_lectura():

@@ -13,7 +13,6 @@ from django.db import connection
 import time
 
 def grafico(form):
-    print time.ctime()
     estacion=form.cleaned_data['estacion']
     variable=form.cleaned_data['variable']
     fecha_inicio=form.cleaned_data['inicio']
@@ -38,7 +37,6 @@ def grafico(form):
     else:
         valores,maximos,minimos,tiempo=datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin)
     if len(valores)>0:
-        print "llego"
         trace0 = go.Scatter(
             x = tiempo,
             y = maximos,
@@ -204,8 +202,6 @@ def datos_5minutos(estacion,variable,fecha_inicio,fecha_fin):
         minimo.append(fila.get('minimo'))
         frecuencia.append(fila.get('interval_alias'))'''
     cursor.close()
-    for tim,val in zip(frecuencia,valor):
-        print tim,val
     return valor,maximo,minimo,frecuencia
 
 
@@ -348,7 +344,6 @@ def datos_horarios_json(est_id,var_id,fec_ini,fec_fin):
         for fila in consulta:
             fecha_str = (str(fila.get('year'))+":"+
                 str(fila.get('month'))+":"+str(fila.get('day')))
-            print fecha_str
             fecha = datetime.datetime.strptime(fecha_str,'%Y:%m:%d').date()
             hora=datetime.time(fila.get('hour'))
             fecha_hora=datetime.datetime.combine(fecha,hora)

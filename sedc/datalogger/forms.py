@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from django.forms import ModelForm
+from django import forms
 from datalogger.models import Datalogger
 from marca.models import Marca
 
-class DataloggerSearchForm(ModelForm):
-    class Meta:
-        model=Datalogger
-        fields=['mar_id','dat_modelo']
-    lista=[]
+class DataloggerSearchForm(forms.Form):
+    marca=forms.ModelChoiceField(required=False,
+        queryset=Marca.objects.order_by('mar_id').all())
 
     def filtrar(self,form):
         mar_id=form.cleaned_data['mar_id']

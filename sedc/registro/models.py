@@ -10,7 +10,6 @@ from django import forms
 from django.forms import ModelForm
 
 # Create your models here.
-
 class LogMedicion(models.Model):
     log_id=models.AutoField("Id",primary_key=True)
     medicion=models.IntegerField("medicion")
@@ -49,8 +48,39 @@ class LogMedicion(models.Model):
     log_mensaje=models.TextField("Mensaje")
     class Meta:
         ordering=('log_fecha',)
-class LogMedicionSearchForm(ModelForm):
-    class Meta:
-        model=LogMedicion
-        fields=['variable','estacion']
+class LogMedicionSearchForm(forms.Form):
+    estacion = forms.ModelChoiceField(required=False,
+        queryset=Estacion.objects.order_by('est_id').all(),label='Estación')
+    variable = forms.ModelChoiceField(required=False,
+        queryset=Variable.objects.order_by('var_id').all(),label='Variable')
     lista=[]
+    def filtrar(self,data):
+        if isinstance(data,LogMedicionSearchForm):
+            variable=data.cleaned_data['variable']
+            estacion=data.cleaned_data['estacion']
+        else:
+            if data.get('var_id')== 'None':
+                variable=None
+            else:
+                variable=Variable.objects.get(var_id=int(data.get('var_id')))
+            if data.get('est_id')== 'None':
+                estacion=None
+            else:
+                estacion=Estacion.objects.get(est_id=int(data.get('est_id')))
+        if variable and estacion:
+            lista=LogMedicion.objects.filter(
+                variable=variable
+            ).filter(
+                estacion=estacion
+            )
+        elif variable is None and estacion:
+            lista=LogMedicion.objects.filter(
+                estacion=estacion
+            )
+        elif estacion is None and variable:
+            lista=LogMedicion.objects.filter(
+                variable=variable
+            )
+        else:
+            lista=LogMedicion.objects.all()
+        return lista

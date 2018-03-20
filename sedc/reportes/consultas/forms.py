@@ -15,18 +15,11 @@ from django.db import connection
 #cursor = connection.cursor()
 
 class MedicionSearchForm(forms.Form):
-    def lista_year():
-        lista=()
-        periodos=Medicion.objects.annotate(year=ExtractYear('med_fecha')).values('year').distinct('year')
-        for item in periodos:
-            i=((item.get('year'),item.get('year')),)
-            lista=lista+i
-        return lista
     FRECUENCIA=(
         ('0','Minima'),
         ('1','5 Minutos'),
         #('2','Horario'),
-        #('3','Diario'),
+        ('3','Diario'),
         #('4','Mensual'),
     )
     estacion=forms.ModelChoiceField(
@@ -63,12 +56,11 @@ class MedicionSearchForm(forms.Form):
         #filtrar los datos por estacion, variable y rango de fechas
         consulta=(Medicion.objects.filter(est_id=estacion)
         .filter(var_id=variable).filter(med_fecha__range=[fecha_inicio,fecha_fin]))
-
+        year_ini=fecha_inicio.strftime('%Y')
+        year_fin=fecha_fin.strftime('%Y')
+        var_cod=variable.var_codigo
         #frecuencia instantanea
         if(frecuencia==str(0)):
-            year_ini=fecha_inicio.strftime('%Y')
-            year_fin=fecha_fin.strftime('%Y')
-            var_cod=variable.var_codigo
             if year_ini==year_fin:
                 tabla=var_cod+'.m'+year_ini
                 sql='SELECT * FROM '+tabla+ ' WHERE '
@@ -164,20 +156,49 @@ class MedicionSearchForm(forms.Form):
 
         #frecuencia diaria
         elif(frecuencia==str(3)):
-            consulta=consulta.annotate(
-                year=ExtractYear('med_fecha'),
-                month=ExtractMonth('med_fecha'),
-                day=ExtractDay('med_fecha')
-            ).values('year','month','day')
-            if(variable==str(1)):
-                datos=list(consulta.annotate(valor=Sum('med_valor')).
-                values('valor','year','month','day').
-                order_by('year','month','day'))
+            if year_ini==year_fin:
+                tabla=var_cod+'.m'+year_ini
+                if variable.var_id==1:
+                    sql='SELECT sum(med_valor) as valor, '
+                    sql+='to_timestamp(floor((extract(\'epoch\' '
+                    sql+='from med_fecha) / 300 )) * 300)'
+                    sql+='AT TIME ZONE \'UTC5\' as interval_alias '
+                    sql+='FROM '+tabla+ ' WHERE '
+                    sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                    sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
+                    sql+='med_fecha<=\''+str(fecha_fin)+'\''
+                    sql+='GROUP BY interval_alias '
+                    sql+='ORDER BY interval_alias'
+                else:
+                    sql='SELECT avg(med_valor) as valor, '
+                    sql+='to_timestamp(floor((extract(\'epoch\' '
+                    sql+='from med_fecha) / 300 )) * 300)'
+                    sql+='AT TIME ZONE \'UTC5\' as interval_alias '
+                    sql+='FROM '+tabla+ ' WHERE '
+                    sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                    sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
+                    sql+='med_fecha<=\''+str(fecha_fin)+'\' 23:59:59'
+                    sql+='GROUP BY interval_alias '
+                    sql+='ORDER BY interval_alias'
+                cursor.execute(sql)
             else:
-                datos=list(consulta.annotate(valor=Avg('med_valor'),
-                maximo=Max('med_maximo'),minimo=Min('med_minimo')).
-                values('valor','maximo','minimo','year','month','day').
-                order_by('year','month','day'))
+                range_year=range(int(year_ini),int(year_fin)+1)
+                consulta=[]
+                for year in range_year:
+                    tabla=var_cod+'.m'+str(year)
+                    if str(year)==year_ini:
+                        sql='SELECT * FROM '+tabla+ ' WHERE '
+                        sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                        sql+='med_fecha>=\''+str(fecha_inicio)+'\' order by med_fecha'
+                    elif str(year)==year_fin:
+                        sql='SELECT * FROM '+tabla+ ' WHERE '
+                        sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                        sql+='med_fecha<=\''+str(fecha_fin)+' 23:59:59 \' order by med_fecha'
+                    else:
+                        sql='SELECT * FROM '+tabla+ ' WHERE '
+                        sql+='est_id_id='+str(estacion.est_id)+' order by med_fecha'
+                    consulta.extend(list(Medicion.objects.raw(sql)))
+            datos=self.dictfetchall(cursor)
 
         #frecuencia mensual
         else:

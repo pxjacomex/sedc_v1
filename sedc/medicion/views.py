@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.shortcuts import render
-from .models import Medicion
+from medicion.models import Medicion
+from formato.models import Clasificacion
+from importacion.models import Importacion
 from django.views.generic import ListView,FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -10,7 +12,7 @@ from django.urls import reverse_lazy
 from medicion.forms import MedicionSearchForm,FilterDeleteForm
 from medicion.functions import (filtrar,consultar,eliminar,
     consultar_objeto,modificar_medicion,eliminar_medicion,
-    guardar_log)
+    guardar_log,grafico)
 from django.db import connection
 from django.contrib.auth.mixins import LoginRequiredMixin
 #Medicion views
@@ -66,11 +68,11 @@ class MedicionList(LoginRequiredMixin,FormView):
         context['variable']=self.variable
         return context
 #Clase para filtrar datos para la vista delete
-class ListDelete(LoginRequiredMixin,FormView):
+class ListDelete(LoginRequiredMixin,FormView,ListView):
     template_name='medicion/list_delete.html'
     form_class=FilterDeleteForm
     success_url='/medicion/listdelete/'
-    lista=[]
+    model=Medicion
     variable=""
     def post(self, request, *args, **kwargs):
         form=FilterDeleteForm(self.request.POST or None)
@@ -101,10 +103,6 @@ class FilterDelete(LoginRequiredMixin,FormView):
         context = super(FilterDelete, self).get_context_data(**kwargs)
         context['mensaje']=self.mensaje
         return context
-
-
-class MedicionDetail(LoginRequiredMixin,DetailView):
-    model=Medicion
 
 class MedicionUpdate(LoginRequiredMixin,UpdateView):
     model=Medicion
@@ -151,3 +149,39 @@ class MedicionDelete(LoginRequiredMixin,UpdateView):
         context = super(MedicionDelete, self).get_context_data(**kwargs)
         context['url']=self.url
         return context
+
+class MedicionImportacion(LoginRequiredMixin,FormView):
+    model=Medicion
+    template_name='medicion/medicion_importacion.html'
+    form_class=MedicionSearchForm
+    def get(self,request,*args,**kwargs):
+        imp_id=kwargs.get('imp_id')
+        importacion=Importacion.objects.get(imp_id=imp_id)
+        clasificacion=Clasificacion.objects.filter(for_id=importacion.for_id)
+        context=[]
+        for fila in clasificacion:
+            data={
+                'estacion':importacion.est_id.est_id,
+                'variable':fila.var_id.var_id,
+                'inicio':importacion.imp_fecha_ini.strftime('%d/%m/%Y'),
+                'fin':importacion.imp_fecha_fin.strftime('%d/%m/%Y')
+            }
+            form=MedicionSearchForm(data)
+            if form.is_valid():
+                #context[str(fila.var_id.var_codigo)]=consultar(form)
+                consulta=consultar(form)
+                obj_informacion=Informacion()
+                obj_informacion.nombre=fila.var_id.var_nombre
+                obj_informacion.lista=consulta
+                obj_informacion.grafico=grafico(consulta,fila.var_id,importacion.est_id)
+                context.append(obj_informacion)
+            else:
+                context=[]
+        return self.render_to_response(self.get_context_data(informacion=context,form=form))
+    def get_context_data(self, **kwargs):
+        context = super(MedicionImportacion, self).get_context_data(**kwargs)
+        return context
+class Informacion():
+    nombre=""
+    lista=""
+    grafico=""

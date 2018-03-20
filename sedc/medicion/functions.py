@@ -7,6 +7,9 @@ from datetime import datetime,timedelta,date
 from django.db import connection
 from django.contrib.auth.models import User
 
+import plotly.offline as opy
+import plotly.graph_objs as go
+
 def filtrar(form):
     estacion=form.cleaned_data['estacion']
     variable=form.cleaned_data['variable']
@@ -168,14 +171,6 @@ def eliminar_medicion(kwargs,data):
     year=fecha_split[0]
     var_cod=variable.var_codigo
     tabla=var_cod+'.m'+year
-    if str(data.get('med_maximo'))=='':
-        med_maximo='Null'
-    else:
-        med_maximo=str(data.get('med_maximo'))
-    if str(data.get('med_minimo'))=='':
-        med_minimo='Null'
-    else:
-        med_minimo=str(data.get('med_maximo'))
     sql="UPDATE "+tabla+" SET med_estado = false "
     sql+="WHERE med_id = "+str(med_id)
     print sql
@@ -201,18 +196,44 @@ def guardar_log(accion,medicion,user):
     logmedicion.save()
 
 def consultar(form):
-    est_id=str(form.cleaned_data['estacion'])
-    var_id=str(form.cleaned_data['variable'])
-    fec_ini=str(form.cleaned_data['fec_ini'])+str(" ")+str(form.cleaned_data['hor_ini'])
-    fec_fin=str(form.cleaned_data['fec_fin'])+str(" ")+str(form.cleaned_data['hor_fin'])
-    consulta=list(Medicion.objects.raw(
-        'SELECT med_id,med_fecha,med_valor,med_maximo, med_minimo\
-        FROM  medicion_medicion WHERE med_fecha>=%s \
-        and med_fecha<=%s and est_id_id=%s\
-        and var_id_id=%s',
-        [fec_ini,fec_fin,est_id,var_id]
-        )
-    )
+    estacion=form.cleaned_data['estacion']
+    variable=form.cleaned_data['variable']
+    inicio=form.cleaned_data['inicio']
+    fin=form.cleaned_data['fin']
+    year_ini=inicio.strftime('%Y')
+    year_fin=fin.strftime('%Y')
+    var_cod=variable.var_codigo
+    if year_ini==year_fin:
+        tabla=var_cod+'.m'+year_ini
+        sql='SELECT * FROM '+tabla+ ' WHERE '
+        sql+='est_id_id='+str(estacion.est_id)+ ' and '
+        sql+='med_fecha>=\''+str(inicio)+'\' and '
+        sql+='med_fecha<=\''+str(fin)+'\' and med_estado is not False '
+        sql+='order by med_fecha'
+        print sql
+        consulta=list(Medicion.objects.raw(sql))
+    else:
+        range_year=range(int(year_ini),int(year_fin)+1)
+        consulta=[]
+        for year in range_year:
+            tabla=var_cod+'.m'+str(year)
+            if str(year)==year_ini:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                sql+='med_fecha>=\''+str(inicio)+'\' med_estado is not False '
+                sql+='order by med_fecha'
+            elif str(year)==year_fin:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                sql+='med_fecha<=\''+str(fin)+'\' med_estado is not False '
+                sql+='order by med_fecha'
+
+            else:
+                sql='SELECT * FROM '+tabla+ ' WHERE '
+                sql+='est_id_id='+str(estacion.est_id)+' med_estado is not False '
+                sql+='order by med_fecha'
+            print sql
+            consulta.extend(list(Medicion.objects.raw(sql)))
 
     return consulta
 def eliminar(form):
@@ -228,6 +249,74 @@ def eliminar(form):
         and med_fecha<=%s",
         [est_id,var_id,fec_ini,fec_fin] )
     return "Proceso Realizado"
+def grafico(consulta,variable,estacion):
+    valor=[]
+    maximo=[]
+    minimo=[]
+    frecuencia=[]
+    for fila in consulta:
+        valor.append(fila.med_valor)
+        maximo.append(fila.med_maximo)
+        minimo.append(fila.med_minimo)
+        frecuencia.append(fila.med_fecha)
+    if variable.var_id==1:
+        trace = go.Bar(
+            x=frecuencia,
+            y=valor,
+            name='Precipitacion (mm)'
+        )
+        data = go.Data([trace])
+    elif variable.var_id in [6,8,9,10,11]:
+        trace0 = go.Scatter(
+            x = frecuencia,
+            y = maximo,
+            name = 'Max',
+            mode = 'lines',
+            line = dict(
+                color = ('rgb(205, 12, 24)'),
+                )
+        )
+        trace1 = go.Scatter(
+            x = frecuencia,
+            y = minimo,
+            name = 'Min',
+            mode = 'lines',
+            line = dict(
+                color = ('rgb(50, 205, 50)'),
+                )
+        )
+        trace2 = go.Scatter(
+            x = frecuencia,
+            y = valor,
+            name = 'Media',
+            mode = 'lines',
+            line = dict(
+                color = ('rgb(22, 96, 167)'),
+                )
+        )
+        data = go.Data([trace0,trace1,trace2])
+    else:
+        trace = go.Scatter(
+            x = frecuencia,
+            y = valor,
+            name = 'Valor',
+            mode = 'lines',
+            line = dict(
+                color = ('rgb(205, 12, 24)'),
+                )
+        )
+        data = go.Data([trace])
+    layout = go.Layout(
+        title = estacion.est_codigo+" "+estacion.est_nombre,
+        yaxis = dict(title = variable.var_nombre),
+        )
+    figure = go.Figure(data=data, layout=layout)
+    div = opy.plot(figure, auto_open=False, output_type='div')
+    return div
+def titulo_unidad(variable):
+    uni=list(Unidad.objects.filter(uni_id=variable.uni_id.uni_id).values())
+    return uni[0].get('uni_sigla')
+
 class Analisis(object):
     med_id=0
     var_id=0

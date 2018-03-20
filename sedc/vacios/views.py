@@ -32,20 +32,21 @@ class VaciosList(LoginRequiredMixin,ListView,FormView):
     template_name='vacios/vacios_list.html'
     form_class=VaciosSearchForm
     #parametros propios
-    cadena=str("")
-    def get(self, request, *args, **kwargs):
-        form=VaciosSearchForm(self.request.GET or None)
-        self.object_list=Vacios.objects.all()
-        if form.is_valid():
+    def post(self, request, *args, **kwargs):
+        form=VaciosSearchForm(self.request.POST or None)
+        page=kwargs.get('page')
+        if form.is_valid() and self.request.is_ajax():
             self.object_list=form.filtrar(form)
-            self.cadena=form.cadena(form)
-        return self.render_to_response(self.get_context_data(form=form))
-
+        else:
+            self.object_list=Vacios.objects.all()
+        context = super(VaciosList, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list,page,10))
+        #return self.render_to_response(self.get_context_data(form=form))
+        return render(request,'vacios/vacios_table.html',context)
     def get_context_data(self, **kwargs):
         context = super(VaciosList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
         context.update(pagination(self.object_list,page,10))
-        context["cadena"]=self.cadena
         return context
 
 class VaciosDetail(LoginRequiredMixin,DetailView):
@@ -67,19 +68,30 @@ class VaciosDelete(LoginRequiredMixin,DeleteView):
 def pagination(lista,page,num_reg):
     #lista=model.objects.all()
     paginator = Paginator(lista, num_reg)
+    print paginator.num_pages
+    factor=paginator.num_pages//2
+    if factor>5:
+        factor=5
+    print factor
     if page is None:
         page=1
     else:
         page=int(page)
     if page == 1:
         start=1
-        last=start+1
+        last=factor
     elif page == paginator.num_pages:
         last=paginator.num_pages
         start=last-1
+    elif (page-factor)<0:
+        start=1
+        last=factor
+    elif page>(paginator.num_pages-factor):
+        start=page-factor
+        last=paginator.num_pages
     else:
-        start=page-1
-        last=page+1
+        start=page-factor//2
+        last=page+factor//2
     context={
         'first':'1',
         'last':paginator.num_pages,

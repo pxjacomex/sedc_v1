@@ -48,6 +48,7 @@ class EstacionList(LoginRequiredMixin,ListView,FormView):
     def get(self, request, *args, **kwargs):
         form=EstacionSearchForm(self.request.GET or None)
         self.object_list=Estacion.objects.all()
+
         if form.is_valid():
             self.object_list=form.filtrar(form)
             self.cadena=form.cadena(form)

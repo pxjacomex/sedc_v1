@@ -8,10 +8,10 @@
 $(document).ready(function() {
   $("#btn_confirmar").click(function(){
     $(this).attr('disabled',true);
-    enlace=$(this).attr('href')
     $.ajax({
-      url: enlace,
-      type:'GET',
+      url: $("#form_confirm").attr('action'),
+      type:'POST',
+      data:$("#form_confirm").serialize(),
       beforeSend: function () {
         $("#div_informacion").hide();
         $("#div_loading").show();
@@ -104,7 +104,6 @@ $(document).ready(function() {
         <thead>
           <tr><th colspan="3">Información de Importación</th></tr>
           <tr>
-
             <th>Variable</th>
             <th>Sobreescribir</th>
             <th>Ultima Fecha de Información</th>
@@ -134,7 +133,32 @@ $(document).ready(function() {
 
   </div>
   <p><small>*Cuando se sobreescribe la información se toma las fechas inicial y final del archivo</small></p>
+
   <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-8">
+      <div class="panel panel-default">
+        <div class="panel-heading">Registro de Carga de Información</div>
+        <div class="panel-body">
+          <form id="form_confirm" method="post" class="form" action="{% url 'importacion:importacion_detail' importacion.imp_id %}">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% if existe_vacio%}
+            <div class="help-block">*Por favor registre el motivo del vacio de información</div>
+            {% endif%}
+            <button id="btn_confirmar" type="button" class="btn btn-default btn-primary">
+              Confirmar
+            </button>
+            <a class="btn btn-default" id="btn_cancelar"
+            href="{% url 'importacion:importacion_delete' importacion.imp_id %}">
+            Cancelar</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--<div class="row">
     <div class="form-group">
       <a class="btn btn-primary" id="btn_confirmar"
       href="{% url 'importacion:importacion_guardar' importacion.imp_id %}">
@@ -144,7 +168,7 @@ $(document).ready(function() {
       Cancelar</a>
     </div>
 
-  </div>
+  </div>-->
 </div>
 
 

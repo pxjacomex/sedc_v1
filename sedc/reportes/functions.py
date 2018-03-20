@@ -139,7 +139,6 @@ def datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin,parametro):
     return valor,frecuencia
 
 def datos_minutos(estacion,variable,fecha_inicio,fecha_fin,parametro,temporalidad):
-    print temporalidad
     cursor = connection.cursor()
     if variable==str(1):
         cursor.execute("SELECT sum(med_valor) as valor, \

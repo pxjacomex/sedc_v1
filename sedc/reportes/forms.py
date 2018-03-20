@@ -8,13 +8,6 @@ from variable.models import Variable, Unidad
 from cruce.models import Cruce
 
 class AnuarioForm(ModelForm):
-    '''def lista_estaciones():
-        lista = ()
-        estaciones = Estacion.objects.all()
-        for item in estaciones:
-            fila = ((str(item.est_id),item.est_nombre),)
-            lista = lista + fila
-        return lista'''
     class Meta:
         model=Estacion
         fields=['est_id']
@@ -33,7 +26,6 @@ class AnuarioForm(ModelForm):
         ('2017','2017'),
     )
     lista=[]
-    #estacion = forms.ChoiceField(required=False,choices=ESTACION,label='Estación')
     estacion = forms.ModelChoiceField(required=False,
         queryset=Estacion.objects.order_by('est_id').all(),label='Estación')
     anio = forms.ChoiceField(required=False,choices=YEAR,label='Año')

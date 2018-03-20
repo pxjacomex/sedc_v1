@@ -1,44 +1,34 @@
 # -*- coding: utf-8 -*-
 
-from django.forms import ModelForm
+#from django.forms import ModelForm
+from django import forms
 from vacios.models import Vacios
 from estacion.models import Estacion
 from formato.models import Variable
 
-class VaciosSearchForm(ModelForm):
-    class Meta:
-        model=Vacios
-        fields=['est_id','var_id']
+class VaciosSearchForm(forms.Form):
+    estacion=forms.ModelChoiceField(required=False,
+        queryset=Estacion.objects.order_by('est_id').all())
+    variable=forms.ModelChoiceField(required=False,
+        queryset=Variable.objects.order_by('var_id').all())
     lista=[]
     def filtrar(self,form):
-        var_id=form.cleaned_data['var_id']
-        est_id=form.cleaned_data['est_id']
-        if var_id and est_id:
+        variable=form.cleaned_data['variable']
+        estacion=form.cleaned_data['estacion']
+        if variable and estacion:
             lista=Vacios.objects.filter(
-                var_id=var_id
+                var_id=variable
             ).filter(
-                est_id=est_id
+                est_id=estacion
             )
-        elif var_id is None and est_id:
+        elif variable is None and estacion:
             lista=Vacios.objects.filter(
-                est_id=est_id
+                est_id=estacion
             )
-        elif est_id is None and var_id:
+        elif estacion is None and variable:
             lista=Vacios.objects.filter(
-                var_id=var_id
+                var_id=variable
             )
         else:
             lista=Vacios.objects.all()
         return lista
-
-    def cadena(self,form):
-        keys=form.cleaned_data.keys()
-        string=str("?")
-        i=1
-        for item in keys:
-            if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item])+"&"
-            else:
-                string+=item+"="+str(form.cleaned_data[item])
-            i+=1
-        return string
