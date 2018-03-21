@@ -18,9 +18,9 @@ class MedicionSearchForm(forms.Form):
     FRECUENCIA=(
         ('0','Minima'),
         ('1','5 Minutos'),
-        #('2','Horario'),
+        ('2','Horario'),
         ('3','Diario'),
-        #('4','Mensual'),
+        ('4','Mensual'),
     )
     estacion=forms.ModelChoiceField(
         queryset=Estacion.objects.order_by('est_id').all())
@@ -156,50 +156,153 @@ class MedicionSearchForm(forms.Form):
 
         #frecuencia diaria
         elif(frecuencia==str(3)):
+            cursor = connection.cursor()
+            datos=[]
             if year_ini==year_fin:
                 tabla=var_cod+'.m'+year_ini
                 if variable.var_id==1:
-                    sql='SELECT sum(med_valor) as valor, '
-                    sql+='to_timestamp(floor((extract(\'epoch\' '
-                    sql+='from med_fecha) / 300 )) * 300)'
-                    sql+='AT TIME ZONE \'UTC5\' as interval_alias '
+                    sql='SELECT '
+                    sql+='date_part(\'month\', med_fecha) as mes,'
+                    sql+='date_part(\'day\',med_fecha) as dia, '
+                    sql+='sum(med_valor) as valor '
                     sql+='FROM '+tabla+ ' WHERE '
                     sql+='est_id_id='+str(estacion.est_id)+ ' and '
                     sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
                     sql+='med_fecha<=\''+str(fecha_fin)+'\''
-                    sql+='GROUP BY interval_alias '
-                    sql+='ORDER BY interval_alias'
-                else:
-                    sql='SELECT avg(med_valor) as valor, '
-                    sql+='to_timestamp(floor((extract(\'epoch\' '
-                    sql+='from med_fecha) / 300 )) * 300)'
-                    sql+='AT TIME ZONE \'UTC5\' as interval_alias '
+                    sql+='GROUP BY mes, dia '
+                    sql+='ORDER BY mes, dia'
+                elif variable.var_id in [2,3,6,8,9,10,11]:
+                    sql='SELECT '
+                    sql+='date_part(\'month\', med_fecha) as mes,'
+                    sql+='date_part(\'day\',med_fecha) as dia, '
+                    sql+='avg(med_valor) as valor, '
+                    sql+='max(med_maximo) as maximo, '
+                    sql+='max(med_minimo) as minimo '
                     sql+='FROM '+tabla+ ' WHERE '
                     sql+='est_id_id='+str(estacion.est_id)+ ' and '
                     sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
-                    sql+='med_fecha<=\''+str(fecha_fin)+'\' 23:59:59'
-                    sql+='GROUP BY interval_alias '
-                    sql+='ORDER BY interval_alias'
+                    sql+='med_fecha<=\''+str(fecha_fin)+'\''
+                    sql+='GROUP BY mes, dia '
+                    sql+='ORDER BY mes, dia'
+                else:
+                    sql='SELECT '
+                    sql+='date_part(\'month\', med_fecha) as mes,'
+                    sql+='date_part(\'day\',med_fecha) as dia, '
+                    sql+='avg(med_valor) as valor '
+                    sql+='FROM '+tabla+ ' WHERE '
+                    sql+='est_id_id='+str(estacion.est_id)+' and '
+                    sql+='med_fecha>=\''+str(fecha_inicio)+'\' and '
+                    sql+='med_fecha<=\''+str(fecha_fin)+'\''
+                    sql+='GROUP BY mes, dia '
+                    sql+='ORDER BY mes, dia'
                 cursor.execute(sql)
+                datos=self.dictfetchall(cursor)
             else:
                 range_year=range(int(year_ini),int(year_fin)+1)
-                consulta=[]
                 for year in range_year:
                     tabla=var_cod+'.m'+str(year)
                     if str(year)==year_ini:
-                        sql='SELECT * FROM '+tabla+ ' WHERE '
-                        sql+='est_id_id='+str(estacion.est_id)+ ' and '
-                        sql+='med_fecha>=\''+str(fecha_inicio)+'\' order by med_fecha'
+                        if variable.var_id==1:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='sum(med_valor) as valor '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                            sql+='med_fecha>=\''+str(fecha_inicio)+'\' '
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        elif variable.var_id in [2,3,6,8,9,10,11]:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='avg(med_valor) as valor, '
+                            sql+='max(med_maximo) as maximo, '
+                            sql+='max(med_minimo) as minimo '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                            sql+='med_fecha>=\''+str(fecha_inicio)+'\' '
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        else:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='avg(med_valor) as valor '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)+' and '
+                            sql+='med_fecha>=\''+str(fecha_inicio)+'\' '
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        cursor.execute(sql)
+                        datos.extend(self.dictfetchall(cursor))
                     elif str(year)==year_fin:
-                        sql='SELECT * FROM '+tabla+ ' WHERE '
-                        sql+='est_id_id='+str(estacion.est_id)+ ' and '
-                        sql+='med_fecha<=\''+str(fecha_fin)+' 23:59:59 \' order by med_fecha'
+                        if variable.var_id==1:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='sum(med_valor) as valor '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                            sql+='med_fecha<=\''+str(fecha_fin)+'\''
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        elif variable.var_id in [2,3,6,8,9,10,11]:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='avg(med_valor) as valor, '
+                            sql+='max(med_maximo) as maximo, '
+                            sql+='max(med_minimo) as minimo '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)+ ' and '
+                            sql+='med_fecha<=\''+str(fecha_fin)+'\''
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        else:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='avg(med_valor) as valor '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)+' and '
+                            sql+='med_fecha<=\''+str(fecha_fin)+'\''
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        cursor.execute(sql)
+                        datos.extend(self.dictfetchall(cursor))
                     else:
-                        sql='SELECT * FROM '+tabla+ ' WHERE '
-                        sql+='est_id_id='+str(estacion.est_id)+' order by med_fecha'
-                    consulta.extend(list(Medicion.objects.raw(sql)))
-            datos=self.dictfetchall(cursor)
-
+                        if variable.var_id==1:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='sum(med_valor) as valor '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        elif variable.var_id in [2,3,6,8,9,10,11]:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='avg(med_valor) as valor, '
+                            sql+='max(med_maximo) as maximo, '
+                            sql+='max(med_minimo) as minimo '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        else:
+                            sql='SELECT '
+                            sql+='date_part(\'month\', med_fecha) as mes,'
+                            sql+='date_part(\'day\',med_fecha) as dia, '
+                            sql+='avg(med_valor) as valor '
+                            sql+='FROM '+tabla+ ' WHERE '
+                            sql+='est_id_id='+str(estacion.est_id)
+                            sql+='GROUP BY mes, dia '
+                            sql+='ORDER BY mes, dia'
+                        cursor.execute(sql)
+                        datos.extend(self.dictfetchall(cursor))
         #frecuencia mensual
         else:
             consulta=consulta.annotate(
