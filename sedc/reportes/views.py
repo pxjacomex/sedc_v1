@@ -6,7 +6,8 @@ import csv
 from django.http import HttpResponse
 #from django.template import loader, Context
 from consultas.functions import (grafico,
-    datos_horarios_json,datos_diarios,datos_5minutos,datos_horarios)
+    datos_horarios_json,datos_diarios,datos_5minutos,datos_horarios,
+    datos_instantaneos)
 from reportes.functions import filtrar,comparar
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -83,7 +84,7 @@ class ConsultasPeriodo(FormView):
         response['Content-Disposition'] = 'attachment; filename="reporte.csv"'
         writer = csv.writer(response)
         if frecuencia=="0":
-            valores,maximos,minimos,tiempo=datos_5minutos(estacion,variable,fecha_inicio,fecha_fin)
+            valores,maximos,minimos,tiempo=datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin)
             writer.writerow(['fecha','valor','maximo','minimo'])
             for valor,maximo,minimo,fecha in zip(valores,maximos,minimos,tiempo):
                 writer.writerow([fecha,valor,maximo,minimo])
