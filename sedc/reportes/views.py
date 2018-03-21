@@ -1,14 +1,14 @@
 from django.views.generic.base import TemplateView
 from django.views.generic import FormView
-from reportes.forms import AnuarioForm, ComparacionForm
-from consultas.forms import MedicionSearchForm
+from reportes.forms import AnuarioForm
+from consultas.forms import MedicionSearchForm,ComparacionForm,VariableForm
 import csv
 from django.http import HttpResponse
 #from django.template import loader, Context
 from consultas.functions import (grafico,
     datos_horarios_json,datos_diarios,datos_5minutos,datos_horarios,
-    datos_instantaneos)
-from reportes.functions import filtrar,comparar
+    datos_instantaneos,datos_mensuales)
+from reportes.functions import filtrar,comparar,comparar_variable
 from django.shortcuts import render
 from django.http import JsonResponse
 
@@ -26,6 +26,7 @@ class ReportesAnuario(FormView):
         context = super(ReportesAnuario, self).get_context_data(**kwargs)
         context.update(self.lista)
         return context
+#vista para comparar tres estaciones una sola variable
 class ComparacionValores(FormView):
     template_name='reportes/comparacion_reporte.html'
     form_class=ComparacionForm
@@ -39,13 +40,28 @@ class ComparacionValores(FormView):
                 self.grafico=comparar(form)
                 return render(request,'reportes/consultas/grafico.html',
                     {'grafico':self.grafico})
-            else:
-                self.lista=form.filtrar(form)
-                return self.export_datos(self.lista,self.frecuencia)
 
         return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(ComparacionValores, self).get_context_data(**kwargs)
+        context.update({'grafico':self.grafico})
+        return context
+#vista para comparar 2 estaciones y dos Variables
+class ComparacionVariables(FormView):
+    template_name='reportes/comparacion_variable.html'
+    form_class=VariableForm
+    success_url='/reportes/compararvariable/'
+    grafico=[]
+    def post(self, request, *args, **kwargs):
+        form=VariableForm(self.request.POST or None)
+        if form.is_valid():
+            if self.request.is_ajax():
+                self.grafico=comparar_variable(form)
+                return render(request,'reportes/consultas/grafico.html',
+                    {'grafico':self.grafico})
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        context = super(ComparacionVariables, self).get_context_data(**kwargs)
         context.update({'grafico':self.grafico})
         return context
 #consultas por periodo y frecuencia horaria, diaria y mensual
@@ -85,29 +101,18 @@ class ConsultasPeriodo(FormView):
         writer = csv.writer(response)
         if frecuencia=="0":
             valores,maximos,minimos,tiempo=datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin)
-            writer.writerow(['fecha','valor','maximo','minimo'])
-            for valor,maximo,minimo,fecha in zip(valores,maximos,minimos,tiempo):
-                writer.writerow([fecha,valor,maximo,minimo])
         elif frecuencia=="1":
             valores,maximos,minimos,tiempo=datos_5minutos(estacion,variable,fecha_inicio,fecha_fin)
-            writer.writerow(['fecha','valor','maximo','minimo'])
-            for valor,maximo,minimo,fecha in zip(valores,maximos,minimos,tiempo):
-                writer.writerow([fecha,valor,maximo,minimo])
         elif frecuencia=="2":
             valores,maximos,minimos,tiempo=datos_horarios(estacion,variable,fecha_inicio,fecha_fin)
-            writer.writerow(['fecha','valor','maximo','minimo'])
-            for valor,maximo,minimo,fecha in zip(valores,maximos,minimos,tiempo):
-                writer.writerow([fecha,valor,maximo,minimo])
         elif frecuencia=="3":
             valores,maximos,minimos,tiempo=datos_diarios(estacion,variable,fecha_inicio,fecha_fin)
-            writer.writerow(['fecha','valor','maximo','minimo'])
-            for valor,maximo,minimo,fecha in zip(valores,maximos,minimos,tiempo):
-                writer.writerow([fecha,valor,maximo,minimo])
         else:
-            valores,maximos,minimos,tiempo=datos_diarios(estacion,variable,fecha_inicio,fecha_fin)
-            writer.writerow(['fecha','valor','maximo','minimo'])
-            for valor,maximo,minimo,fecha in zip(valores,maximos,minimos,tiempo):
-                writer.writerow([fecha,valor,maximo,minimo])
+            valores,maximos,minimos,tiempo=datos_mensuales(estacion,variable,fecha_inicio,fecha_fin)
+
+        writer.writerow(['fecha','valor','maximo','minimo'])
+        for valor,maximo,minimo,fecha in zip(valores,maximos,minimos,tiempo):
+            writer.writerow([fecha,valor,maximo,minimo])
         return response
 #web service para consultar datos horarios
 def datos_json_horarios(request,est_id,var_id,fec_ini,fec_fin):

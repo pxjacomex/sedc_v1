@@ -24,16 +24,16 @@ def grafico(form):
     if(frecuencia==str(0)):
         valores,maximos,minimos,tiempo=datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin)
     #frecuencia 5 minutos
-    elif(form.cleaned_data['frecuencia']==str(1)):
+    elif(frecuencia==str(1)):
         valores,maximos,minimos,tiempo=datos_5minutos(estacion,variable,fecha_inicio,fecha_fin)
     #frecuencia horaria
-    elif(form.cleaned_data['frecuencia']==str(2)):
+    elif(frecuencia==str(2)):
         valores,maximos,minimos,tiempo=datos_horarios(estacion,variable,fecha_inicio,fecha_fin)
     #frecuencia diaria
-    elif(form.cleaned_data['frecuencia']==str(3)):
+    elif(frecuencia==str(3)):
         valores,maximos,minimos,tiempo=datos_diarios(estacion,variable,fecha_inicio,fecha_fin)
     #frecuencia mensual
-    elif(form.cleaned_data['frecuencia']==str(4)):
+    elif(frecuencia==str(4)):
         valores,maximos,minimos,tiempo=datos_mensuales(estacion,variable,fecha_inicio,fecha_fin)
     else:
         valores,maximos,minimos,tiempo=datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin)
@@ -91,9 +91,30 @@ def grafico(form):
             " " + str(titulo_frecuencia(frecuencia))+\
             " " + estacion.est_codigo,
             yaxis = dict(title = variable.var_nombre + \
-                         str(" (") + titulo_unidad(variable)+ str(")")),
-            #xaxis = dict(range = [str(fecha_inicio),str(fecha_fin)])
+                         str(" (") + variable.uni_id.uni_sigla+ str(")")),
+            xaxis=dict(
+                rangeselector=dict(
+                    buttons=list([
+                        dict(count=1,
+                             label='1m',
+                             step='month',
+                             stepmode='backward'),
+                        dict(count=6,
+                             label='6m',
+                             step='month',
+                             stepmode='backward'),
+                        dict(count=1,
+                            label='1y',
+                            step='year',
+                            stepmode='backward'),
+                        dict(step='all')
+                    ])
+                ),
+                rangeslider=dict(),
+                type='date'
             )
+        )
+
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
     return div
@@ -308,17 +329,17 @@ def datos_5minutos(estacion,variable,fecha_inicio,fecha_fin):
     for dia in range(int_dias):
         if item<num_datos:
             fecha_datos=datos[item].get('interval_alias')
-        if fecha_datos==fecha:
-            valor.append(datos[item].get('valor'))
-            maximo.append(datos[item].get('maximo'))
-            minimo.append(datos[item].get('minimo'))
-            frecuencia.append(fecha_datos)
-            fecha+=intervalo
-            item+=1
-        else:
-            valor.append(None)
-            maximo.append(None)
-            minimo.append(None)
+            if fecha_datos==fecha:
+                valor.append(datos[item].get('valor'))
+                maximo.append(datos[item].get('maximo'))
+                minimo.append(datos[item].get('minimo'))
+                #frecuencia.append(fecha_datos)
+                #fecha+=intervalo
+                item+=1
+            else:
+                valor.append(None)
+                maximo.append(None)
+                minimo.append(None)
             frecuencia.append(fecha)
             fecha+=intervalo
     cursor.close()
@@ -512,32 +533,19 @@ def datos_horarios(estacion,variable,fecha_inicio,fecha_fin):
                 str(int(datos[item].get('hora'))))
             fecha_datos = datetime.strptime(fecha_str,'%Y-%m-%d %H')
             #fecha_datos=datetime.combine(fecha,hora)
-        if fecha_datos==fecha:
-            valor.append(datos[item].get('valor'))
-            maximo.append(datos[item].get('maximo'))
-            minimo.append(datos[item].get('minimo'))
-            frecuencia.append(fecha_datos)
-            fecha+=intervalo
-            item+=1
-        else:
-            valor.append(None)
-            maximo.append(None)
-            minimo.append(None)
+            if fecha_datos==fecha:
+                valor.append(datos[item].get('valor'))
+                maximo.append(datos[item].get('maximo'))
+                minimo.append(datos[item].get('minimo'))
+                #frecuencia.append(fecha_datos)
+                #fecha+=intervalo
+                item+=1
+            else:
+                valor.append(None)
+                maximo.append(None)
+                minimo.append(None)
             frecuencia.append(fecha)
             fecha+=intervalo
-    '''for fila in consulta:
-        if fila.get('valor') is not None:
-            valor.append(fila.get('valor'))
-        if fila.get('maximo') is not None:
-            maximo.append(fila.get('maximo'))
-        if fila.get('minimo') is not None:
-            minimo.append(fila.get('minimo'))
-        fecha_str = (str(fila.get('year'))+":"+
-            str(fila.get('month'))+":"+str(fila.get('day')))
-        fecha = datetime.strptime(fecha_str,'%Y:%m:%d').date()
-        hora=datetime.time(fila.get('hour'))
-        fecha_hora=datetime.combine(fecha,hora)
-        frecuencia.append(fecha_hora)'''
     return valor,maximo,minimo,frecuencia
 def datos_diarios(estacion,variable,fecha_inicio,fecha_fin):
     year_ini=fecha_inicio.strftime('%Y')
@@ -714,17 +722,17 @@ def datos_diarios(estacion,variable,fecha_inicio,fecha_fin):
                 str(int(datos[item].get('mes')))+"-"+
                 str(int(datos[item].get('dia'))))
             fecha_datos = datetime.strptime(fecha_str,'%Y-%m-%d').date()
-        if fecha_datos==fecha:
-            valor.append(datos[item].get('valor'))
-            maximo.append(datos[item].get('maximo'))
-            minimo.append(datos[item].get('minimo'))
-            frecuencia.append(fecha_datos)
-            fecha+=intervalo
-            item+=1
-        else:
-            valor.append(None)
-            maximo.append(None)
-            minimo.append(None)
+            if fecha_datos==fecha:
+                valor.append(datos[item].get('valor'))
+                maximo.append(datos[item].get('maximo'))
+                minimo.append(datos[item].get('minimo'))
+                #frecuencia.append(fecha_datos)
+                #fecha+=intervalo
+                item+=1
+            else:
+                valor.append(None)
+                maximo.append(None)
+                minimo.append(None)
             frecuencia.append(fecha)
             fecha+=intervalo
     return valor,maximo,minimo,frecuencia
@@ -892,21 +900,19 @@ def datos_mensuales(estacion,variable,fecha_inicio,fecha_fin):
             fecha_str = (str(int(datos[item].get('anio')))+"-"+
                 str(int(datos[item].get('mes'))))
             fecha_datos = datetime.strptime(fecha_str,'%Y-%m').date()
-        if fecha==fecha_datos:
-            valor.append(datos[item].get('valor'))
-            maximo.append(datos[item].get('maximo'))
-            minimo.append(datos[item].get('minimo'))
-            #frecuencia.append(fecha_datos)
-            item+=1
-        else:
-            valor.append(None)
-            maximo.append(None)
-            minimo.append(None)
-            #frecuencia.append(fecha)
-        fecha_str = str(calendar.month_abbr[fecha.month])+" "+str(fecha.year)
-        frecuencia.append(fecha_str)
-        intervalo=dias_mes(fecha.month,fecha.year)
-        fecha+=timedelta(days=intervalo)
+            if fecha==fecha_datos:
+                valor.append(datos[item].get('valor'))
+                maximo.append(datos[item].get('maximo'))
+                minimo.append(datos[item].get('minimo'))
+                item+=1
+            else:
+                valor.append(None)
+                maximo.append(None)
+                minimo.append(None)
+            fecha_str = str(calendar.month_abbr[fecha.month])+" "+str(fecha.year)
+            frecuencia.append(fecha)
+            intervalo=dias_mes(fecha.month,fecha.year)
+            fecha+=timedelta(days=intervalo)
 
     return valor,maximo,minimo,frecuencia
         #fecha_str = str(calendar.month_abbr[fila.get('month')])+" "+str(fila.get('year'))
@@ -928,10 +934,6 @@ def dias_mes(month,year):
         else:
             dias=30
     return dias
-def titulo_unidad(variable):
-    uni=list(Unidad.objects.filter(uni_id=variable.uni_id.uni_id).values())
-    return uni[0].get('uni_sigla')
-
 def titulo_frecuencia(frecuencia):
     nombre = []
     if frecuencia == '0':

@@ -15,6 +15,8 @@ import plotly.graph_objs as go
 
 from django.db import connection
 
+from consultas.functions import (datos_diarios,datos_5minutos,datos_horarios,datos_mensuales)
+
 def filtrar(form):
     context = {}
     #humedadsuelo,presionatmosferica,temperaturaagua,caudal,nivelagua
@@ -75,117 +77,151 @@ def comparar(form):
     variable=form.cleaned_data['variable']
     fecha_inicio=form.cleaned_data['inicio']
     fecha_fin=form.cleaned_data['fin']
-    frecuencia=form.cleaned_data['tiempo']
-    #unidad=form.cleaned_data['unidad']
-    #temporalidad=conversion_tiempo(tiempo,unidad)
-    val01,tiempo=datos_minutos(
-        estacion01,variable,fecha_inicio,fecha_fin,'med_valor',frecuencia*60)
-    val02,tiempo=datos_minutos(
-        estacion02,variable,fecha_inicio,fecha_fin,'med_valor',frecuencia*60)
-    val03,tiempo=datos_minutos(
-        estacion03,variable,fecha_inicio,fecha_fin,'med_valor',frecuencia*60)
-    #obj_est01=Estacion.objects.get(est_id=estacion01.est_id)
-    #obj_est02=Estacion.objects.get(est_id=estacion02.est_id)
-    #obj_est03=Estacion.objects.get(est_id=estacion03.est_id)
-    trace0 = go.Scatter(
-        x = tiempo,
-        y = val01,
-        name = estacion01.est_codigo,
-        mode = 'lines',
-        line = dict(
-            color = ('rgb(205, 12, 24)'),
-            )
-    )
-    trace1 = go.Scatter(
-        x = tiempo,
-        y = val02,
-        name = estacion02.est_codigo,
-        mode = 'lines',
-        line = dict(
-            color = ('rgb(50, 205, 50)'),
-            )
-    )
-    trace2 = go.Scatter(
-        x = tiempo,
-        y = val03,
-        name = estacion03.est_codigo,
-        mode = 'lines',
-        line = dict(
-            color = ('rgb(22, 96, 167)'),
-            )
-    )
+    frecuencia=form.cleaned_data['frecuencia']
+    #frecuencia 5 minutos
+    if(frecuencia==str(1)):
+        val01,max01,min01,time01=datos_5minutos(estacion01,variable,fecha_inicio,fecha_fin)
+        val02,max02,min02,time02=datos_5minutos(estacion02,variable,fecha_inicio,fecha_fin)
+        val03,max03,min03,time03=datos_5minutos(estacion03,variable,fecha_inicio,fecha_fin)
+    #frecuencia horaria
+    elif(frecuencia==str(2)):
+        val01,max01,min01,time01=datos_horarios(estacion01,variable,fecha_inicio,fecha_fin)
+        val02,max02,min02,time02=datos_horarios(estacion02,variable,fecha_inicio,fecha_fin)
+        val03,max03,min03,time03=datos_horarios(estacion03,variable,fecha_inicio,fecha_fin)
+    #frecuencia diaria
+    elif(frecuencia==str(3)):
+        val01,max01,min01,time01=datos_diarios(estacion01,variable,fecha_inicio,fecha_fin)
+        val02,max02,min02,time02=datos_diarios(estacion02,variable,fecha_inicio,fecha_fin)
+        val03,max03,min03,time03=datos_diarios(estacion03,variable,fecha_inicio,fecha_fin)
+    #frecuencia mensual
+    elif(frecuencia==str(4)):
+        val01,max01,min01,time01=datos_mensuales(estacion01,variable,fecha_inicio,fecha_fin)
+        val02,max02,min02,time02=datos_mensuales(estacion02,variable,fecha_inicio,fecha_fin)
+        val03,max03,min03,time03=datos_mensuales(estacion03,variable,fecha_inicio,fecha_fin)
+    trace0 = trace_graph(variable,estacion01,time01,val01)
+    trace1 = trace_graph(variable,estacion02,time02,val02)
+    trace2 = trace_graph(variable,estacion03,time03,val03)
     data = go.Data([trace0, trace1, trace2])
     layout = go.Layout(
         title = "Comparación de Estaciones",
-        yaxis = dict(title='Promedios')
+        yaxis = dict(title = variable.var_nombre + \
+                     str(" (") + variable.uni_id.uni_sigla+ str(")")),
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=1,
+                         label='1d',
+                         step='day',
+                         stepmode='today'),
+                    dict(count=1,
+                         label='1m',
+                         step='month',
+                         stepmode='backward'),
+                    dict(count=6,
+                         label='6m',
+                         step='month',
+                         stepmode='backward'),
+                    dict(count=1,
+                        label='1y',
+                        step='year',
+                        stepmode='backward'),
+                    dict(step='all')
+                ])
+            ),
+            rangeslider=dict(),
+            type='date'
         )
+    )
     figure = go.Figure(data=data, layout=layout)
     div = opy.plot(figure, auto_open=False, output_type='div')
     return div
-
-
-def datos_instantaneos(estacion,variable,fecha_inicio,fecha_fin,parametro):
-    consulta=list(Medicion.objects.filter(est_id=estacion)
-        .filter(var_id=variable).filter(med_fecha__range=[fecha_inicio,fecha_fin])
-        .values(parametro,'med_fecha','med_hora')
-        .order_by('med_fecha','med_hora'))
-    valor=[]
-    frecuencia=[]
-    for fila in consulta:
-        if fila.get(parametro) is not None:
-            valor.append(fila.get(parametro))
-        frecuencia.append(datetime.datetime.combine(fila['med_fecha'],fila['med_hora']))
-
-    return valor,frecuencia
-
-def datos_minutos(estacion,variable,fecha_inicio,fecha_fin,parametro,temporalidad):
-    cursor = connection.cursor()
-    if variable==str(1):
-        cursor.execute("SELECT sum(med_valor) as valor, \
-            to_timestamp(floor((extract('epoch' \
-            from med_fecha) / %s )) * %s)\
-            AT TIME ZONE 'UTC' as interval_alias\
-            FROM medicion_medicion\
-            where est_id_id=%s and var_id_id=%s and \
-            med_fecha>=%s and med_fecha<=%s\
-            GROUP BY interval_alias\
-            order by interval_alias",[temporalidad,temporalidad,
-            estacion.est_id,variable.var_id,fecha_inicio,fecha_fin])
+def comparar_variable(form):
+    estacion01=form.cleaned_data['estacion01']
+    estacion02=form.cleaned_data['estacion02']
+    variable01=form.cleaned_data['variable01']
+    variable02=form.cleaned_data['variable02']
+    fecha_inicio=form.cleaned_data['inicio']
+    fecha_fin=form.cleaned_data['fin']
+    frecuencia=form.cleaned_data['frecuencia']
+    #frecuencia 5 minutos
+    if(frecuencia==str(1)):
+        val01,max01,min01,time01=datos_5minutos(estacion01,variable01,fecha_inicio,fecha_fin)
+        val02,max02,min02,time02=datos_5minutos(estacion02,variable02,fecha_inicio,fecha_fin)
+    #frecuencia horaria
+    elif(frecuencia==str(2)):
+        val01,max01,min01,time01=datos_horarios(estacion01,variable01,fecha_inicio,fecha_fin)
+        val02,max02,min02,time02=datos_horarios(estacion02,variable02,fecha_inicio,fecha_fin)
+    #frecuencia diaria
+    elif(frecuencia==str(3)):
+        val01,max01,min01,time01=datos_diarios(estacion01,variable01,fecha_inicio,fecha_fin)
+        val02,max02,min02,time02=datos_diarios(estacion02,variable02,fecha_inicio,fecha_fin)
+    #frecuencia mensual
+    elif(frecuencia==str(4)):
+        val01,max01,min01,time01=datos_mensuales(estacion01,variable01,fecha_inicio,fecha_fin)
+        val02,max02,min02,time02=datos_mensuales(estacion02,variable02,fecha_inicio,fecha_fin)
+    trace0=trace_graph(variable01,estacion01,time01,val01)
+    trace1=trace_graph(variable02,estacion02,time02,val02)
+    data = go.Data([trace0, trace1])
+    layout = go.Layout(
+        title = "Comparación de Variables",
+        yaxis = dict(
+            title = variable01.var_nombre + \
+                str(" (") + variable01.uni_id.uni_sigla+ str(")")
+        ),
+        yaxis2=dict(
+            title = variable02.var_nombre + \
+                str(" (") + variable02.uni_id.uni_sigla+ str(")"),
+            titlefont=dict(
+                color='rgb(148, 103, 189)'
+            ),
+            tickfont=dict(
+                color='rgb(148, 103, 189)'
+            ),
+            overlaying='y',
+            side='right'
+        ),
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=1,
+                         label='1d',
+                         step='day',
+                         stepmode='today'),
+                    dict(count=1,
+                         label='1m',
+                         step='month',
+                         stepmode='backward'),
+                    dict(count=6,
+                         label='6m',
+                         step='month',
+                         stepmode='backward'),
+                    dict(count=1,
+                        label='1y',
+                        step='year',
+                        stepmode='backward'),
+                    dict(step='all')
+                ])
+            ),
+            rangeslider=dict(),
+            type='date'
+        )
+    )
+    figure = go.Figure(data=data, layout=layout)
+    div = opy.plot(figure, auto_open=False, output_type='div')
+    return div
+def trace_graph(variable,estacion,tiempo,valor):
+    if variable.var_id==1:
+        trace = go.Bar(
+            x = tiempo,
+            y = valor,
+            name = estacion.est_codigo,
+        )
     else:
-        cursor.execute("SELECT sum(med_valor) as valor, \
-            to_timestamp(floor((extract('epoch' \
-            from med_fecha) / %s )) * %s)\
-            AT TIME ZONE 'UTC' as interval_alias\
-            FROM medicion_medicion\
-            where est_id_id=%s and var_id_id=%s and \
-            med_fecha>=%s and med_fecha<=%s\
-            GROUP BY interval_alias\
-            order by interval_alias",[temporalidad,temporalidad,
-            estacion.est_id,variable.var_id,fecha_inicio,fecha_fin])
-    datos=dictfetchall(cursor)
-    valor=[]
-    frecuencia=[]
-    for fila in datos:
-        if fila.get('valor') is not None:
-            valor.append(fila.get('valor'))
-        frecuencia.append(fila.get('interval_alias'))
-    cursor.close()
-    return valor,frecuencia
-def conversion_tiempo(tiempo,unidad):
-    valor=300
-    if unidad=="0":
-        valor=tiempo*60
-    elif unidad=="1":
-        valor=tiempo*60*60
-    elif unidad=="2":
-        valor=tiempo*60*60*24
-    elif unidad=="3":
-        valor=tiempo*60*60*24*365
-    return valor
-def dictfetchall(cursor):
-    #Return all rows from a cursor as a dict
-    columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
+        trace = go.Scatter(
+            x = tiempo,
+            y = valor,
+            name = estacion.est_codigo,
+            mode = 'lines',
+            yaxis='y2'
+        )
+    return trace
