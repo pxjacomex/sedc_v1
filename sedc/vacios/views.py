@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from .forms import VaciosSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from home.functions import pagination
 # Create your views here.
 #Vacios
 class VaciosCreate(LoginRequiredMixin,CreateView):
@@ -31,7 +32,6 @@ class VaciosList(LoginRequiredMixin,ListView,FormView):
     #parámetros FormView
     template_name='vacios/vacios_list.html'
     form_class=VaciosSearchForm
-    #parametros propios
     def post(self, request, *args, **kwargs):
         form=VaciosSearchForm(self.request.POST or None)
         page=kwargs.get('page')
@@ -41,7 +41,6 @@ class VaciosList(LoginRequiredMixin,ListView,FormView):
             self.object_list=Vacios.objects.all()
         context = super(VaciosList, self).get_context_data(**kwargs)
         context.update(pagination(self.object_list,page,10))
-        #return self.render_to_response(self.get_context_data(form=form))
         return render(request,'vacios/vacios_table.html',context)
     def get_context_data(self, **kwargs):
         context = super(VaciosList, self).get_context_data(**kwargs)
@@ -64,37 +63,3 @@ class VaciosUpdate(LoginRequiredMixin,UpdateView):
 class VaciosDelete(LoginRequiredMixin,DeleteView):
     model=Vacios
     success_url = reverse_lazy('vacios:vacios_index')
-
-def pagination(lista,page,num_reg):
-    #lista=model.objects.all()
-    paginator = Paginator(lista, num_reg)
-    print paginator.num_pages
-    factor=paginator.num_pages//2
-    if factor>5:
-        factor=5
-    print factor
-    if page is None:
-        page=1
-    else:
-        page=int(page)
-    if page == 1:
-        start=1
-        last=factor
-    elif page == paginator.num_pages:
-        last=paginator.num_pages
-        start=last-1
-    elif (page-factor)<0:
-        start=1
-        last=factor
-    elif page>(paginator.num_pages-factor):
-        start=page-factor
-        last=paginator.num_pages
-    else:
-        start=page-factor//2
-        last=page+factor//2
-    context={
-        'first':'1',
-        'last':paginator.num_pages,
-        'range':range(start,last+1),
-    }
-    return context

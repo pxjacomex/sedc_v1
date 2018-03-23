@@ -15,6 +15,7 @@ def filtrar(form):
     variable=form.cleaned_data['variable']
     inicio=form.cleaned_data['inicio']
     fin=form.cleaned_data['fin']
+    tipo_variable=form.cleaned_data['valor']
     year_ini=inicio.strftime('%Y')
     year_fin=fin.strftime('%Y')
     var_cod=variable.var_codigo
@@ -24,6 +25,7 @@ def filtrar(form):
         sql+='est_id_id='+str(estacion.est_id)+ ' and '
         sql+='med_fecha>=\''+str(inicio)+'\' and '
         sql+='med_fecha<=\''+str(fin)+'\' and med_estado is not False '
+        sql+='and med_valor is not null '
         sql+='order by med_fecha'
         print sql
         consulta=list(Medicion.objects.raw(sql))
@@ -35,17 +37,20 @@ def filtrar(form):
             if str(year)==year_ini:
                 sql='SELECT * FROM '+tabla+ ' WHERE '
                 sql+='est_id_id='+str(estacion.est_id)+ ' and '
-                sql+='med_fecha>=\''+str(inicio)+'\' med_estado is not False '
+                sql+='med_fecha>=\''+str(inicio)+'\' and med_estado is not False '
+                sql+='and med_valor is not null '
                 sql+='order by med_fecha'
             elif str(year)==year_fin:
                 sql='SELECT * FROM '+tabla+ ' WHERE '
                 sql+='est_id_id='+str(estacion.est_id)+ ' and '
-                sql+='med_fecha<=\''+str(fin)+'\' med_estado is not False '
+                sql+='med_fecha<=\''+str(fin)+'\' and med_estado is not False '
+                sql+='and med_valor is not null '
                 sql+='order by med_fecha'
 
             else:
                 sql='SELECT * FROM '+tabla+ ' WHERE '
-                sql+='est_id_id='+str(estacion.est_id)+' med_estado is not False '
+                sql+='est_id_id='+str(estacion.est_id)+' and med_estado is not False '
+                sql+='and med_valor is not null '
                 sql+='order by med_fecha'
             print sql
             consulta.extend(list(Medicion.objects.raw(sql)))
@@ -62,7 +67,14 @@ def filtrar(form):
     variabilidad=0
     for item in consulta:
         obj_analisis=Analisis()
-        valor=item.med_valor
+        if tipo_variable=='valor':
+            valor=item.med_valor
+        elif tipo_variable=='maximo':
+            valor=item.med_maximo
+        elif tipo_variable=='minimo':
+            valor=item.med_minimo
+        else:
+            valor=item.med_valor
         valor_error=False
         resta=0
         resta_error=False
@@ -149,6 +161,10 @@ def modificar_medicion(kwargs,data):
     year=fecha_split[0]
     var_cod=variable.var_codigo
     tabla=var_cod+'.m'+year
+    if str(data.get('med_valor'))=='':
+        med_valor='Null'
+    else:
+        med_valor=str(data.get('med_maximo'))
     if str(data.get('med_maximo'))=='':
         med_maximo='Null'
     else:
@@ -157,7 +173,7 @@ def modificar_medicion(kwargs,data):
         med_minimo='Null'
     else:
         med_minimo=str(data.get('med_maximo'))
-    sql="UPDATE "+tabla+" SET med_valor = "+str(data.get('med_valor'))
+    sql="UPDATE "+tabla+" SET med_valor = "+med_valor
     sql+=", med_maximo="+med_maximo+", med_minimo="
     sql+=med_minimo+"  WHERE med_id = "+str(med_id)
     with connection.cursor() as cursor:

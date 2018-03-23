@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from datalogger.forms import DataloggerSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from home.functions import pagination
 #Datalogger views
 class DataloggerCreate(LoginRequiredMixin,CreateView):
     model = Datalogger
@@ -30,20 +31,20 @@ class DataloggerList(LoginRequiredMixin,ListView,FormView):
     #parámetros FormView
     template_name='datalogger/datalogger_list.html'
     form_class=DataloggerSearchForm
-    #parametros propios
-    cadena=str("")
-    def get(self, request, *args, **kwargs):
-        form=DataloggerSearchForm(self.request.GET or None)
-        self.object_list=Datalogger.objects.all()
-        if form.is_valid():
+    def post(self, request, *args, **kwargs):
+        form=DataloggerSearchForm(self.request.POST or None)
+        page=kwargs.get('page')
+        if form.is_valid() and self.request.is_ajax():
             self.object_list=form.filtrar(form)
-            self.cadena=form.cadena(form)
-        return self.render_to_response(self.get_context_data(form=form))
+        else:
+            self.object_list=Datalogger.objects.all()
+        context = super(DataloggerList, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list,page,10))
+        return render(request,'datalogger/datalogger_table.html',context)
     def get_context_data(self, **kwargs):
         context = super(DataloggerList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
         context.update(pagination(self.object_list,page,10))
-        context["cadena"]=self.cadena
         return context
 
 class DataloggerDetail(LoginRequiredMixin,DetailView):
@@ -61,26 +62,3 @@ class DataloggerUpdate(LoginRequiredMixin,UpdateView):
 class DataloggerDelete(LoginRequiredMixin,DeleteView):
     model=Datalogger
     success_url = reverse_lazy('datalogger:datalogger_index')
-
-def pagination(lista,page,num_reg):
-    #lista=model.objects.all()
-    paginator = Paginator(lista, num_reg)
-    if page is None:
-        page=1
-    else:
-        page=int(page)
-    if page == 1:
-        start=1
-        last=start+1
-    elif page == paginator.num_pages:
-        last=paginator.num_pages
-        start=last-1
-    else:
-        start=page-1
-        last=page+1
-    context={
-        'first':'1',
-        'last':paginator.num_pages,
-        'range':range(start,last+1),
-    }
-    return context

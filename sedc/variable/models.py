@@ -16,6 +16,8 @@ class Unidad(models.Model):
         return self.uni_nombre.encode('utf-8')
     def get_absolute_url(self):
         return reverse('variable:unidad_detail', kwargs={'pk': self.pk})
+    class Meta:
+        ordering=['uni_id']
 
 class Variable(models.Model):
     var_id=models.AutoField("Id",primary_key=True)
@@ -37,6 +39,8 @@ class Variable(models.Model):
         return self.var_nombre.encode('utf-8')
     def get_absolute_url(self):
         return reverse('variable:variable_detail', kwargs={'pk': self.pk})
+    class Meta:
+        ordering=['var_id']
 
 
 class Control(models.Model):
@@ -47,12 +51,6 @@ class Control(models.Model):
     	blank=True,
     	null=True,
     	verbose_name="Variable")
-    '''sen_id=models.ForeignKey(
-    	Sensor,
-        models.SET_NULL,
-    	blank=True,
-    	null=True,
-    	verbose_name="Sensor")'''
     est_id=models.ForeignKey(
     	Estacion,
     	models.SET_NULL,
@@ -64,5 +62,5 @@ class Control(models.Model):
     con_estado=models.BooleanField("Activo",default=True)
     def get_absolute_url(self):
         return reverse('variable:control_detail', kwargs={'pk': self.pk})
-    '''class Meta:
-        ordering=('est_id','var_id',)'''
+    class Meta:
+        ordering=['est_id']

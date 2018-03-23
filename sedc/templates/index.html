@@ -1,7 +1,5 @@
 <html>
-<head>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-</head>
+
 {# Load the tag library #}
 {% load bootstrap3 %}
 
@@ -9,7 +7,12 @@
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
 {% bootstrap_javascript jquery='all' %}
-
+<head>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+  {% load static %}
+  <script src="{% static 'functions.js' %}"></script>
+</head>
 
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
@@ -67,7 +70,7 @@
             aria-haspopup="true" aria-expanded="false">Datos
             <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="{% url 'formato:formato_index' %}">Formato</a></li>
+              <li><a href="{% url 'formato:formato_index' %}">Formatos de Importación</a></li>
               <li><a href="{% url 'formato:clasificacion_index' %}">Variables por Formato</a></li>
               <li><a href="{% url 'formato:asociacion_index' %}">Formatos por Estación</a></li>
               <li><a href="{% url 'importacion:importacion_create'%}">Importar Archivo</a></li>
@@ -135,12 +138,12 @@
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
-
+  {% block javascript %}{% endblock %}
   <div class="container">
     {% block content %}
     {% endblock %}
   </div>
-  {% block javascript %}{% endblock %}
+
 
 </body>
 </html>

@@ -29,21 +29,20 @@ class SensorList(LoginRequiredMixin,ListView,FormView):
     #parámetros FormView
     template_name='sensor/sensor_list.html'
     form_class=SensorSearchForm
-    #success_url='/sensor/'
-    #parametros propios
-    cadena=str("")
-    def get(self, request, *args, **kwargs):
-        form=SensorSearchForm(self.request.GET or None)
-        self.object_list=Sensor.objects.all()
-        if form.is_valid():
+    def post(self, request, *args, **kwargs):
+        form=SensorSearchForm(self.request.POST or None)
+        page=kwargs.get('page')
+        if form.is_valid() and self.request.is_ajax():
             self.object_list=form.filtrar(form)
-            self.cadena=form.cadena(form)
-        return self.render_to_response(self.get_context_data(form=form))
+        else:
+            self.object_list=Sensor.objects.all()
+        context = super(SensorList, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list,page,10))
+        return render(request,'sensor/sensor_table.html',context)
     def get_context_data(self, **kwargs):
         context = super(SensorList, self).get_context_data(**kwargs)
-        #page=kwargs.get('page')
-        #context.update(pagination(self.object_list,page,10))
-        context["cadena"]=self.cadena
+        page=self.request.GET.get('page')
+        context.update(pagination(self.object_list,page,10))
         return context
 class SensorDetail(LoginRequiredMixin,DetailView):
     model=Sensor

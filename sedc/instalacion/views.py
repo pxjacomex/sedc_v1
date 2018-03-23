@@ -27,22 +27,21 @@ class InstalacionList(LoginRequiredMixin,ListView,FormView):
     paginate_by = 10
     template_name='instalacion/instalacion_list.html'
     form_class=InstalacionSearchForm
-    #parametros propios
-    cadena=str("")
-    def get(self, request, *args, **kwargs):
-        form=InstalacionSearchForm(self.request.GET or None)
-        self.object_list=Instalacion.objects.all()
+    def post(self, request, *args, **kwargs):
+        form=InstalacionSearchForm(self.request.POST or None)
+        page=kwargs.get('page')
+
         if form.is_valid():
             self.object_list=form.filtrar(form)
-            self.cadena=form.cadena(form)
-        return self.render_to_response(self.get_context_data(form=form))
-
+        else:
+            self.object_list=Instalacion.objects.all()
+        context = super(InstalacionList, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list,page,10))
+        return render(request,'instalacion/instalacion_table.html',context)
     def get_context_data(self, **kwargs):
         context = super(InstalacionList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
-        print kwargs
         context.update(pagination(self.object_list,page,10))
-        context["cadena"]=self.cadena
         return context
 
 class InstalacionDetail(LoginRequiredMixin,DetailView):

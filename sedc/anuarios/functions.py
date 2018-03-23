@@ -12,15 +12,23 @@ from anuarios.formatoII import matrizII
 from anuarios.formatoIII import matrizIII
 from anuarios.formatoIV import matrizIV
 from anuarios.formatoV import datos_viento,matrizV_mensual
-from anuarios.formatoVI import matrizVI,datos_guardar, datos_radiacion_maxima,datos_radiacion_minimo
+from anuarios.formatoVI import matrizVI, datos_radiacion_maxima,datos_radiacion_minimo
+
+
 def calcular(form):
     datos=[]
     valid=False
+    #humedadsuelo,presionatmosferica,temperaturaagua,caudal,nivelagua
     typeI = [6,8,9,10,11]
+    #precipitacion
     typeII = [1]
+    #temperaturaaire
     typeIII = [2]
+    #humedadaire
     typeIV = [3]
+    #direccion y velocidad
     typeV = [4,5]
+    #radiacion
     typeVI = [7]
     estacion=form.cleaned_data['estacion']
     variable=form.cleaned_data['variable']

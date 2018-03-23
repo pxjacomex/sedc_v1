@@ -2,44 +2,12 @@
 {% block content %}
 {% load bootstrap3 %}
 {% load humanize %}
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 $(document).ready(function() {
   actualizar_lista($("#form_consulta").attr('action'));
   $("#btn_filtrar").click(function(){
     actualizar_lista($("#form_consulta").attr('action'));
   });
-
-  $(".link_page").click(function(e){
-    e.preventDefault();
-    //var enlace=$(this).attr('href')
-    actualizar_lista($(this).attr('href'));
-  });
-  function actualizar_lista(enlace){
-    $("#btn_filtrar").attr('disabled',true);
-    $.ajax({
-      url: enlace,
-      data: $("#form_consulta").serialize(),
-      type:'POST',
-      beforeSend: function () {
-        $("#div_informacion").hide();
-        $("#div_loading").show();
-        $("#div_error").hide();
-      },
-      success: function (data) {
-        $("#div_informacion").show();
-        $("#div_informacion").html(data)
-        $("#div_loading").hide();
-        $("#div_error").hide();
-        $("#btn_filtrar").removeAttr('disabled');
-      },
-      error: function () {
-        $("#div_loading").hide();
-        $("#div_error").show();
-        $("#btn_filtrar").removeAttr('disabled');
-      }
-    });
-  }
 });
 </script>
 
@@ -56,7 +24,7 @@ $(document).ready(function() {
         Nuevo</a>
       </div>
     </div>
-  </div>
+  </div><!-- end div class="panel-heading"-->
 
   <div class="panel-body">
     <form id="form_consulta" class="form" method="post" action="{% url 'vacios:vacios_index'%}">
@@ -74,25 +42,22 @@ $(document).ready(function() {
         Limpiar</a>
       </div>
     </form>
-  </div>
-
-
+  </div><!-- end div class="panel-body"-->
   <div id="div_informacion">
-    
-  </div><!-- end div id="div_informacion"-->
 
+  </div><!-- end div id="div_informacion"-->
   <div id="div_loading" style="display:none;" class="panel-body">
     <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
     <div class="col-lg-4 col-md-4 col-sm-4">
       <img src="/media/loading6.gif" />
     </div>
     <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
-  </div>
+  </div><!-- end div id="div_loading"-->
   <div id="div_error" style="display:none;" class="panel-body">
     <div class="alert alert-danger alert-dismissible" role="alert">
       Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
     </div>
-  </div>
+  </div><!-- end div id="div_loading"-->
 </div><!--end div class="panel panel-default"-->
 
 {% endblock %}

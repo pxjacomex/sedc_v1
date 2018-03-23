@@ -4,52 +4,62 @@ from estacion.models import Estacion
 from anuarios.models import Viento
 from django.db.models.functions import TruncMonth
 from django.db.models import Max, Min, Avg, Count
-
+from django.db import connection
 from datetime import datetime
 
 def matrizV_mensual(estacion,variable,periodo):
+    tabla_velocidad="vvi.m"+periodo
+    tabla_direccion="dvi.m"+periodo
+    cursor = connection.cursor()
     print "Inicio de la Función mensual ",datetime.now()
     #velocidad media en m/s
-    vel_media=list(Medicion.objects.filter(est_id=estacion.est_id).filter(var_id=4)
-        .filter(med_fecha__year=periodo)
-        .annotate(month=TruncMonth('med_fecha')).values('month')
-        .annotate(valor=Avg('med_valor')).values('valor').order_by('month'))
+    sql="SELECT avg(med_valor) as valor, date_part('month',med_fecha) as mes "
+    sql+="FROM "+tabla_velocidad+" "
+    sql+="WHERE est_id_id="+str(estacion.est_id)+" "
+    sql+="GROUP BY mes ORDER BY mes"
+    cursor.execute(sql)
+    vel_media=dictfetchall(cursor)
     #numero de registros por mes en velocidad
-    num_obs=list(Medicion.objects.filter(est_id=estacion.est_id).filter(var_id=4)
-        .filter(med_fecha__year=periodo)
-        .annotate(month=TruncMonth('med_fecha')).values('month')
-        .annotate(obs=Count('med_valor')).values('obs','month')
-        .order_by('month'))
-    #numero de registros mayores a 0.5 en velocidad
-    calma=list(Medicion.objects.filter(est_id=estacion.est_id).filter(var_id=4)
-        .filter(med_fecha__year=periodo).filter(med_valor__lt=0.5)
-        .annotate(month=TruncMonth('med_fecha')).values('month')
-        .annotate(calma=Count('med_valor')).values('calma')
-        .order_by('month'))
+    sql="SELECT count(med_valor) as obs, date_part('month',med_fecha) as mes "
+    sql+="FROM "+tabla_velocidad+" "
+    sql+="WHERE est_id_id="+str(estacion.est_id)+" "
+    sql+="GROUP BY mes ORDER BY mes"
+    cursor.execute(sql)
+    num_obs=dictfetchall(cursor)
+    #numero de registros menores a 0.5 en velocidad
+    sql="SELECT count(med_valor) as calma, date_part('month',med_fecha) as mes "
+    sql+="FROM "+tabla_velocidad+" "
+    sql+="WHERE est_id_id="+str(estacion.est_id)+" and med_valor<0.5"
+    sql+="GROUP BY mes ORDER BY mes"
+    cursor.execute(sql)
+    calma=dictfetchall(cursor)
+
     print "Inicio del For que recorrre los meses",datetime.now()
     direcciones=["N","NE","E","SE","S","SO","O","NO"]
     valores=[[] for y in range(12)]
     for item_obs,item_calma,item_velocidad in zip(num_obs,calma,vel_media):
-        mes=item_obs.get('month').month
+        mes=int(item_obs.get('mes'))
         print "Inicio de la consulta por mes",datetime.now()
         #lista de datos de la dirección de viento
-        dat_dvi=list(Medicion.objects
-            .filter(est_id=estacion.est_id).filter(var_id=5)
-            .filter(med_fecha__year=periodo)
-            .filter(med_fecha__month=mes)
-            .values('med_valor','med_fecha').order_by('med_fecha','med_hora')
-        )
+        sql="SELECT med_valor, med_fecha "
+        sql+="FROM "+tabla_direccion+" "
+        sql+="WHERE est_id_id="+str(estacion.est_id)+" "
+        sql+="AND date_part('month',med_fecha)="+str(mes)
+        sql+="ORDER BY med_fecha"
+        cursor.execute(sql)
+        dat_dvi=dictfetchall(cursor)
         #lista de datos de velocidad del viento
-        dat_vvi=list(Medicion.objects
-            .filter(est_id=estacion.est_id).filter(var_id=4)
-            .filter(med_fecha__year=periodo)
-            .filter(med_fecha__month=mes)
-            .values('med_valor','med_maximo').order_by('med_fecha','med_hora')
-        )
+        sql="SELECT med_valor,med_maximo, med_fecha "
+        sql+="FROM "+tabla_velocidad+" "
+        sql+="WHERE est_id_id="+str(estacion.est_id)+" "
+        sql+="AND date_part('month',med_fecha)="+str(mes)
+        sql+="ORDER BY med_fecha"
+        cursor.execute(sql)
+        dat_vvi=dictfetchall(cursor)
         print "Fin de la consulta por mes",datetime.now()
         vvi=[[0 for x in range(0)] for y in range(8)]
         vvi_max=[[0 for x in range(0)] for y in range(8)]
-        print "Clasificar velocididades por direccion",datetime.now()
+        print "Clasificar velocidades por direccion",datetime.now()
         for val_dvi,val_vvi in zip(dat_dvi,dat_vvi):
             #agrupa las velocidades por direccion
             if val_vvi.get('med_valor') is not None:
@@ -119,16 +129,16 @@ def matrizV_mensual(estacion,variable,periodo):
         valores[mes-1].append(round(max(maximos),2))
         valores[mes-1].append(direcciones[maximos.index(max(maximos))])
         valores[mes-1].append(round(item_velocidad.get('valor'),2))
+    cursor.close()
     return valores
 
 
 def datos_viento(datos,estacion,periodo):
     lista=[]
-    obj_estacion=estacion.est_id.objects.get(est_id=estacion.est_id)
     for fila in datos:
         if len(fila)>0:
             obj_viento=Viento()
-            obj_viento.est_id=obj_estacion
+            obj_viento.est_id=estacion
             obj_viento.vie_periodo=periodo
             obj_viento.vie_mes=fila[0]
             obj_viento.vie_vel_N=fila[1]
@@ -154,3 +164,10 @@ def datos_viento(datos,estacion,periodo):
             obj_viento.vie_vel_med=fila[21]
             lista.append(obj_viento)
     return lista
+def dictfetchall(cursor):
+    #Return all rows from a cursor as a dict
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]

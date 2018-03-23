@@ -88,7 +88,7 @@ class UnidadDelete(LoginRequiredMixin,DeleteView):
     model=Unidad
     success_url = reverse_lazy('variable:unidad_index')
 
-#Control
+#Model Control
 class ControlCreate(LoginRequiredMixin,CreateView):
     model=Control
     fields = ['var_id','sen_id','est_id','con_fecha_ini','con_fecha_fin','con_estado']
@@ -108,21 +108,20 @@ class ControlList(LoginRequiredMixin,ListView,FormView):
     #parámetros FormView
     template_name='variable/control_list.html'
     form_class=ControlSearchForm
-    #parametros propios
-    cadena=str("")
-    def get(self, request, *args, **kwargs):
-        form=ControlSearchForm(self.request.GET or None)
-        self.object_list=Control.objects.all()
+    def post(self, request, *args, **kwargs):
+        form=ControlSearchForm(self.request.POST or None)
+        page=kwargs.get('page')
         if form.is_valid():
             self.object_list=form.filtrar(form)
-            self.cadena=form.cadena(form)
-        return self.render_to_response(self.get_context_data(form=form))
-
+        else:
+            self.object_list=Control.objects.all()
+        context = super(ControlList, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list,page,10))
+        return render(request,'variable/control_table.html',context)
     def get_context_data(self, **kwargs):
         context = super(ControlList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
         context.update(pagination(self.object_list,page,10))
-        context["cadena"]=self.cadena
         return context
 
 class ControlDetail(LoginRequiredMixin,DetailView):

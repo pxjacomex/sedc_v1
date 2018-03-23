@@ -7,9 +7,10 @@ from datalogger.models import Datalogger
 
 
 class InstalacionSearchForm(forms.Form):
-    class Meta:
-        model=Instalacion
-        fields=['est_id','dat_id']
+    dat_id=forms.ModelChoiceField(label="Datalogger",required=False,
+        queryset=Datalogger.objects.all())
+    est_id=forms.ModelChoiceField(label="Estación",required=False,
+        queryset=Datalogger.objects.all())
 
     def filtrar(self,form):
         dat_id=form.cleaned_data['dat_id']
@@ -31,15 +32,3 @@ class InstalacionSearchForm(forms.Form):
         else:
             lista=Instalacion.objects.all()
         return lista
-
-    def cadena(self,form):
-        keys=form.cleaned_data.keys()
-        string=str("?")
-        i=1
-        for item in keys:
-            if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item])+"&"
-            else:
-                string+=item+"="+str(form.cleaned_data[item])
-            i+=1
-        return string
