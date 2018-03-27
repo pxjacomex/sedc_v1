@@ -24,19 +24,10 @@ class FormatoSearchForm(ModelForm):
         else:
             lista=Formato.objects.all()
         return lista
-
-    def cadena(self,form):
-        keys=form.cleaned_data.keys()
-        string=str("?")
-        i=1
-        for item in keys:
-            if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item])+"&"
-            else:
-                string+=item+"="+str(form.cleaned_data[item])
-            i+=1
-        return string
-
+class FormatoForm(ModelForm):
+    class Meta:
+        model=Formato
+        fields='__all__'
 class ClasificacionSearchForm(ModelForm):
     lista=[]
     class Meta:
@@ -64,18 +55,10 @@ class ClasificacionSearchForm(ModelForm):
         else:
             lista=Clasificacion.objects.all()
         return lista
-
-    def cadena(self,form):
-        keys=form.cleaned_data.keys()
-        string=str("?")
-        i=1
-        for item in keys:
-            if i<len(keys):
-                string+=item+"="+str(form.cleaned_data[item])+"&"
-            else:
-                string+=item+"="+str(form.cleaned_data[item])
-            i+=1
-        return string
+class ClasificacionForm(ModelForm):
+    class Meta:
+        model=Clasificacion
+        fields=['var_id','cla_valor','cla_maximo','cla_minimo']
 class AsociacionSearchForm(ModelForm):
     lista=[]
     class Meta:

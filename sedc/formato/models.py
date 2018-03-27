@@ -30,7 +30,7 @@ class Fecha(models.Model):
     fec_formato=models.CharField("Formato",max_length=20)
     fec_codigo=models.CharField("Código",max_length=20)
     def __str__(self):
-        return self.fec_codigo
+        return self.fec_formato
     class Meta:
         ordering=('fec_id',)
 class Hora(models.Model):
@@ -38,7 +38,7 @@ class Hora(models.Model):
     hor_formato=models.CharField("Formato",max_length=20)
     hor_codigo=models.CharField("Código",max_length=20)
     def __str__(self):
-        return self.hor_codigo
+        return self.hor_formato
     class Meta:
         ordering=('hor_id',)
 

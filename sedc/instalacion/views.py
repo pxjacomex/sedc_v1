@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from instalacion.forms import InstalacionSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from home.functions import pagination
 #Variable views
 class InstalacionCreate(LoginRequiredMixin,CreateView):
     model=Instalacion
@@ -59,25 +60,3 @@ class InstalacionUpdate(LoginRequiredMixin,UpdateView):
 class InstalacionDelete(LoginRequiredMixin,DeleteView):
     model=Instalacion
     success_url = reverse_lazy('instalacion:instalacion_index')
-def pagination(lista,page,num_reg):
-    #lista=model.objects.all()
-    paginator = Paginator(lista, num_reg)
-    if page is None:
-        page=1
-    else:
-        page=int(page)
-    if page == 1:
-        start=1
-        last=start+1
-    elif page == paginator.num_pages:
-        last=paginator.num_pages
-        start=last-1
-    else:
-        start=page-1
-        last=page+1
-    context={
-        'first':'1',
-        'last':paginator.num_pages,
-        'range':range(start,last+1),
-    }
-    return context

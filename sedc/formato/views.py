@@ -5,11 +5,12 @@ from .models import Formato, Extension, Delimitador, Clasificacion, Asociacion
 from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy,reverse
 from django.core.paginator import Paginator
-from .forms import FormatoSearchForm, ClasificacionSearchForm, AsociacionSearchForm
+from .forms import FormatoSearchForm, ClasificacionSearchForm, AsociacionSearchForm,ClasificacionForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from home.functions import pagination
+from django.http import HttpResponseRedirect, HttpResponse
 #Formato views
 class FormatoCreate(LoginRequiredMixin,CreateView):
     model = Formato
@@ -42,10 +43,20 @@ class FormatoList(LoginRequiredMixin,ListView,FormView):
         context = super(FormatoList, self).get_context_data(**kwargs)
         context.update(pagination(self.object_list,page,10))
         return render(request,'formato/formato_table.html',context)
-    def get_context_data(self, **kwargs):
-        context = super(FormatoList, self).get_context_data(**kwargs)
-        page=self.request.GET.get('page')
-        context.update(pagination(self.object_list,page,10))
+class FormatoClasificacion(LoginRequiredMixin,ListView,FormView):
+    model=Clasificacion
+    template_name='formato/formato_clasificacion.html'
+    form_class=ClasificacionForm
+    def get(self,request,*args,**kwargs):
+        for_id=kwargs.get('pk')
+        formato=Formato.objects.get(for_id=for_id)
+        return self.render_to_response(self.get_context_data(
+            for_id=for_id,formato=formato))
+    def get_context_data(self,**kwargs):
+        for_id=kwargs.get('for_id')
+        formato=Formato.objects.get(for_id=for_id)
+        self.object_list=Clasificacion.objects.filter(for_id=formato)
+        context = super(FormatoClasificacion, self).get_context_data(**kwargs)
         return context
 
 class FormatoDetail(LoginRequiredMixin,DetailView):
@@ -68,6 +79,8 @@ class FormatoUpdate(LoginRequiredMixin,UpdateView):
         context = super(FormatoUpdate, self).get_context_data(**kwargs)
         context['title'] = "Modificar"
         return context
+
+
 
 class FormatoDelete(LoginRequiredMixin,DeleteView):
     model=Formato
@@ -154,17 +167,23 @@ class DelimitadorDelete(LoginRequiredMixin,DeleteView):
 #Clasificacion
 class ClasificacionCreate(LoginRequiredMixin,CreateView):
     model=Clasificacion
-    fields = ['for_id','var_id','cla_valor','cla_maximo','cla_minimo']
-    def form_valid(self, form):
-        return super(ClasificacionCreate, self).form_valid(form)
+    fields = ['var_id','cla_valor','cla_maximo','cla_minimo']
+    def post(self,request,*args,**kwargs):
+        form=ClasificacionForm(self.request.POST or None)
+        clasificacion=form.save(commit=False)
+        for_id=kwargs.get('for_id')
+        formato=Formato.objects.get(for_id=for_id)
+        clasificacion.for_id=formato
+        clasificacion.save()
+        #form.save_m2m()
+        rreturn HttpResponseRedirect(reverse('formato:clasificacion_index', kwargs={'for_id':formato.for_id}))
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ClasificacionCreate, self).get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
         context['title'] = "Crear"
         return context
 
-class ClasificacionList(LoginRequiredMixin,ListView,FormView):
+'''class ClasificacionList(LoginRequiredMixin,ListView,FormView):
     #parámetros ListView
     model=Clasificacion
     paginate_by=10
@@ -173,27 +192,36 @@ class ClasificacionList(LoginRequiredMixin,ListView,FormView):
     form_class=ClasificacionSearchForm
     #parametros propios
     cadena=str("")
-    def get(self, request, *args, **kwargs):
-        form=ClasificacionSearchForm(self.request.GET or None)
-        self.object_list=Clasificacion.objects.all()
+    def post(self, request, *args, **kwargs):
+        form=ClasificacionSearchForm(self.request.POST or None)
+        page=kwargs.get('page')
         if form.is_valid():
             self.object_list=form.filtrar(form)
-            self.cadena=form.cadena(form)
-        return self.render_to_response(self.get_context_data(form=form))
-
+        else:
+            self.object_list=Clasificacion.objects.all()
+        context = super(ClasificacionList, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list,page,10))
+        return render(request,'formato/clasificacion_table.html',context)
     def get_context_data(self, **kwargs):
         context = super(ClasificacionList, self).get_context_data(**kwargs)
         page=self.request.GET.get('page')
         context.update(pagination(self.object_list,page,10))
-        context["cadena"]=self.cadena
-        return context
+        return context'''
+class ClasificacionList(LoginRequiredMixin,ListView):
+    model=Clasificacion
+    def get(self, request, *args, **kwargs):
+        for_id=kwargs.get('for_id')
+        formato=Formato.objects.get(for_id=for_id)
+        self.object_list=Clasificacion.objects.filter(for_id=formato)
+        context={'object_list':self.object_list}
+        return render(request,'formato/clasificacion_table.html',context)
 
 class ClasificacionDetail(LoginRequiredMixin,DetailView):
     model=Clasificacion
 
 class ClasificacionUpdate(LoginRequiredMixin,UpdateView):
     model=Clasificacion
-    fields = ['for_id','var_id','cla_valor','cla_maximo','cla_minimo']
+    fields = ['var_id','cla_valor','cla_maximo','cla_minimo']
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ClasificacionUpdate, self).get_context_data(**kwargs)
@@ -203,7 +231,11 @@ class ClasificacionUpdate(LoginRequiredMixin,UpdateView):
 class ClasificacionDelete(LoginRequiredMixin,DeleteView):
     model=Clasificacion
     success_url = reverse_lazy('formato:clasificacion_index')
-
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        formato=self.object.for_id
+        self.object.delete()
+        return HttpResponseRedirect(reverse('formato:clasificacion_index', kwargs={'for_id':formato.for_id}))
 #Asociacion
 class AsociacionCreate(LoginRequiredMixin,CreateView):
     model=Asociacion
@@ -256,26 +288,3 @@ class AsociacionUpdate(LoginRequiredMixin,UpdateView):
 class AsociacionDelete(LoginRequiredMixin,DeleteView):
     model=Asociacion
     success_url = reverse_lazy('formato:asociacion_index')
-
-def pagination(lista,page,num_reg):
-    #lista=model.objects.all()
-    paginator = Paginator(lista, num_reg)
-    if page is None:
-        page=1
-    else:
-        page=int(page)
-    if page == 1:
-        start=1
-        last=start+1
-    elif page == paginator.num_pages:
-        last=paginator.num_pages
-        start=last-1
-    else:
-        start=page-1
-        last=page+1
-    context={
-        'first':'1',
-        'last':paginator.num_pages,
-        'range':range(start,last+1),
-    }
-    return context

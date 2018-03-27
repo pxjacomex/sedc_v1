@@ -10,6 +10,7 @@ urlpatterns=[
     url(r'formato/create/$', views.FormatoCreate.as_view(), name='formato_create'),
     url(r'formato/detail/(?P<pk>[0-9]+)/$', views.FormatoDetail.as_view(), name='formato_detail'),
     url(r'formato/edit/(?P<pk>[0-9]+)/$', views.FormatoUpdate.as_view(), name='formato_update'),
+    url(r'formato/clasificacion/(?P<pk>[0-9]+)/$', views.FormatoClasificacion.as_view(), name='formato_clasificacion'),
     url(r'formato/(?P<pk>[0-9]+)/delete/$', views.FormatoDelete.as_view(), name='formato_delete'),
 
     url(r'^extension/$',views.ExtensionList.as_view(),name='extension_index'),
@@ -25,8 +26,10 @@ urlpatterns=[
     url(r'delimitador/(?P<pk>[0-9]+)/delete/$', views.DelimitadorDelete.as_view(), name='delimitador_delete'),
 
     url(r'clasificacion/$',views.ClasificacionList.as_view(),name='clasificacion_index'),
-    url(r'clasificacion/(?P<page>[0-9]+)/$',views.ClasificacionList.as_view(),name='clasificacion_index'),
+    #url(r'clasificacion/(?P<page>[0-9]+)/$',views.ClasificacionList.as_view(),name='clasificacion_index'),
+    url(r'clasificacion/(?P<for_id>[0-9]+)/$',views.ClasificacionList.as_view(),name='clasificacion_index'),
     url(r'clasificacion/create/$', views.ClasificacionCreate.as_view(), name='clasificacion_create'),
+    url(r'clasificacion/create/(?P<for_id>[0-9]+)/$', views.ClasificacionCreate.as_view(), name='clasificacion_create'),
     url(r'clasificacion/detail/(?P<pk>[0-9]+)/$', views.ClasificacionDetail.as_view(), name='clasificacion_detail'),
     url(r'clasificacion/edit/(?P<pk>[0-9]+)/$', views.ClasificacionUpdate.as_view(), name='clasificacion_update'),
     url(r'clasificacion/(?P<pk>[0-9]+)/delete/$', views.ClasificacionDelete.as_view(), name='clasificacion_delete'),

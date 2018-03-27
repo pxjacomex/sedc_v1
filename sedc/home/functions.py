@@ -11,6 +11,7 @@ def pagination(lista,page,num_reg):
     else:
         page=int(page)
     if page <= 3 and factor>=3:
+        print "caso 1"
         start=1
         last=5
     elif page <= 5 and factor<3:
