@@ -176,7 +176,7 @@ class ClasificacionCreate(LoginRequiredMixin,CreateView):
         clasificacion.for_id=formato
         clasificacion.save()
         #form.save_m2m()
-        rreturn HttpResponseRedirect(reverse('formato:clasificacion_index', kwargs={'for_id':formato.for_id}))
+        return HttpResponseRedirect(reverse('formato:clasificacion_index', kwargs={'for_id':formato.for_id}))
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ClasificacionCreate, self).get_context_data(**kwargs)

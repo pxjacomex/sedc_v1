@@ -753,6 +753,7 @@ def datos_diarios(estacion,variable,fecha_inicio,fecha_fin):
                     sql+='and med_estado is not False '
                     sql+='GROUP BY anio, mes, dia '
                     sql+='ORDER BY anio, mes, dia'
+            print sql
             cursor.execute(sql)
             datos.extend(dictfetchall(cursor))
     valor=[]
@@ -776,10 +777,14 @@ def datos_diarios(estacion,variable,fecha_inicio,fecha_fin):
                     maximo.append(datos[item].get('maximo'))
                 elif datos[item].get('maximo2') is not None:
                     maximo.append(datos[item].get('maximo2'))
+                else:
+                    maximo.append(None)
                 if datos[item].get('minimo'):
                     minimo.append(datos[item].get('minimo'))
                 elif datos[item].get('minimo2'):
                     minimo.append(datos[item].get('minimo2'))
+                else:
+                    minimo.append(None)
                 #frecuencia.append(fecha_datos)
                 #fecha+=intervalo
                 item+=1

@@ -109,7 +109,6 @@ class ConsultasPeriodo(FormView):
             valores,maximos,minimos,tiempo=datos_diarios(estacion,variable,fecha_inicio,fecha_fin)
         else:
             valores,maximos,minimos,tiempo=datos_mensuales(estacion,variable,fecha_inicio,fecha_fin)
-
         writer.writerow(['fecha','valor','maximo','minimo'])
         for valor,maximo,minimo,fecha in zip(valores,maximos,minimos,tiempo):
             writer.writerow([fecha,valor,maximo,minimo])
