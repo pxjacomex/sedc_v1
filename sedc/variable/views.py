@@ -91,7 +91,8 @@ class UnidadDelete(LoginRequiredMixin,DeleteView):
 #Model Control
 class ControlCreate(LoginRequiredMixin,CreateView):
     model=Control
-    fields = ['var_id','sen_id','est_id','con_fecha_ini','con_fecha_fin','con_estado']
+    #fields = ['var_id','est_id','con_fecha_ini','con_fecha_fin','con_estado']
+    fields = ['var_id', 'sen_id', 'est_id', 'con_fecha_ini', 'con_fecha_fin', 'con_estado']
     def form_valid(self, form):
         return super(ControlCreate, self).form_valid(form)
     def get_context_data(self, **kwargs):

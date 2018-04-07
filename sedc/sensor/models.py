@@ -7,19 +7,24 @@ from marca.models import Marca
 
 # Create your models here.
 class Sensor(models.Model):
-    TIPO_NOMBRE=(
-        ('Termómetro','Termómetro'),
-        ('Higrómetro','Higrómetro'),
-        ('Pluviógrafo','Pluviógrafo'),
-        ('Veleta','Veleta'),
-        ('Anemómetro','Anemómetro'),
-        ('Barómetro','Barómetro'),
-        ('TDR','TDR'),
-        ('Piranómetro','Piranómetro'),
-        ('Termómetro de agua','Termómetro de agua'),
-        ('Sensor de nivel','Sensor de nivel'),
-    )
     sen_id=models.AutoField("Id",primary_key=True)
+
+    sen_codigo = models.CharField("Código", max_length=10)
+
+    TIPO_NOMBRE=(
+        ("Pluviómetro","Pluviómetro"),
+        ("Sonda Ultrasónico", "Sonda Ultrasónico" ),
+        ("Velocidad del viento", "Velocidad del viento"),
+        ("Sonda Piezométrico", "Sonda Piezométrico"),
+        ("Humedad y Temperatura", "Humedad y Temperatura"),
+        ("Sensor de viento" , "Sensor de viento"),
+        ("Sensor de Viento", "Sensor de Viento"),
+        ("Pluviómetro", "Pluviómetro"),
+        ("Presión Barométrica", "Presión Barométrica"),
+        ("Radiación Solar", "Radiación Solar"),
+        ("Dirección del viento", "Dirección del viento"),
+    )
+
     sen_nombre=models.CharField("Nombre",max_length=20,choices=TIPO_NOMBRE)
     mar_id=models.ForeignKey(
         Marca,
@@ -32,8 +37,8 @@ class Sensor(models.Model):
     sen_serial=models.CharField("Serial",max_length=20,null=True)
     sen_estado=models.BooleanField("Estado",default=True)
     def __str__(self):
-        return (self.sen_nombre + " " + self.sen_modelo + " " + self.sen_serial).encode('utf-8')
+        return self.sen_codigo
     def get_absolute_url(self):
         return reverse('sensor:sensor_detail', kwargs={'pk': self.pk})
     class Meta:
-        ordering=('sen_nombre','sen_modelo','sen_serial',)
+        ordering=('sen_codigo',)
